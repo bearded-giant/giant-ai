@@ -1,0 +1,119 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLAUDE_DIR="$(dirname "$SCRIPT_DIR")"
+DOTFILES_DIR="$(dirname "$(dirname "$CLAUDE_DIR")")"
+
+echo "Giant AI Dev Setup"
+echo "========================="
+echo "Giant AI Dev directory: $CLAUDE_DIR"
+echo ""
+
+# Function to check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Check prerequisites
+echo "Checking prerequisites..."
+
+if ! command_exists python3; then
+    echo "❌ Python 3 is not installed"
+    exit 1
+fi
+
+if ! command_exists node; then
+    echo "❌ Node.js is not installed"
+    exit 1
+fi
+
+if ! command_exists npm; then
+    echo "❌ npm is not installed"
+    exit 1
+fi
+
+echo "✅ All prerequisites met"
+echo ""
+
+# Install Python dependencies
+echo "Installing Python dependencies for RAG..."
+cd "$CLAUDE_DIR/rag"
+pip3 install -r requirements.txt
+echo "✅ Python dependencies installed"
+echo ""
+
+# Install Node.js dependencies
+echo "Installing Node.js dependencies for MCP..."
+cd "$CLAUDE_DIR/mcp"
+npm install
+echo "✅ Node.js dependencies installed"
+echo ""
+
+# Make scripts executable
+echo "Making scripts executable..."
+chmod +x "$CLAUDE_DIR/bin/"*
+chmod +x "$CLAUDE_DIR/rag/indexer.py"
+chmod +x "$CLAUDE_DIR/rag/search.py"
+chmod +x "$CLAUDE_DIR/mcp/project-server.js"
+echo "✅ Scripts made executable"
+echo ""
+
+# Create symlinks for CLI tools
+echo "Creating CLI symlinks..."
+mkdir -p ~/.local/bin
+
+# RAG tools
+ln -sf "$CLAUDE_DIR/rag/indexer.py" ~/.local/bin/giant-rag
+ln -sf "$CLAUDE_DIR/rag/search.py" ~/.local/bin/giant-search
+
+# Other tools
+ln -sf "$CLAUDE_DIR/bin/giant-setup" ~/.local/bin/giant-setup
+ln -sf "$CLAUDE_DIR/bin/giant-init-project" ~/.local/bin/giant-init-project
+
+echo "✅ CLI tools linked to ~/.local/bin"
+echo ""
+
+# Set up MCP hub configuration
+echo "Configuring MCP hub..."
+MCP_CONFIG_DIR=~/.config/mcp-hub
+mkdir -p "$MCP_CONFIG_DIR"
+
+cat > "$MCP_CONFIG_DIR/config.json" << EOF
+{
+  "servers": {
+    "giant-project-context": {
+      "command": "node",
+      "args": ["$CLAUDE_DIR/mcp/project-server.js"],
+      "env": {},
+      "auto_start": false
+    }
+  }
+}
+EOF
+
+echo "✅ MCP hub configured"
+echo ""
+
+# Create global RAG database directory
+echo "Creating global RAG database directory..."
+mkdir -p ~/.giant-ai-dev/rag/db
+echo "✅ RAG database directory created"
+echo ""
+
+# Setup complete
+echo "🎉 Setup complete!"
+echo ""
+echo "Next steps:"
+echo "1. Add ~/.local/bin to your PATH if not already there"
+echo "2. Run 'giant-rag index <project-path>' to index a project"
+echo "3. Run 'giant-init-project' in a project directory to set up project-specific config"
+echo "4. Configure your neovim with the provided enhancements"
+echo ""
+echo "Available commands:"
+echo "  giant-rag index <path>     - Index a codebase for semantic search"
+echo "  giant-rag search <query>   - Search indexed codebases"
+echo "  giant-search <query> [path] - Quick search in a project"
+echo "  giant-init-project         - Initialize project-specific Giant AI Dev config"
+echo ""

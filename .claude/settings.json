@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(cat:*)",
+      "Bash(cd:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(touch:*)",
+      "Bash(echo:*)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(git:*)",
+      "Bash(docker:*)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(brew:*)"
+    ],
+    "deny": []
+  }
+}
+

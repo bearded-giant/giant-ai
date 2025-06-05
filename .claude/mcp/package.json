@@ -1,0 +1,14 @@
+{
+  "name": "claude-global-mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Global MCP server for Claude Code with project context support",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "glob": "^10.3.10",
+    "yaml": "^2.3.4"
+  },
+  "bin": {
+    "claude-mcp-server": "./project-server.js"
+  }
+}

@@ -1,0 +1,139 @@
+#!/bin/bash
+
+set -e
+
+PROJECT_DIR="${1:-$(pwd)}"
+CLAUDE_CONFIG_DIR="$PROJECT_DIR/.claude"
+
+echo "Giant AI Dev Project Initialization"
+echo "============================"
+echo "Project directory: $PROJECT_DIR"
+echo ""
+
+# Create project .claude directory
+mkdir -p "$CLAUDE_CONFIG_DIR"
+
+# Create project-specific context file if it doesn't exist
+if [ ! -f "$CLAUDE_CONFIG_DIR/context.md" ]; then
+    echo "Creating project context file..."
+    cat > "$CLAUDE_CONFIG_DIR/context.md" << 'EOF'
+# Project Context
+
+## Overview
+[Describe your project here - its purpose, main features, and target users]
+
+## Architecture
+[Describe the high-level architecture - main components, data flow, key technologies]
+
+## Development Guidelines
+
+### Code Style
+- [Add project-specific code style guidelines]
+- [Naming conventions]
+- [File organization patterns]
+
+### Testing Strategy
+- [Unit test requirements]
+- [Integration test approach]
+- [E2E test coverage]
+
+### Performance Considerations
+- [Key performance metrics]
+- [Optimization priorities]
+- [Resource constraints]
+
+## Current Focus
+- [What are you currently working on?]
+- [Any specific areas that need attention?]
+- [Known issues or technical debt?]
+
+## AI Assistant Instructions
+
+### When generating code:
+- [Project-specific patterns to follow]
+- [Libraries/frameworks to use or avoid]
+- [Security considerations]
+
+### When reviewing code:
+- [What to look for]
+- [Common pitfalls in this codebase]
+- [Performance hotspots to consider]
+
+### When debugging:
+- [Common issues in this project]
+- [Debugging tools and techniques]
+- [Logging patterns]
+EOF
+    echo "✅ Created context.md"
+else
+    echo "✓ context.md already exists"
+fi
+
+# Create conventions file if it doesn't exist
+if [ ! -f "$CLAUDE_CONFIG_DIR/conventions.yml" ]; then
+    echo "Creating conventions file..."
+    cat > "$CLAUDE_CONFIG_DIR/conventions.yml" << 'EOF'
+# Project Conventions
+naming:
+  files: kebab-case  # or camelCase, PascalCase, snake_case
+  components: PascalCase
+  functions: camelCase
+  constants: UPPER_SNAKE_CASE
+
+structure:
+  src_layout: feature  # or layer (controllers/models/views)
+  test_location: alongside  # or separate (__tests__ folder)
+  
+code_style:
+  max_line_length: 100
+  indent: spaces  # or tabs
+  indent_size: 2
+  quotes: single  # or double
+  semicolons: false  # JS/TS specific
+  
+git:
+  branch_naming: feature/ticket-description
+  commit_style: conventional  # conventional commits
+  
+dependencies:
+  package_manager: npm  # or yarn, pnpm, cargo, pip, etc.
+  version_strategy: exact  # or caret, tilde
+EOF
+    echo "✅ Created conventions.yml"
+else
+    echo "✓ conventions.yml already exists"
+fi
+
+# Create .gitignore entries if needed
+if [ -f "$PROJECT_DIR/.gitignore" ]; then
+    if ! grep -q ".claude/rag/" "$PROJECT_DIR/.gitignore"; then
+        echo "" >> "$PROJECT_DIR/.gitignore"
+        echo "# Giant AI Dev local files" >> "$PROJECT_DIR/.gitignore"
+        echo ".claude/rag/db/" >> "$PROJECT_DIR/.gitignore"
+        echo "✅ Added Giant AI Dev entries to .gitignore"
+    else
+        echo "✓ .gitignore already has Giant AI Dev entries"
+    fi
+fi
+
+# Ask if user wants to index the project now
+echo ""
+read -p "Would you like to index this project for semantic search now? (y/N) " -n 1 -r
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Indexing project..."
+    giant-rag index "$PROJECT_DIR"
+fi
+
+echo ""
+echo "🎉 Project initialization complete!"
+echo ""
+echo "Next steps:"
+echo "1. Edit $CLAUDE_CONFIG_DIR/context.md to describe your project"
+echo "2. Edit $CLAUDE_CONFIG_DIR/conventions.yml to match your project's conventions"
+echo "3. Run 'giant-rag index $PROJECT_DIR' to index/reindex the codebase"
+echo ""
+echo "The AI assistant will now have access to:"
+echo "- Project-specific context and guidelines"
+echo "- Semantic search across your codebase"
+echo "- Your coding conventions and patterns"
