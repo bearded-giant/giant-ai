@@ -52,7 +52,7 @@ git clone <giant-ai-dev-repo>
 cd giant-ai-dev
 
 # 2. Run setup script
-./bin/claude-setup
+./bin/ai-setup
 ```
 
 This automatically:

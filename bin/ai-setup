@@ -1,14 +1,16 @@
 #!/bin/bash
+# Giant AI Dev Setup - LLM-agnostic AI development toolkit
+# Supports Claude, OpenAI, and other LLM providers
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLAUDE_DIR="$(dirname "$SCRIPT_DIR")"
-DOTFILES_DIR="$(dirname "$(dirname "$CLAUDE_DIR")")"
+AI_DEV_DIR="$(dirname "$SCRIPT_DIR")"
+DOTFILES_DIR="$(dirname "$(dirname "$AI_DEV_DIR")")"
 
 echo "Giant AI Dev Setup"
 echo "========================="
-echo "Giant AI Dev directory: $CLAUDE_DIR"
+echo "Giant AI Dev directory: $AI_DEV_DIR"
 echo ""
 
 # Function to check if command exists
@@ -39,24 +41,24 @@ echo ""
 
 # Install Python dependencies
 echo "Installing Python dependencies for RAG..."
-cd "$CLAUDE_DIR/rag"
+cd "$AI_DEV_DIR/rag"
 pip3 install -r requirements.txt
 echo "✅ Python dependencies installed"
 echo ""
 
 # Install Node.js dependencies
 echo "Installing Node.js dependencies for MCP..."
-cd "$CLAUDE_DIR/mcp"
+cd "$AI_DEV_DIR/mcp"
 npm install
 echo "✅ Node.js dependencies installed"
 echo ""
 
 # Make scripts executable
 echo "Making scripts executable..."
-chmod +x "$CLAUDE_DIR/bin/"*
-chmod +x "$CLAUDE_DIR/rag/indexer.py"
-chmod +x "$CLAUDE_DIR/rag/search.py"
-chmod +x "$CLAUDE_DIR/mcp/project-server.js"
+chmod +x "$AI_DEV_DIR/bin/"*
+chmod +x "$AI_DEV_DIR/rag/indexer.py"
+chmod +x "$AI_DEV_DIR/rag/search.py"
+chmod +x "$AI_DEV_DIR/mcp/project-server.js"
 echo "✅ Scripts made executable"
 echo ""
 
@@ -65,12 +67,12 @@ echo "Creating CLI symlinks..."
 mkdir -p ~/.local/bin
 
 # RAG tools
-ln -sf "$CLAUDE_DIR/rag/indexer.py" ~/.local/bin/giant-rag
-ln -sf "$CLAUDE_DIR/rag/search.py" ~/.local/bin/giant-search
+ln -sf "$AI_DEV_DIR/rag/indexer.py" ~/.local/bin/ai-rag
+ln -sf "$AI_DEV_DIR/rag/search.py" ~/.local/bin/ai-search
 
 # Other tools
-ln -sf "$CLAUDE_DIR/bin/giant-setup" ~/.local/bin/giant-setup
-ln -sf "$CLAUDE_DIR/bin/giant-init-project" ~/.local/bin/giant-init-project
+ln -sf "$AI_DEV_DIR/bin/ai-setup" ~/.local/bin/ai-setup
+ln -sf "$AI_DEV_DIR/bin/ai-init-project" ~/.local/bin/ai-init-project
 
 echo "✅ CLI tools linked to ~/.local/bin"
 echo ""
@@ -83,9 +85,9 @@ mkdir -p "$MCP_CONFIG_DIR"
 cat > "$MCP_CONFIG_DIR/config.json" << EOF
 {
   "servers": {
-    "giant-project-context": {
+    "ai-project-context": {
       "command": "node",
-      "args": ["$CLAUDE_DIR/mcp/project-server.js"],
+      "args": ["$AI_DEV_DIR/mcp/project-server.js"],
       "env": {},
       "auto_start": false
     }
@@ -98,7 +100,7 @@ echo ""
 
 # Create global RAG database directory
 echo "Creating global RAG database directory..."
-mkdir -p ~/.giant-ai-dev/rag/db
+mkdir -p ~/.ai-dev/rag/db
 echo "✅ RAG database directory created"
 echo ""
 
@@ -107,13 +109,13 @@ echo "🎉 Setup complete!"
 echo ""
 echo "Next steps:"
 echo "1. Add ~/.local/bin to your PATH if not already there"
-echo "2. Run 'giant-rag index <project-path>' to index a project"
-echo "3. Run 'giant-init-project' in a project directory to set up project-specific config"
-echo "4. Configure your neovim with the provided enhancements"
+echo "2. Run 'ai-rag index <project-path>' to index a project"
+echo "3. Run 'ai-init-project' in a project directory to set up project-specific config"
+echo "4. Configure your editor with the provided enhancements"
 echo ""
 echo "Available commands:"
-echo "  giant-rag index <path>     - Index a codebase for semantic search"
-echo "  giant-rag search <query>   - Search indexed codebases"
-echo "  giant-search <query> [path] - Quick search in a project"
-echo "  giant-init-project         - Initialize project-specific Giant AI Dev config"
+echo "  ai-rag index <path>     - Index a codebase for semantic search"
+echo "  ai-rag search <query>   - Search indexed codebases"
+echo "  ai-search <query> [path] - Quick search in a project"
+echo "  ai-init-project         - Initialize project-specific AI config"
 echo ""

@@ -1,22 +1,24 @@
 #!/bin/bash
+# Giant AI Dev Project Initialization - LLM-agnostic project setup
+# Creates .llm-setup directory with context and conventions
 
 set -e
 
 PROJECT_DIR="${1:-$(pwd)}"
-CLAUDE_CONFIG_DIR="$PROJECT_DIR/.claude"
+AI_CONFIG_DIR="$PROJECT_DIR/.llm-setup"
 
 echo "Giant AI Dev Project Initialization"
 echo "============================"
 echo "Project directory: $PROJECT_DIR"
 echo ""
 
-# Create project .claude directory
-mkdir -p "$CLAUDE_CONFIG_DIR"
+# Create project .llm-setup directory
+mkdir -p "$AI_CONFIG_DIR"
 
 # Create project-specific context file if it doesn't exist
-if [ ! -f "$CLAUDE_CONFIG_DIR/context.md" ]; then
+if [ ! -f "$AI_CONFIG_DIR/context.md" ]; then
     echo "Creating project context file..."
-    cat > "$CLAUDE_CONFIG_DIR/context.md" << 'EOF'
+    cat > "$AI_CONFIG_DIR/context.md" << 'EOF'
 # Project Context
 
 ## Overview
@@ -70,9 +72,9 @@ else
 fi
 
 # Create conventions file if it doesn't exist
-if [ ! -f "$CLAUDE_CONFIG_DIR/conventions.yml" ]; then
+if [ ! -f "$AI_CONFIG_DIR/conventions.yml" ]; then
     echo "Creating conventions file..."
-    cat > "$CLAUDE_CONFIG_DIR/conventions.yml" << 'EOF'
+    cat > "$AI_CONFIG_DIR/conventions.yml" << 'EOF'
 # Project Conventions
 naming:
   files: kebab-case  # or camelCase, PascalCase, snake_case
@@ -106,10 +108,10 @@ fi
 
 # Create .gitignore entries if needed
 if [ -f "$PROJECT_DIR/.gitignore" ]; then
-    if ! grep -q ".claude/rag/" "$PROJECT_DIR/.gitignore"; then
+    if ! grep -q ".llm-setup/rag/" "$PROJECT_DIR/.gitignore"; then
         echo "" >> "$PROJECT_DIR/.gitignore"
         echo "# Giant AI Dev local files" >> "$PROJECT_DIR/.gitignore"
-        echo ".claude/rag/db/" >> "$PROJECT_DIR/.gitignore"
+        echo ".llm-setup/rag/db/" >> "$PROJECT_DIR/.gitignore"
         echo "✅ Added Giant AI Dev entries to .gitignore"
     else
         echo "✓ .gitignore already has Giant AI Dev entries"
@@ -122,16 +124,16 @@ read -p "Would you like to index this project for semantic search now? (y/N) " -
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Indexing project..."
-    giant-rag index "$PROJECT_DIR"
+    ai-rag index "$PROJECT_DIR"
 fi
 
 echo ""
 echo "🎉 Project initialization complete!"
 echo ""
 echo "Next steps:"
-echo "1. Edit $CLAUDE_CONFIG_DIR/context.md to describe your project"
-echo "2. Edit $CLAUDE_CONFIG_DIR/conventions.yml to match your project's conventions"
-echo "3. Run 'giant-rag index $PROJECT_DIR' to index/reindex the codebase"
+echo "1. Edit $AI_CONFIG_DIR/context.md to describe your project"
+echo "2. Edit $AI_CONFIG_DIR/conventions.yml to match your project's conventions"
+echo "3. Run 'ai-rag index $PROJECT_DIR' to index/reindex the codebase"
 echo ""
 echo "The AI assistant will now have access to:"
 echo "- Project-specific context and guidelines"
