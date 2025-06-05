@@ -1,4 +1,4 @@
-# Complete Claude AI Development Setup
+# Complete AI Development Setup
 
 A comprehensive AI-powered development environment that rivals Cursor IDE while maintaining the flexibility and power of Neovim.
 
@@ -15,7 +15,7 @@ This setup transforms your development workflow with:
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Neovim IDE    │    │  Claude Code    │    │   RAG System    │
+│   Neovim IDE    │    │   AI CLI Tool   │    │   RAG System    │
 │                 │    │                 │    │                 │
 │ • Avante.nvim   │◄──►│ • CLI Tool      │◄──►│ • Chunked Index │
 │ • Codeium       │    │ • Project Root  │    │ • Semantic Search│
@@ -40,7 +40,7 @@ This setup transforms your development workflow with:
 ### Prerequisites
 - **Python 3.8+** with pip
 - **Node.js 18+** with npm  
-- **Claude Code CLI** - Install via: `npm install -g @anthropic/claude-code`
+- **AI CLI Tool** - Install via: `npm install -g @anthropic/claude-code` (or equivalent AI CLI)
 - **Claude Desktop** (optional, for desktop app MCP integration)
 - **Neovim** (optional, for IDE integration)
 
@@ -51,7 +51,7 @@ git clone <giant-ai-dev-repo>
 cd giant-ai-dev
 
 # 2. Run global setup
-./bin/claude-setup
+./scripts/ai-setup
 ```
 
 This script automatically:
@@ -61,7 +61,7 @@ This script automatically:
 - ✅ Configures MCP hub with global servers
 - ✅ Sets up RAG database directory
 - ✅ Configures Claude Desktop MCP integration
-- ✅ Sets up Claude Code global context
+- ✅ Sets up AI CLI global context
 
 ### Add to PATH
 ```bash
@@ -74,26 +74,26 @@ export PATH="$HOME/.local/bin:$PATH"
 # Navigate to any project
 cd your-project
 
-# Initialize Claude configuration
-claude-init-project
+# Initialize AI configuration
+ai-init-project
 ```
 
 This creates:
 ```
 your-project/
-├── .claude/
+├── .ai-setup/
 │   ├── context.md       # Project-specific AI instructions
 │   └── conventions.yml  # Coding standards and patterns
-└── .gitignore          # Updated with Claude entries
+└── .gitignore          # Updated with AI entries
 ```
 
 ### Index for Search
 ```bash
 # Index current project for semantic search
-claude-rag index .
+ai-rag index .
 
 # Verify indexing
-claude-rag list-projects
+ai-rag list-projects
 ```
 
 ### Neovim Integration (Optional)
@@ -123,24 +123,24 @@ giant-ai-dev/                    # Standalone AI development toolkit
 │   ├── project-server.js    # Global MCP tools
 │   ├── package.json
 │   └── node_modules/
-├── bin/
-│   ├── claude-setup        # One-time setup script
-│   └── claude-init-project # Per-project initialization
+├── scripts/
+│   ├── ai-setup        # One-time setup script
+│   └── ai-init-project # Per-project initialization
 ├── templates/              # POC templates
 ├── prompts/               # AI prompts
 └── settings.local.json    # Local configuration
 
 ~/.local/bin/              # CLI tools (symlinked by setup)
-├── claude-rag            # → giant-ai-dev/rag/indexer.py
-├── claude-search        # → giant-ai-dev/rag/search.py
-├── claude-setup         # → giant-ai-dev/bin/claude-setup
-└── claude-init-project  # → giant-ai-dev/bin/claude-init-project
+├── ai-rag            # → giant-ai-dev/rag/indexer.py
+├── ai-search        # → giant-ai-dev/rag/search.py
+├── ai-setup         # → giant-ai-dev/scripts/ai-setup
+└── ai-init-project  # → giant-ai-dev/scripts/ai-init-project
 
-~/.claude/                # Claude Code runtime (managed separately)
-├── CLAUDE.md@           # → dotfiles/claude-code/.claude/CLAUDE.md (stowed)
-├── projects/            # Claude Code project sessions
-├── todos/              # Claude Code todo management
-└── statsig/            # Claude Code analytics
+~/.ai-setup/                # AI setup runtime (managed separately)
+├── CLAUDE.md@           # → dotfiles/claude-code/.ai-setup/CLAUDE.md (stowed)
+├── projects/            # AI project sessions
+├── todos/              # AI todo management
+└── statsig/            # AI analytics
 
 ~/.config/mcp-hub/
 └── config.json         # MCP server configuration
@@ -152,19 +152,19 @@ giant-ai-dev/                    # Standalone AI development toolkit
 ### Per-Project Structure
 ```
 your-project/
-├── .claude/
+├── .ai-setup/
 │   ├── context.md           # Project-specific AI context
 │   ├── conventions.yml      # Coding standards
 │   └── mcp/                # Optional project MCP server
 │       └── server.js
-├── .gitignore              # Updated to exclude .claude/rag/db/
+├── .gitignore              # Updated to exclude .ai-setup/rag/db/
 └── [your project files]
 ```
 
 ### RAG Storage Details
 
 **Project-Specific Collections:**
-Each project gets its own ChromaDB collection stored in `~/.claude/rag/db/`:
+Each project gets its own ChromaDB collection stored in `~/.ai-setup/rag/db/`:
 
 ```python
 # Collection naming
@@ -186,19 +186,19 @@ giant-ai-dev/rag/db/
 **Search Commands:**
 ```bash
 # Index current project
-claude-rag index .
+ai-rag index .
 
 # Index with custom settings
-claude-rag index . --batch-size 100 --chunk-size 30 --max-file-size 20
+ai-rag index . --batch-size 100 --chunk-size 30 --max-file-size 20
 
 # Search current project
-claude-search "authentication middleware"
+ai-search "authentication middleware"
 
 # Search specific project
-claude-rag search "error handling" /path/to/project --limit 5
+ai-rag search "error handling" /path/to/project --limit 5
 
 # List all indexed projects
-claude-rag list-projects
+ai-rag list-projects
 ```
 
 ## RAG System - Semantic Code Search
@@ -234,22 +234,22 @@ giant-ai-dev/rag/db/
 ### Usage
 ```bash
 # Index with chunking (creates project-specific store)
-claude-rag index .
+ai-rag index .
 
 # Search semantically within current project
-claude-search "authentication middleware"
-claude-search "database connection pooling"
-claude-search "error handling patterns"
+ai-search "authentication middleware"
+ai-search "database connection pooling"
+ai-search "error handling patterns"
 
 # Advanced search with project targeting
-claude-rag search "JWT token validation" --limit 10
-claude-rag search "React hooks for API calls" --project /path/to/project
-claude-rag list-projects  # Show all indexed projects
+ai-rag search "JWT token validation" --limit 10
+ai-rag search "React hooks for API calls" --project /path/to/project
+ai-rag list-projects  # Show all indexed projects
 ```
 
 ### Integration Points
 - **Neovim**: `<leader>rs` for instant search in current project
-- **Claude Code**: Automatic context injection from current project's RAG
+- **AI CLI**: Automatic context injection from current project's RAG
 - **MCP Tools**: `semantic_code_search` function accesses project-specific index
 - **Avante**: RAG results automatically fed into AI context
 
@@ -283,7 +283,7 @@ extract_function_context({
 ```
 
 ### Project-Specific MCP
-Create `.claude/mcp/server.js` for custom tools:
+Create `.ai-setup/mcp/server.js` for custom tools:
 ```javascript
 const server = new Server({
   name: "project-tools",
@@ -312,8 +312,8 @@ function load_project_context()
   local context = {}
   
   -- Load project-specific context
-  context.project = read_file(".claude/context.md")
-  context.conventions = read_file(".claude/conventions.yml")
+  context.project = read_file(".ai-setup/context.md")
+  context.conventions = read_file(".ai-setup/conventions.yml")
   
   -- Get MCP server status and available tools
   context.mcp_tools = mcphub.list_available_tools()
@@ -346,7 +346,7 @@ User: <leader>ca (analyze this function)
 Avante receives selected code
   ↓
 System prompt includes:
-  • Project context from .claude/context.md
+  • Project context from .ai-setup/context.md
   • Available MCP tools
   • RAG search capabilities
   ↓
@@ -386,7 +386,7 @@ Avante calls: get_proof_of_concept_template({
   ↓
 Returns: Template following project conventions
   ↓
-Avante customizes: Based on .claude/conventions.yml
+Avante customizes: Based on .ai-setup/conventions.yml
 ```
 
 ### RAG Integration in Avante
@@ -440,7 +440,7 @@ Response: Detailed analysis of error handling across your project
       max_tokens = 30000,
     },
     system_prompt = function()
-      -- Loads .claude/context.md + MCP awareness
+      -- Loads .ai-setup/context.md + MCP awareness
       return load_project_context()
     end,
     mappings = {
@@ -479,7 +479,7 @@ Response: Detailed analysis of error handling across your project
       servers = {
         ["project-context"] = {
           command = "node",
-          args = { "./.claude/mcp/server.js" },
+          args = { "./.ai-setup/mcp/server.js" },
           auto_start = true,
         },
       },
@@ -492,7 +492,7 @@ Response: Detailed analysis of error handling across your project
 
 | Key | Primary Tool | Secondary Tools | Workflow |
 |-----|-------------|----------------|----------|
-| `<leader>cc` | Claude Code | Auto-loads RAG context | Terminal AI with full project awareness |
+| `<leader>cc` | AI CLI | Auto-loads RAG context | Terminal AI with full project awareness |
 | `<leader>ca` | Avante | MCP tools + RAG search | Visual analysis with architecture context |
 | `<leader>cp` | Avante | MCP template tools | POC generation with project conventions |
 | `<leader>cr` | Avante | RAG pattern search | Refactoring with similar implementations |
@@ -558,22 +558,22 @@ vim.api.nvim_create_autocmd("DirChanged", {
 ```
 
 **Smart Context Loading**
-- Loads `.claude/context.md` for project-specific instructions
+- Loads `.ai-setup/context.md` for project-specific instructions
 - Detects available MCP servers automatically
 - Checks RAG indexing status and suggests reindex if needed
 - Updates Avante system prompt with full project awareness
 
-## Claude Code CLI Integration
+## AI CLI Integration
 
 ### Enhanced Terminal AI
-Claude Code automatically inherits all your setup:
+The AI CLI automatically inherits all your setup:
 
 **Context Loading:**
 ```bash
-# When you run 'claude' in a project directory:
+# When you run the AI CLI in a project directory:
 # 1. Detects git repository boundaries
-# 2. Loads .claude/context.md if present
-# 3. Reads .claude/conventions.yml
+# 2. Loads .ai-setup/context.md if present
+# 3. Reads .ai-setup/conventions.yml
 # 4. Includes recent git changes
 # 5. Maps directory structure
 # 6. Connects to available MCP servers
@@ -582,7 +582,7 @@ Claude Code automatically inherits all your setup:
 **Usage Patterns:**
 ```bash
 # Basic AI assistance
-claude
+claude  # or your preferred AI CLI
 
 # Continue previous conversation
 claude --continue
@@ -602,8 +602,8 @@ claude --context "reviewing pull request"
 
 ## Project Configuration Templates
 
-### Context File Template (`.claude/context.md`)
-The `claude-init-project` script creates a comprehensive template:
+### Context File Template (`.ai-setup/context.md`)
+The `ai-init-project` script creates a comprehensive template:
 
 ```markdown
 # Project Context
@@ -654,7 +654,7 @@ The `claude-init-project` script creates a comprehensive template:
 - [Logging patterns]
 ```
 
-### Conventions Template (`.claude/conventions.yml`)
+### Conventions Template (`.ai-setup/conventions.yml`)
 ```yaml
 # Project Conventions
 naming:
@@ -686,10 +686,10 @@ dependencies:
 ### Auto-Setup Features
 
 **Smart .gitignore Updates:**
-The init script automatically adds Claude-specific entries:
+The init script automatically adds AI-specific entries:
 ```bash
-# Claude Code local files
-.claude/rag/db/
+# AI setup local files
+.ai-setup/rag/db/
 ```
 
 **Optional Immediate Indexing:**
@@ -700,11 +700,11 @@ Would you like to index this project for semantic search now? (y/N)
 **CLI Tool Availability:**
 After setup, these commands are available globally:
 ```bash
-claude-rag index <path>        # Index codebase
-claude-rag search <query>      # Search with results
-claude-search <query> [path]   # Quick search
-claude-init-project           # Initialize project config
-claude-setup                  # Re-run global setup
+ai-rag index <path>        # Index codebase
+ai-rag search <query>      # Search with results
+ai-search <query> [path]   # Quick search
+ai-init-project           # Initialize project config
+ai-setup                  # Re-run global setup
 ```
 
 ## Tool Interoperability Examples
@@ -719,7 +719,7 @@ claude-setup                  # Re-run global setup
 <leader>ra "authentication flow"
 # → RAG search + Avante analyzes the flow across files
 # → Avante has access to:
-#   • Project context (.claude/context.md)
+#   • Project context (.ai-setup/context.md)
 #   • Found code patterns via RAG
 #   • Architecture info via MCP tools
 #   • Project conventions
@@ -791,7 +791,7 @@ Ask Avante: "What should new developers know about our error handling?"
 
 ### Custom MCP Tool Creation for Avante
 ```javascript
-// .claude/mcp/server.js - Project-specific tools
+// .ai-setup/mcp/server.js - Project-specific tools
 const projectTools = {
   analyze_test_coverage: async (args) => {
     const coverage = await runCoverage(args.file);
@@ -876,7 +876,7 @@ end
 
 ### Custom MCP Tools
 ```javascript
-// .claude/mcp/server.js
+// .ai-setup/mcp/server.js
 const customTools = {
   run_tests: async (args) => {
     const result = await exec(`npm test ${args.pattern}`);
@@ -897,7 +897,7 @@ const customTools = {
 
 ### Template Customization
 ```json
-// ~/.claude/templates/poc-templates.json
+// ~/.ai-setup/templates/poc-templates.json
 {
   "typescript": {
     "microservice": {
@@ -913,7 +913,7 @@ const customTools = {
 
 ### RAG Configuration
 ```python
-# ~/.claude/rag/config.py
+# ~/.ai-setup/rag/config.py
 RAG_CONFIG = {
     "chunk_size": 1000,
     "chunk_overlap": 200,
@@ -934,16 +934,16 @@ RAG_CONFIG = {
 ### Check Setup Status
 ```bash
 # Verify CLI tools are available
-which claude-rag claude-search claude-init-project
+which ai-rag ai-search ai-init-project
 
 # Test RAG indexing
-claude-rag index . --batch-size 10  # Small test
+ai-rag index . --batch-size 10  # Small test
 
 # List indexed projects
-claude-rag list-projects
+ai-rag list-projects
 
 # Test search
-claude-search "function" . 5
+ai-search "function" . 5
 ```
 
 ### Common Issues
@@ -969,7 +969,7 @@ source ~/.bashrc
 **RAG Index Problems:**
 ```bash
 # Clear and rebuild index
-claude-rag index . --clear
+ai-rag index . --clear
 
 # Check permissions (from giant-ai-dev directory)
 ls -la ./rag/db/
@@ -1007,17 +1007,17 @@ cat ~/.config/claude-desktop/claude_desktop_config.json
 **RAG Tuning:**
 ```bash
 # For large codebases
-claude-rag index . --batch-size 100 --max-file-size 20
+ai-rag index . --batch-size 100 --max-file-size 20
 
 # For better granularity
-claude-rag index . --chunk-size 30
+ai-rag index . --chunk-size 30
 
 # Exclude more directories (edit indexer.py)
 exclude_dirs = {'.git', 'node_modules', 'dist', 'build', 'target', '.next', '.venv'}
 ```
 
 **Context Management:**
-- Keep `.claude/context.md` under 2000 words
+- Keep `.ai-setup/context.md` under 2000 words
 - Focus on current development priorities
 - Remove outdated architectural decisions
 - Update conventions after team changes
@@ -1031,7 +1031,7 @@ exclude_dirs = {'.git', 'node_modules', 'dist', 'build', 'target', '.next', '.ve
 - Use specific search terms for better results
 
 ### Context Management
-- Keep `.claude/context.md` under 2000 words
+- Keep `.ai-setup/context.md` under 2000 words
 - Focus on current sprint/focus areas
 - Remove outdated architectural decisions
 - Update conventions after team changes
@@ -1055,15 +1055,15 @@ exclude_dirs = {'.git', 'node_modules', 'dist', 'build', 'target', '.next', '.ve
 ## Team Setup
 
 ### For Team Leads
-1. Initialize project: `claude-init-project`
-2. Customize `.claude/context.md` with team patterns
-3. Commit `.claude/` directory to repo
+1. Initialize project: `ai-init-project`
+2. Customize `.ai-setup/context.md` with team patterns
+3. Commit `.ai-setup/` directory to repo
 4. Share this README with team
 
 ### For Developers  
-1. Run global setup: `./bin/claude-setup`
-2. In each project: `claude-rag index .`
-3. Start using: `claude-search` and `<leader>cc`
+1. Run global setup: `./scripts/ai-setup`
+2. In each project: `ai-rag index .`
+3. Start using: `ai-search` and `<leader>cc`
 
 ### CI/CD Integration
 ```yaml
@@ -1080,7 +1080,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Update search index
         run: |
-          claude-rag index . --ci
+          ai-rag index . --ci
           # Upload to shared storage if needed
 ```
 

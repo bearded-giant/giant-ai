@@ -1,18 +1,18 @@
 #!/bin/bash
 # Giant AI Dev Project Initialization - LLM-agnostic project setup
-# Creates .llm-setup directory with context and conventions
+# Creates .ai-setup directory with context and conventions
 
 set -e
 
 PROJECT_DIR="${1:-$(pwd)}"
-AI_CONFIG_DIR="$PROJECT_DIR/.llm-setup"
+AI_CONFIG_DIR="$PROJECT_DIR/.ai-setup"
 
 echo "Giant AI Dev Project Initialization"
 echo "============================"
 echo "Project directory: $PROJECT_DIR"
 echo ""
 
-# Create project .llm-setup directory
+# Create project .ai-setup directory
 mkdir -p "$AI_CONFIG_DIR"
 
 # Create project-specific context file if it doesn't exist
@@ -108,10 +108,10 @@ fi
 
 # Create .gitignore entries if needed
 if [ -f "$PROJECT_DIR/.gitignore" ]; then
-    if ! grep -q ".llm-setup/rag/" "$PROJECT_DIR/.gitignore"; then
+    if ! grep -q ".ai-setup/rag/" "$PROJECT_DIR/.gitignore"; then
         echo "" >> "$PROJECT_DIR/.gitignore"
         echo "# Giant AI Dev local files" >> "$PROJECT_DIR/.gitignore"
-        echo ".llm-setup/rag/db/" >> "$PROJECT_DIR/.gitignore"
+        echo ".ai-setup/rag/db/" >> "$PROJECT_DIR/.gitignore"
         echo "✅ Added Giant AI Dev entries to .gitignore"
     else
         echo "✓ .gitignore already has Giant AI Dev entries"

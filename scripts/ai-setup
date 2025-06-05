@@ -55,7 +55,7 @@ echo ""
 
 # Make scripts executable
 echo "Making scripts executable..."
-chmod +x "$AI_DEV_DIR/bin/"*
+chmod +x "$AI_DEV_DIR/scripts/"*
 chmod +x "$AI_DEV_DIR/rag/indexer.py"
 chmod +x "$AI_DEV_DIR/rag/search.py"
 chmod +x "$AI_DEV_DIR/mcp/project-server.js"
@@ -71,8 +71,8 @@ ln -sf "$AI_DEV_DIR/rag/indexer.py" ~/.local/bin/ai-rag
 ln -sf "$AI_DEV_DIR/rag/search.py" ~/.local/bin/ai-search
 
 # Other tools
-ln -sf "$AI_DEV_DIR/bin/ai-setup" ~/.local/bin/ai-setup
-ln -sf "$AI_DEV_DIR/bin/ai-init-project" ~/.local/bin/ai-init-project
+ln -sf "$AI_DEV_DIR/scripts/ai-setup" ~/.local/bin/ai-setup
+ln -sf "$AI_DEV_DIR/scripts/ai-init-project" ~/.local/bin/ai-init-project
 
 echo "✅ CLI tools linked to ~/.local/bin"
 echo ""

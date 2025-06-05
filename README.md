@@ -52,7 +52,7 @@ git clone <giant-ai-dev-repo>
 cd giant-ai-dev
 
 # 2. Run setup script
-./bin/ai-setup
+./scripts/ai-setup
 ```
 
 This automatically:
@@ -83,10 +83,10 @@ ai-init-project
 Creates:
 ```
 your-project/
-├── .llm-setup/
+├── .ai-setup/
 │   ├── context.md       # Project-specific AI instructions
 │   └── conventions.yml  # Coding standards and patterns
-└── .gitignore          # Updated with LLM entries
+└── .gitignore          # Updated with AI Dev entries
 ```
 
 ### Index for Semantic Search
@@ -142,9 +142,11 @@ giant-ai-dev/                    # Standalone AI development toolkit
 │   ├── project-server.js    # Global MCP tools
 │   ├── package.json
 │   └── node_modules/
-├── bin/
-│   ├── claude-setup        # One-time setup script
-│   └── claude-init-project # Per-project initialization
+├── scripts/
+│   ├── ai-setup            # One-time setup script
+│   └── ai-init-project     # Per-project initialization
+├── providers/
+│   └── claude-config.md    # Claude-specific configuration
 ├── templates/              # POC templates
 ├── prompts/               # AI prompts
 └── settings.local.json    # Local configuration
@@ -152,8 +154,8 @@ giant-ai-dev/                    # Standalone AI development toolkit
 ~/.local/bin/              # CLI tools (symlinked by setup)
 ├── ai-rag               # → giant-ai-dev/rag/indexer.py
 ├── ai-search            # → giant-ai-dev/rag/search.py
-├── ai-setup             # → giant-ai-dev/bin/ai-setup
-└── ai-init-project      # → giant-ai-dev/bin/ai-init-project
+├── ai-setup             # → giant-ai-dev/scripts/ai-setup
+└── ai-init-project      # → giant-ai-dev/scripts/ai-init-project
 ```
 
 ## RAG System - Semantic Code Search
@@ -246,7 +248,7 @@ The MCP servers work with any editor that supports the Model Context Protocol.
 
 ## Project Configuration
 
-### Context File Template (`.llm-setup/context.md`)
+### Context File Template (`.ai-setup/context.md`)
 ```markdown
 # Project Context
 
@@ -281,7 +283,7 @@ The MCP servers work with any editor that supports the Model Context Protocol.
 - [Security considerations]
 ```
 
-### Conventions Template (`.llm-setup/conventions.yml`)
+### Conventions Template (`.ai-setup/conventions.yml`)
 ```yaml
 # Project Conventions
 naming:
@@ -417,12 +419,12 @@ cat ~/.config/claude-desktop/claude_desktop_config.json
 
 ### For Team Leads
 1. Initialize project: `ai-init-project`
-2. Customize `.llm-setup/context.md` with team patterns
-3. Commit `.llm-setup/` directory to repo
+2. Customize `.ai-setup/context.md` with team patterns
+3. Commit `.ai-setup/` directory to repo
 4. Share this README with team
 
 ### For Developers  
-1. Run global setup: `./bin/ai-setup`
+1. Run global setup: `./scripts/ai-setup`
 2. In each project: `ai-rag index .`
 3. Start using: `ai-search` and your LLM CLI
 
@@ -454,7 +456,7 @@ jobs:
 - Use specific search terms for better results
 
 ### Context Management
-- Keep `.llm-setup/context.md` under 2000 words
+- Keep `.ai-setup/context.md` under 2000 words
 - Focus on current sprint/focus areas
 - Remove outdated architectural decisions
 - Update conventions after team changes
