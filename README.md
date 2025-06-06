@@ -20,6 +20,9 @@ claude  # (or your preferred AI CLI)
 
 # 5. Search your code semantically
 ai-search "authentication middleware"
+
+# 6. NEW: Agent mode for autonomous coding
+ai-agent task "Add dark mode to settings page" --auto-accept
 ```
 
 **What each does:**
@@ -27,6 +30,7 @@ ai-search "authentication middleware"
 - `ai-init-project-smart`: Auto-detects your project and creates intelligent `.ai-setup/` config
 - `ai-rag index`: Creates searchable index of your codebase  
 - `ai-search`: Find code by meaning, not keywords
+- `ai-agent`: Autonomous coding with checkpoints (like Cursor's agent mode)
 
 ## Overview
 
@@ -35,30 +39,31 @@ Transform your development workflow with:
 - **Model Context Protocol (MCP)** - Enhanced AI context and tools
 - **Project-Aware AI** - Context that understands your architecture
 - **Template Generation** - Smart POC and boilerplate creation
+- **Agent Mode** - Autonomous coding with checkpoints and safety controls
 - **CLI Tools** - Global commands for project initialization and search
 
 ## Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  Claude Code    │    │   RAG System    │    │  MCP Servers    │
+│  LLM Providers  │    │   RAG System    │    │  MCP Servers    │
 │                 │    │                 │    │                 │
-│ • CLI Tool      │◄──►│ • Chunked Index │◄──►│ • Project Tools │
-│ • Project Root  │    │ • Semantic Search│    │ • Architecture  │
-│ • Git Aware     │    │ • ChromaDB      │    │ • Templates     │
-│ • Context Load  │    │ • Local Storage │    │ • Context       │
+│ • Claude Code   │◄──►│ • Chunked Index │◄──►│ • Project Tools │
+│ • OpenAI (TBD)  │    │ • Semantic Search│    │ • Architecture  │
+│ • Custom CLIs   │    │ • ChromaDB      │    │ • Templates     │
+│ • Agent Mode    │    │ • Local Storage │    │ • Context       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
                                  │
-                    ┌─────────────────┐
-                    │ Editor Support  │
-                    │                 │
-                    │ • Claude Desktop│
-                    │ • Neovim (opt)  │
-                    │ • VS Code (opt) │
-                    │ • Any MCP       │
-                    └─────────────────┘
+                    ┌─────────────────┐    ┌─────────────────┐
+                    │   Agent Mode    │    │ Editor Support  │
+                    │                 │    │                 │
+                    │ • Checkpoints   │    │ • Claude Desktop│
+                    │ • Auto Tasks    │    │ • Neovim (opt)  │
+                    │ • Batch Exec    │    │ • VS Code (opt) │
+                    │ • Safety Ctrl   │    │ • Any MCP       │
+                    └─────────────────┘    └─────────────────┘
 ```
 
 ## Quick Start
@@ -486,6 +491,36 @@ cat ~/.config/mcp-hub/config.json
 cat ~/.config/claude-desktop/claude_desktop_config.json
 ```
 
+## Agent Mode - Autonomous Coding
+
+Giant AI Dev includes a powerful agent mode that rivals Cursor IDE's capabilities while maintaining flexibility across LLM providers.
+
+### Features
+- **Autonomous task execution** - Give high-level instructions, agent handles implementation
+- **Checkpoint system** - Automatic snapshots before changes, easy rollback
+- **Multi-provider support** - Works with Claude Code, OpenAI (coming), and custom CLIs
+- **Batch operations** - Execute multiple tasks in sequence
+- **Safety boundaries** - No git commits/pushes, respects project boundaries
+
+### Quick Examples
+```bash
+# Single task with auto-accept
+ai-agent task "Add comprehensive error handling to all API endpoints" --auto-accept
+
+# Batch tasks from file
+ai-agent batch refactor-plan.txt --continue-on-failure
+
+# Interactive mode with checkpoint control
+ai-agent interactive
+
+# Manual checkpoint management
+ai-agent checkpoint "Before major refactor"
+ai-agent list
+ai-agent restore 20240106_143022
+```
+
+For detailed agent mode documentation, see [giant-agent.md](giant-agent.md).
+
 ## Benefits Over Other Solutions
 
 - **No Vendor Lock-in** - Use any AI provider  
@@ -495,6 +530,7 @@ cat ~/.config/claude-desktop/claude_desktop_config.json
 - **Editor Choice** - Works with any editor supporting MCP  
 - **Cost Effective** - No subscription required  
 - **Privacy First** - Control your data completely  
+- **Agent Mode** - Cursor-like autonomous coding across providers  
 
 ## Team Setup
 

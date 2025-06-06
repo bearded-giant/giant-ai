@@ -74,6 +74,7 @@ ln -sf "$AI_DEV_DIR/rag/search.py" ~/.local/bin/ai-search
 ln -sf "$AI_DEV_DIR/scripts/ai-setup" ~/.local/bin/ai-setup
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project" ~/.local/bin/ai-init-project
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project-smart" ~/.local/bin/ai-init-project-smart
+ln -sf "$AI_DEV_DIR/scripts/ai-agent" ~/.local/bin/ai-agent
 
 echo "✅ CLI tools linked to ~/.local/bin"
 echo ""
@@ -121,5 +122,7 @@ echo "  ai-search <query> [path]   - Quick search in a project"
 echo "  ai-init-project            - Initialize project-specific AI config"
 echo "  ai-init-project-smart      - Initialize with smart auto-detection (recommended)"
 echo "  ai-init-project-smart --clean - Fresh install with auto-detection"
+echo "  ai-agent task <desc>       - Execute autonomous agent task"
+echo "  ai-agent interactive       - Interactive agent mode with checkpoints"
 echo ""
 

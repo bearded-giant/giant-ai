@@ -17,6 +17,8 @@ ai-rag index .
 
 # 4. Use AI in multiple ways:
 claude                               # Enhanced terminal AI with project context
+ai-agent task "Add dark mode" --auto-accept  # Autonomous coding with checkpoints
+
 # OR in Neovim:
 <leader>cc                          # Terminal AI with project context
 <leader>ca                          # Avante AI chat in editor
@@ -27,6 +29,7 @@ claude                               # Enhanced terminal AI with project context
 - `ai-setup`: One-time install of CLI tools, MCP servers, and optional Neovim integration
 - `ai-init-project-smart`: Auto-detects your project and creates intelligent `.ai-setup/` config  
 - `ai-rag index`: Creates searchable index of your codebase
+- `ai-agent`: Autonomous agent mode with checkpoints (like Cursor)
 - `<leader>cc`: AI CLI with full project context and RAG integration
 - `<leader>ca`: Avante AI interface with MCP tools and RAG search
 - `<leader>rs`: Direct semantic search of your codebase
@@ -1120,6 +1123,89 @@ exclude_dirs = {'.git', 'node_modules', 'dist', 'build', 'target', '.next', '.ve
 - Implement caching for expensive operations
 - Monitor server resource usage
 
+## Agent Mode - Autonomous Coding Like Cursor
+
+Giant AI Dev now includes a powerful agent mode that provides Cursor-like autonomous coding capabilities across any LLM provider.
+
+### Agent Mode Features
+
+**Core Capabilities:**
+- **Autonomous task execution** - Give high-level instructions, agent completes the implementation
+- **Checkpoint system** - Automatic snapshots before changes, easy rollback if needed  
+- **Multi-provider support** - Works with Claude Code (auto-accept), OpenAI (coming), custom CLIs
+- **Batch operations** - Execute multiple tasks in sequence from a file
+- **Interactive mode** - Step-by-step control with checkpoint management
+- **Safety boundaries** - No git commits/pushes, respects project boundaries
+
+**Usage Examples:**
+```bash
+# Single autonomous task
+ai-agent task "Add comprehensive error handling to all API endpoints" --auto-accept
+
+# Interactive mode for careful control
+ai-agent interactive
+> task Add dark mode support to settings page
+> checkpoint  # Manual checkpoint
+> task Update tests for dark mode
+> list       # See all checkpoints
+> restore 20240106_143022  # If something went wrong
+
+# Batch execution from file
+echo "Refactor authentication module
+Add JWT token support
+Update API documentation
+Add integration tests" > tasks.txt
+
+ai-agent batch tasks.txt --continue-on-failure
+
+# Checkpoint management
+ai-agent checkpoint "Before major architecture change"
+ai-agent list --limit 20
+ai-agent restore 20240106_143022
+```
+
+**Provider Configuration:**
+```yaml
+# .ai-setup/agent.yml
+provider: claude-code  # or openai, custom
+
+checkpoint_before_tasks: true
+auto_restore_on_failure: false
+max_checkpoints: 20
+
+prompt_templates:
+  default: default
+  refactor: refactor  
+  feature: feature
+  debug: debug
+```
+
+**Integration with Neovim:**
+```vim
+" Add to your Neovim config for quick agent access
+nnoremap <leader>at :!ai-agent task "
+nnoremap <leader>ai :!ai-agent interactive<CR>
+nnoremap <leader>ac :!ai-agent checkpoint "
+```
+
+### How It Compares to Cursor's Agent Mode
+
+| Feature | Cursor | Giant AI Dev |
+|---------|--------|--------------|
+| Autonomous coding | ✅ | ✅ |
+| Checkpoint/rollback | ✅ | ✅ |
+| Multi-file changes | ✅ | ✅ |
+| Terminal commands | ✅ | ✅ |
+| Auto-accept mode | ✅ | ✅ (provider-dependent) |
+| Error recovery | ✅ | ✅ |
+| Multiple LLM providers | ❌ | ✅ |
+| Local/private | ❌ | ✅ |
+| Custom prompt templates | ❌ | ✅ |
+| Batch task execution | ❌ | ✅ |
+| Git integration | Limited | Full (except commit/push) |
+
+For comprehensive agent mode documentation, see [giant-agent.md](giant-agent.md).
+
 ## Benefits Over Cursor IDE
 
 - **No Vendor Lock-in** - Use any AI provider  
@@ -1129,6 +1215,7 @@ exclude_dirs = {'.git', 'node_modules', 'dist', 'build', 'target', '.next', '.ve
 - **Editor Choice** - Works with any editor supporting MCP  
 - **Cost Effective** - No subscription required  
 - **Privacy First** - Control your data completely  
+- **Agent Mode** - Cursor-like autonomous features across providers  
 
 ## Team Setup
 

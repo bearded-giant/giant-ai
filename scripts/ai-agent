@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""
+AI Agent Mode CLI - Autonomous coding with safety controls
+"""
+
+import sys
+import os
+import argparse
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from agent.agent import AgentMode
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="AI Agent Mode - Autonomous coding with checkpoints",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  ai-agent task "Add dark mode to the settings page"
+  ai-agent task "Refactor the auth module" --template refactor --auto-accept
+  ai-agent batch tasks.txt --checkpoint --continue-on-failure
+  ai-agent interactive
+  ai-agent checkpoint "Before major refactor"
+  ai-agent restore 20240106_143022
+  ai-agent list
+        """
+    )
+    
+    subparsers = parser.add_subparsers(dest="command", help="Command to run")
+    
+    # Task command
+    task_parser = subparsers.add_parser("task", help="Execute a single agent task")
+    task_parser.add_argument("description", help="Task description")
+    task_parser.add_argument("--auto-accept", action="store_true", help="Auto-accept all changes")
+    task_parser.add_argument("--no-checkpoint", action="store_true", help="Skip checkpoint creation")
+    task_parser.add_argument("--template", default="default", help="Prompt template to use")
+    task_parser.add_argument("--provider", help="LLM provider to use (default: from config)")
+    task_parser.add_argument("--continue", dest="continue_session", action="store_true", 
+                           help="Continue previous session")
+    
+    # Batch command
+    batch_parser = subparsers.add_parser("batch", help="Execute multiple tasks from file")
+    batch_parser.add_argument("file", help="File containing tasks (one per line)")
+    batch_parser.add_argument("--auto-accept", action="store_true", help="Auto-accept all changes")
+    batch_parser.add_argument("--continue-on-failure", action="store_true", 
+                            help="Continue even if a task fails")
+    batch_parser.add_argument("--no-checkpoint", action="store_true", help="Skip checkpoint creation")
+    
+    # Interactive mode
+    subparsers.add_parser("interactive", help="Start interactive agent mode")
+    
+    # Checkpoint commands
+    checkpoint_parser = subparsers.add_parser("checkpoint", help="Create a checkpoint")
+    checkpoint_parser.add_argument("description", nargs="?", default="Manual checkpoint",
+                                 help="Checkpoint description")
+    
+    # Restore command
+    restore_parser = subparsers.add_parser("restore", help="Restore from checkpoint")
+    restore_parser.add_argument("checkpoint_id", help="Checkpoint ID to restore")
+    
+    # List command
+    list_parser = subparsers.add_parser("list", help="List available checkpoints")
+    list_parser.add_argument("--limit", type=int, default=10, help="Number of checkpoints to show")
+    
+    # Config command
+    config_parser = subparsers.add_parser("config", help="Show agent configuration")
+    config_parser.add_argument("--init", action="store_true", help="Initialize agent config")
+    
+    args = parser.parse_args()
+    
+    # Initialize agent mode
+    agent = AgentMode()
+    
+    # Execute commands
+    if args.command == "task":
+        options = {
+            "auto_accept": args.auto_accept,
+            "checkpoint": not args.no_checkpoint,
+            "prompt_template": args.template,
+            "continue_session": args.continue_session
+        }
+        
+        if args.provider:
+            agent.agent_config["provider"] = args.provider
+            agent.provider = LLMProviderFactory.create(args.provider, agent.agent_config)
+        
+        result = agent.execute_task(args.description, options)
+        sys.exit(0 if result["success"] else 1)
+    
+    elif args.command == "batch":
+        # Read tasks from file
+        with open(args.file) as f:
+            tasks = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        
+        options = {
+            "auto_accept": args.auto_accept,
+            "checkpoint": not args.no_checkpoint,
+            "continue_on_failure": args.continue_on_failure
+        }
+        
+        results = agent.batch_execute(tasks, options)
+        
+        # Summary
+        successful = sum(1 for r in results if r["success"])
+        print(f"\n📊 Batch complete: {successful}/{len(tasks)} tasks successful")
+        
+        sys.exit(0 if successful == len(tasks) else 1)
+    
+    elif args.command == "interactive":
+        agent.interactive_mode()
+    
+    elif args.command == "checkpoint":
+        checkpoint_id = agent.checkpoint_manager.create_checkpoint(args.description)
+        print(f"Created checkpoint: {checkpoint_id}")
+    
+    elif args.command == "restore":
+        success = agent.checkpoint_manager.restore_checkpoint(args.checkpoint_id)
+        sys.exit(0 if success else 1)
+    
+    elif args.command == "list":
+        checkpoints = agent.checkpoint_manager.list_checkpoints()
+        
+        if not checkpoints:
+            print("No checkpoints found")
+        else:
+            print("Available checkpoints:")
+            for cp in checkpoints[:args.limit]:
+                print(f"  {cp['id']} - {cp['description']} ({cp['modified_files']} files)")
+                print(f"    Created: {cp['timestamp']}")
+    
+    elif args.command == "config":
+        if args.init:
+            # Initialize agent configuration
+            config_dir = Path(".ai-setup")
+            config_dir.mkdir(exist_ok=True)
+            
+            config_file = config_dir / "agent.yml"
+            if not config_file.exists():
+                config_content = """# AI Agent Configuration
+provider: claude-code  # or openai, etc.
+
+# Checkpoint settings
+checkpoint_before_tasks: true
+auto_restore_on_failure: false
+max_checkpoints: 20
+
+# Prompt templates
+prompt_templates:
+  default: default
+  refactor: refactor
+  feature: feature
+  debug: debug
+
+# Provider-specific settings
+claude_code:
+  auto_accept_enabled: true
+  
+openai:
+  auto_accept_enabled: false  # Not yet supported
+"""
+                config_file.write_text(config_content)
+                print(f"✅ Created agent configuration: {config_file}")
+            else:
+                print(f"Agent configuration already exists: {config_file}")
+        else:
+            # Show current configuration
+            import yaml
+            print("Current agent configuration:")
+            print(yaml.dump(agent.agent_config, default_flow_style=False))
+    
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

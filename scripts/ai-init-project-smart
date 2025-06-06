@@ -241,6 +241,55 @@ echo ""
 # Create project .ai-setup directory
 mkdir -p "$AI_CONFIG_DIR"
 
+# Prepare framework-specific content
+FRAMEWORK_TECH=""
+case "$DETECTED_FRAMEWORK" in
+    "nextjs") FRAMEWORK_TECH="- Next.js React framework with SSR/SSG capabilities" ;;
+    "react") FRAMEWORK_TECH="- React frontend library with component-based architecture" ;;
+    "express") FRAMEWORK_TECH="- Express.js web framework for Node.js" ;;
+    "fastapi") FRAMEWORK_TECH="- FastAPI Python web framework with automatic API documentation" ;;
+    "django") FRAMEWORK_TECH="- Django Python web framework with ORM and admin interface" ;;
+    "flask") FRAMEWORK_TECH="- Flask Python micro web framework" ;;
+    "rust-web") FRAMEWORK_TECH="- Rust web framework (Axum/Warp/Actix)" ;;
+    "go-web") FRAMEWORK_TECH="- Go web framework (Gin/Echo/Gorilla)" ;;
+    *) FRAMEWORK_TECH="- Standard $DETECTED_LANG development patterns" ;;
+esac
+
+# Testing strategy content
+TESTING_STRATEGY=""
+case "$DETECTED_FRAMEWORK" in
+    "nextjs"|"react") TESTING_STRATEGY="- Component testing with React Testing Library" ;;
+    "express"|"nodejs") TESTING_STRATEGY="- API testing with Jest/Mocha" ;;
+    "fastapi") TESTING_STRATEGY="- API testing with pytest and TestClient" ;;
+    "django") TESTING_STRATEGY="- Django test framework with fixtures" ;;
+    "rust"*) TESTING_STRATEGY="- Unit tests with cargo test" ;;
+    "go"*) TESTING_STRATEGY="- Go testing package with table-driven tests" ;;
+    *) TESTING_STRATEGY="- Framework-appropriate testing patterns" ;;
+esac
+
+# Code generation guidelines
+CODE_GUIDELINES=""
+case "$DETECTED_FRAMEWORK" in
+    "nextjs") CODE_GUIDELINES="- Use Next.js App Router patterns and server components where appropriate" ;;
+    "react") CODE_GUIDELINES="- Use React hooks and functional components" ;;
+    "express") CODE_GUIDELINES="- Follow Express.js middleware patterns and async/await" ;;
+    "fastapi") CODE_GUIDELINES="- Use FastAPI dependency injection and Pydantic models" ;;
+    "django") CODE_GUIDELINES="- Follow Django MVT patterns and use Django ORM" ;;
+    "rust"*) CODE_GUIDELINES="- Use Rust ownership principles and error handling patterns" ;;
+    "go"*) CODE_GUIDELINES="- Follow Go conventions: interfaces, error handling, and package structure" ;;
+    *) CODE_GUIDELINES="" ;;
+esac
+
+# Package manager detection
+PACKAGE_MANAGER="npm"
+case "$DETECTED_LANG" in
+    "javascript") PACKAGE_MANAGER="npm" ;;
+    "python") PACKAGE_MANAGER="pip" ;;
+    "rust") PACKAGE_MANAGER="cargo" ;;
+    "go") PACKAGE_MANAGER="go" ;;
+    *) PACKAGE_MANAGER="npm" ;;
+esac
+
 # Create smart context file
 if [ ! -f "$AI_CONFIG_DIR/context.md" ] || [ "$CLEAN_INSTALL" = true ]; then
     echo "📝 Creating intelligent context file..."
@@ -261,17 +310,7 @@ $(if [[ "$PROJECT_STRUCTURE" == *"has_routes:true"* ]]; then echo "- Route-based
 $(if [[ "$PROJECT_STRUCTURE" == *"has_api:true"* ]]; then echo "- API layer structure"; fi)
 
 ### Key Technologies
-$(case "$DETECTED_FRAMEWORK" in
-    "nextjs") echo "- Next.js React framework with SSR/SSG capabilities" ;;
-    "react") echo "- React frontend library with component-based architecture" ;;
-    "express") echo "- Express.js web framework for Node.js" ;;
-    "fastapi") echo "- FastAPI Python web framework with automatic API documentation" ;;
-    "django") echo "- Django Python web framework with ORM and admin interface" ;;
-    "flask") echo "- Flask Python micro web framework" ;;
-    "rust-web") echo "- Rust web framework (Axum/Warp/Actix)" ;;
-    "go-web") echo "- Go web framework (Gin/Echo/Gorilla)" ;;
-    *) echo "- Standard $DETECTED_LANG development patterns" ;;
-esac)
+$FRAMEWORK_TECH
 
 ## Development Guidelines
 
@@ -286,15 +325,7 @@ $(if [[ "$NAMING_CONVENTIONS" == *"indent_style:tabs"* ]]; then echo "- Indentat
 
 ### Testing Strategy
 $(if [[ "$PROJECT_STRUCTURE" == *"has_tests_dir:true"* ]]; then echo "- Tests organized in dedicated test directories"; else echo "- Tests alongside source files (recommended)"; fi)
-$(case "$DETECTED_FRAMEWORK" in
-    "nextjs"|"react") echo "- Component testing with React Testing Library" ;;
-    "express"|"nodejs") echo "- API testing with Jest/Mocha" ;;
-    "fastapi") echo "- API testing with pytest and TestClient" ;;
-    "django") echo "- Django test framework with fixtures" ;;
-    "rust"*) echo "- Unit tests with cargo test" ;;
-    "go"*) echo "- Go testing package with table-driven tests" ;;
-    *) echo "- Framework-appropriate testing patterns" ;;
-esac)
+$TESTING_STRATEGY
 
 ## Current Focus
 - [What are you currently working on?]
@@ -305,15 +336,7 @@ esac)
 
 ### When generating code:
 - Follow $DETECTED_LANG best practices and idioms
-$(case "$DETECTED_FRAMEWORK" in
-    "nextjs") echo "- Use Next.js App Router patterns and server components where appropriate" ;;
-    "react") echo "- Use React hooks and functional components" ;;
-    "express") echo "- Follow Express.js middleware patterns and async/await" ;;
-    "fastapi") echo "- Use FastAPI dependency injection and Pydantic models" ;;
-    "django") echo "- Follow Django MVT patterns and use Django ORM" ;;
-    "rust"*) echo "- Use Rust ownership principles and error handling patterns" ;;
-    "go"*) echo "- Follow Go conventions: interfaces, error handling, and package structure" ;;
-esac)
+$CODE_GUIDELINES
 - Maintain consistency with existing code patterns
 - Use appropriate error handling for the framework
 
@@ -382,13 +405,7 @@ git:
   commit_style: conventional
   
 dependencies:
-$(case "$DETECTED_LANG" in
-    "javascript") echo "  package_manager: npm" ;;
-    "python") echo "  package_manager: pip" ;;
-    "rust") echo "  package_manager: cargo" ;;
-    "go") echo "  package_manager: go" ;;
-    *) echo "  package_manager: npm" ;;
-esac)
+  package_manager: $PACKAGE_MANAGER
   version_strategy: exact
 EOF
     if [ "$CLEAN_INSTALL" = true ]; then
