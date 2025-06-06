@@ -2,6 +2,32 @@
 
 A standalone AI-powered development toolkit that provides semantic code search, enhanced AI context, and project-aware assistance. Works with multiple LLM providers (Claude, OpenAI, etc.) through Model Context Protocol (MCP) and CLI tools.
 
+## 🚀 Quick Start (TLDR)
+
+```bash
+# 1. One-time setup (installs CLI tools, creates symlinks)
+./scripts/ai-setup
+
+# 2. Per-project initialization (auto-detects language/framework) 
+ai-init-project-smart                # Smart auto-detection
+ai-init-project-smart --clean        # Fresh install, overwrites existing
+
+# 3. Index project for semantic search
+ai-rag index .
+
+# 4. Use your AI CLI with enhanced context
+claude  # (or your preferred AI CLI)
+
+# 5. Search your code semantically
+ai-search "authentication middleware"
+```
+
+**What each does:**
+- `ai-setup`: One-time install of CLI tools and MCP servers
+- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.ai-setup/` config
+- `ai-rag index`: Creates searchable index of your codebase  
+- `ai-search`: Find code by meaning, not keywords
+
 ## Overview
 
 Transform your development workflow with:

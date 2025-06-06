@@ -2,6 +2,35 @@
 
 A comprehensive AI-powered development environment that rivals Cursor IDE while maintaining the flexibility and power of Neovim.
 
+## 🚀 Quick Start (TLDR)
+
+```bash
+# 1. One-time setup (installs everything: CLI tools, MCP servers, Neovim config)
+./scripts/ai-setup
+
+# 2. Per-project setup (auto-detects language/framework/conventions)
+ai-init-project-smart                # Smart auto-detection  
+ai-init-project-smart --clean        # Fresh install, overwrites existing
+
+# 3. Index for semantic search
+ai-rag index .
+
+# 4. Use AI in multiple ways:
+claude                               # Enhanced terminal AI with project context
+# OR in Neovim:
+<leader>cc                          # Terminal AI with project context
+<leader>ca                          # Avante AI chat in editor
+<leader>rs                          # Semantic code search
+```
+
+**What each does:**
+- `ai-setup`: One-time install of CLI tools, MCP servers, and optional Neovim integration
+- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.ai-setup/` config  
+- `ai-rag index`: Creates searchable index of your codebase
+- `<leader>cc`: AI CLI with full project context and RAG integration
+- `<leader>ca`: Avante AI interface with MCP tools and RAG search
+- `<leader>rs`: Direct semantic search of your codebase
+
 ## Overview
 
 This setup transforms your development workflow with:
