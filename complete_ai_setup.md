@@ -76,6 +76,9 @@ cd your-project
 
 # Initialize AI configuration (smart auto-detection)
 ai-init-project
+
+# Clean install - fresh configuration files (overwrites existing)
+ai-init-project --clean
 ```
 
 **Smart Initialization** automatically detects and configures:
@@ -749,6 +752,7 @@ ai-rag index <path>        # Index codebase
 ai-rag search <query>      # Search with results
 ai-search <query> [path]   # Quick search
 ai-init-project           # Initialize project config
+ai-init-project --clean   # Clean install - fresh configuration
 ai-setup                  # Re-run global setup
 ```
 

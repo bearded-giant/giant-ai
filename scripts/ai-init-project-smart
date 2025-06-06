@@ -4,12 +4,31 @@
 
 set -e
 
-PROJECT_DIR="${1:-$(pwd)}"
+# Parse command line arguments
+CLEAN_INSTALL=false
+PROJECT_DIR="$(pwd)"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --clean|-c)
+            CLEAN_INSTALL=true
+            shift
+            ;;
+        *)
+            PROJECT_DIR="$1"
+            shift
+            ;;
+    esac
+done
+
 AI_CONFIG_DIR="$PROJECT_DIR/.ai-setup"
 
 echo "Smart AI Dev Project Initialization"
 echo "=================================="
 echo "Project directory: $PROJECT_DIR"
+if [ "$CLEAN_INSTALL" = true ]; then
+    echo "Mode: Clean install (fresh installation, overwrite existing files)"
+fi
 echo ""
 
 # Function to detect primary language
@@ -223,7 +242,7 @@ echo ""
 mkdir -p "$AI_CONFIG_DIR"
 
 # Create smart context file
-if [ ! -f "$AI_CONFIG_DIR/context.md" ]; then
+if [ ! -f "$AI_CONFIG_DIR/context.md" ] || [ "$CLEAN_INSTALL" = true ]; then
     echo "📝 Creating intelligent context file..."
     cat > "$AI_CONFIG_DIR/context.md" << EOF
 # Project Context
@@ -308,13 +327,17 @@ esac)
 - Check common $DETECTED_FRAMEWORK gotchas
 - Consider performance implications
 EOF
-    echo "✅ Created intelligent context.md"
+    if [ "$CLEAN_INSTALL" = true ]; then
+        echo "✅ Clean install: created fresh intelligent context.md"
+    else
+        echo "✅ Created intelligent context.md"
+    fi
 else
     echo "✓ context.md already exists"
 fi
 
 # Create smart conventions file based on detected patterns
-if [ ! -f "$AI_CONFIG_DIR/conventions.yml" ]; then
+if [ ! -f "$AI_CONFIG_DIR/conventions.yml" ] || [ "$CLEAN_INSTALL" = true ]; then
     echo "📝 Creating convention file based on detected patterns..."
     
     # Extract detected values
@@ -368,7 +391,11 @@ $(case "$DETECTED_LANG" in
 esac)
   version_strategy: exact
 EOF
-    echo "✅ Created conventions.yml with detected patterns"
+    if [ "$CLEAN_INSTALL" = true ]; then
+        echo "✅ Clean install: created fresh conventions.yml with detected patterns"
+    else
+        echo "✅ Created conventions.yml with detected patterns"
+    fi
 else
     echo "✓ conventions.yml already exists"
 fi
@@ -387,11 +414,16 @@ fi
 
 # Ask if user wants to index the project now
 echo ""
-read -p "Would you like to index this project for semantic search now? (y/N) " -n 1 -r
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Indexing project..."
-    ai-rag index "$PROJECT_DIR"
+if [ "$CLEAN_INSTALL" = true ]; then
+    echo "🔄 Clean install: clearing existing RAG index and creating fresh index..."
+    ai-rag index "$PROJECT_DIR" --clear
+else
+    read -p "Would you like to index this project for semantic search now? (y/N) " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "Indexing project..."
+        ai-rag index "$PROJECT_DIR"
+    fi
 fi
 
 echo ""
@@ -408,4 +440,8 @@ echo "1. Review and customize $AI_CONFIG_DIR/context.md"
 echo "2. Verify $AI_CONFIG_DIR/conventions.yml matches your preferences"
 echo "3. Run 'ai-rag index $PROJECT_DIR' to index/reindex if needed"
 echo ""
-echo "The AI assistant now has intelligent context about your $DETECTED_FRAMEWORK project!"
+if [ "$CLEAN_INSTALL" = true ]; then
+    echo "Fresh AI assistant installation complete for your $DETECTED_FRAMEWORK project!"
+else
+    echo "The AI assistant now has intelligent context about your $DETECTED_FRAMEWORK project!"
+fi

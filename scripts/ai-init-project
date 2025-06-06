@@ -4,13 +4,67 @@
 
 set -e
 
-PROJECT_DIR="${1:-$(pwd)}"
+# Parse command line arguments
+CLEAN_INSTALL=false
+PROJECT_DIR="$(pwd)"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --clean|-c)
+            CLEAN_INSTALL=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: ai-init-project [OPTIONS] [PROJECT_DIR]"
+            echo ""
+            echo "Options:"
+            echo "  --clean, -c    Clean install - overwrite existing configuration files"
+            echo "  --help, -h     Show this help message"
+            echo ""
+            echo "Examples:"
+            echo "  ai-init-project                    # Initialize current directory"
+            echo "  ai-init-project /path/to/project   # Initialize specific directory"
+            echo "  ai-init-project --clean            # Clean reinstall current directory"
+            exit 0
+            ;;
+        *)
+            PROJECT_DIR="$1"
+            shift
+            ;;
+    esac
+done
+
 AI_CONFIG_DIR="$PROJECT_DIR/.ai-setup"
 
 echo "Giant AI Dev Project Initialization"
 echo "============================"
 echo "Project directory: $PROJECT_DIR"
+if [ "$CLEAN_INSTALL" = true ]; then
+    echo "Mode: Clean install (overwrite existing files)"
+fi
 echo ""
+
+# Check if files exist and warn if not using force
+if [ "$CLEAN_INSTALL" = false ] && ([ -f "$AI_CONFIG_DIR/context.md" ] || [ -f "$AI_CONFIG_DIR/conventions.yml" ]); then
+    echo "⚠️  Existing configuration detected:"
+    [ -f "$AI_CONFIG_DIR/context.md" ] && echo "   • context.md exists"
+    [ -f "$AI_CONFIG_DIR/conventions.yml" ] && echo "   • conventions.yml exists"
+    echo ""
+    echo "Options:"
+    echo "1. Skip existing files (keep current configuration)"
+    echo "2. Clean install (completely reinitialize)"
+    echo ""
+    read -p "Choose option (1/2, default: 1): " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[2]$ ]]; then
+        CLEAN_INSTALL=true
+        echo "Will perform clean install..."
+    else
+        echo "Will preserve existing files..."
+    fi
+    echo ""
+fi
 
 # Offer smart initialization option
 echo "Initialization options:"
@@ -25,7 +79,11 @@ if [[ $REPLY =~ ^[2]$ ]]; then
     echo ""
 else
     echo "Using smart initialization..."
-    exec "$(dirname "$0")/ai-init-project-smart" "$PROJECT_DIR"
+    if [ "$CLEAN_INSTALL" = true ]; then
+        exec "$(dirname "$0")/ai-init-project-smart" "$PROJECT_DIR" --clean
+    else
+        exec "$(dirname "$0")/ai-init-project-smart" "$PROJECT_DIR"
+    fi
 fi
 
 # Create project .ai-setup directory

@@ -78,6 +78,9 @@ cd your-project
 
 # Initialize LLM project configuration (smart auto-detection)
 ai-init-project
+
+# Clean install - fresh configuration files (overwrites existing)
+ai-init-project --clean
 ```
 
 **Smart Initialization** automatically detects and configures:
@@ -388,6 +391,9 @@ ai-rag index . --clear
 ```bash
 # Initialize project config
 ai-init-project
+
+# Clean install - fresh configuration files
+ai-init-project --clean
 
 # Re-run global setup
 ai-setup
