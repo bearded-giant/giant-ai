@@ -73,6 +73,7 @@ ln -sf "$AI_DEV_DIR/rag/search.py" ~/.local/bin/ai-search
 # Other tools
 ln -sf "$AI_DEV_DIR/scripts/ai-setup" ~/.local/bin/ai-setup
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project" ~/.local/bin/ai-init-project
+ln -sf "$AI_DEV_DIR/scripts/ai-init-project-smart" ~/.local/bin/ai-init-project-smart
 
 echo "✅ CLI tools linked to ~/.local/bin"
 echo ""
@@ -114,10 +115,11 @@ echo "3. Run 'ai-init-project[-smart]' in a project directory to set up project-
 echo "4. Configure your editor with the provided enhancements"
 echo ""
 echo "Available commands:"
-echo "  ai-rag index <path>     - Index a codebase for semantic search"
-echo "  ai-rag search <query>   - Search indexed codebases"
-echo "  ai-search <query> [path] - Quick search in a project"
-echo "  ai-init-project         - Initialize project-specific AI config"
-echo "  ai-init-project-smart  - Initialize project-specific AI config with smart conventions and project context"
+echo "  ai-rag index <path>        - Index a codebase for semantic search"
+echo "  ai-rag search <query>      - Search indexed codebases"
+echo "  ai-search <query> [path]   - Quick search in a project"
+echo "  ai-init-project            - Initialize project-specific AI config"
+echo "  ai-init-project-smart      - Initialize with smart auto-detection (recommended)"
+echo "  ai-init-project-smart --clean - Fresh install with auto-detection"
 echo ""
 
