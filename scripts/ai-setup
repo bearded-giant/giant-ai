@@ -82,7 +82,7 @@ echo "Configuring MCP hub..."
 MCP_CONFIG_DIR=~/.config/mcp-hub
 mkdir -p "$MCP_CONFIG_DIR"
 
-cat > "$MCP_CONFIG_DIR/config.json" << EOF
+cat >"$MCP_CONFIG_DIR/config.json" <<EOF
 {
   "servers": {
     "ai-project-context": {
@@ -110,7 +110,7 @@ echo ""
 echo "Next steps:"
 echo "1. Add ~/.local/bin to your PATH if not already there"
 echo "2. Run 'ai-rag index <project-path>' to index a project"
-echo "3. Run 'ai-init-project' in a project directory to set up project-specific config"
+echo "3. Run 'ai-init-project[-smart]' in a project directory to set up project-specific config"
 echo "4. Configure your editor with the provided enhancements"
 echo ""
 echo "Available commands:"
@@ -118,4 +118,6 @@ echo "  ai-rag index <path>     - Index a codebase for semantic search"
 echo "  ai-rag search <query>   - Search indexed codebases"
 echo "  ai-search <query> [path] - Quick search in a project"
 echo "  ai-init-project         - Initialize project-specific AI config"
+echo "  ai-init-project-smart  - Initialize project-specific AI config with smart conventions and project context"
 echo ""
+
