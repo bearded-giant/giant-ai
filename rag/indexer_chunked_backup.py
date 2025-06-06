@@ -12,6 +12,7 @@ from tree_sitter import Language, Parser
 class CodebaseRAG:
     def __init__(self, project_path, persist_directory=None):
         self.project_path = Path(project_path).resolve()
+        self.default_chunk_size = 50
         
         # Use global RAG db location with project-specific collection
         if persist_directory is None:
@@ -45,14 +46,13 @@ class CodebaseRAG:
         except:
             self.parser = None
     
-    def index_codebase(self, batch_size=100, max_file_size_mb=10, use_chunking=False):
+    def index_codebase(self, batch_size=10, max_file_size_mb=10):
         file_patterns = ['*.py', '*.js', '*.ts', '*.tsx', '*.jsx', '*.rs', '*.go', '*.java', '*.cpp', '*.h', '*.lua', '*.vim']
         indexed_count = 0
         
         click.echo(f"Indexing project: {self.project_path}")
         click.echo(f"Collection name: codebase_{self.project_id}")
         click.echo(f"Batch size: {batch_size}, Max file size: {max_file_size_mb}MB")
-        click.echo(f"Chunking mode: {'enabled' if use_chunking else 'disabled (fast mode)'}")
         
         # Collect all files to index first
         files_to_index = []
@@ -61,8 +61,6 @@ class CodebaseRAG:
                 if self.should_index_file(file_path, max_file_size_mb):
                     files_to_index.append(file_path)
         
-        click.echo(f"Found {len(files_to_index)} files to index")
-        
         # Process files in batches
         all_docs = []
         all_metas = []
@@ -70,17 +68,7 @@ class CodebaseRAG:
         
         with click.progressbar(files_to_index, label='Indexing files', show_pos=True) as bar:
             for file_path in bar:
-                if use_chunking:
-                    # Original chunking behavior (slower)
-                    docs, metas, ids = self.prepare_file_chunks(file_path)
-                else:
-                    # Fast mode - one document per file
-                    doc, meta, doc_id = self.prepare_file_fast(file_path)
-                    if doc:
-                        docs, metas, ids = [doc], [meta], [doc_id]
-                    else:
-                        docs, metas, ids = [], [], []
-                
+                docs, metas, ids = self.prepare_file_chunks(file_path)
                 if docs:
                     all_docs.extend(docs)
                     all_metas.extend(metas)
@@ -133,62 +121,7 @@ class CodebaseRAG:
             
         return True
     
-    def prepare_file_fast(self, file_path):
-        """Fast mode - index entire file as one document with smart context"""
-        try:
-            content = file_path.read_text(encoding='utf-8')
-            
-            # For Python files, extract key components for metadata
-            functions = []
-            classes = []
-            if file_path.suffix == '.py' and self.parser:
-                tree = self.parser.parse(bytes(content, "utf8"))
-                functions, classes = self.extract_python_symbols(tree.root_node, content)
-            
-            # Create a single document with rich metadata
-            doc_id = str(file_path.relative_to(self.project_path))
-            metadata = {
-                'file_path': str(file_path.relative_to(self.project_path)),
-                'file_type': file_path.suffix,
-                'project': str(self.project_path),
-                'functions': json.dumps(functions[:20]),  # Limit stored functions
-                'classes': json.dumps(classes[:10]),      # Limit stored classes
-                'line_count': len(content.split('\n'))
-            }
-            
-            return content, metadata, doc_id
-                
-        except Exception as e:
-            click.echo(f"Error preparing {file_path}: {e}", err=True)
-            return None, None, None
-    
-    def extract_python_symbols(self, node, content):
-        """Extract function and class names for metadata"""
-        functions = []
-        classes = []
-        
-        def extract_nodes(node):
-            if node.type == 'function_definition' or node.type == 'async_function_definition':
-                # Get function name
-                for child in node.children:
-                    if child.type == 'identifier':
-                        functions.append(child.text.decode('utf8'))
-                        break
-            elif node.type == 'class_definition':
-                # Get class name
-                for child in node.children:
-                    if child.type == 'identifier':
-                        classes.append(child.text.decode('utf8'))
-                        break
-            
-            for child in node.children:
-                extract_nodes(child)
-        
-        extract_nodes(node)
-        return functions, classes
-    
     def prepare_file_chunks(self, file_path):
-        """Original chunking method - kept for compatibility"""
         try:
             content = file_path.read_text(encoding='utf-8')
             
@@ -253,7 +186,10 @@ class CodebaseRAG:
         
         return chunks or self.chunk_by_lines(content, file_path)
     
-    def chunk_by_lines(self, content, file_path, chunk_size=50):
+    def chunk_by_lines(self, content, file_path, chunk_size=None):
+        if chunk_size is None:
+            chunk_size = self.default_chunk_size
+            
         lines = content.split('\n')
         chunks = []
         
@@ -303,17 +239,18 @@ def cli():
 @cli.command()
 @click.argument('project_path', type=click.Path(exists=True), default='.')
 @click.option('--clear', is_flag=True, help='Clear existing index before indexing')
-@click.option('--batch-size', '-b', default=100, help='Number of documents to insert per batch (default: 100)')
-@click.option('--chunk', is_flag=True, help='Enable chunking mode (slower but more granular)')
+@click.option('--batch-size', '-b', default=50, help='Number of documents to insert per batch (default: 50)')
+@click.option('--chunk-size', '-c', default=50, help='Number of lines per chunk for non-Python files (default: 50)')
 @click.option('--max-file-size', '-m', default=10, help='Maximum file size in MB to index (default: 10)')
-def index(project_path, clear, batch_size, chunk, max_file_size):
+def index(project_path, clear, batch_size, chunk_size, max_file_size):
     """Index a codebase for semantic search"""
     rag = CodebaseRAG(project_path)
+    rag.default_chunk_size = chunk_size
     
     if clear:
         rag.clear_project_index()
     
-    count = rag.index_codebase(batch_size=batch_size, max_file_size_mb=max_file_size, use_chunking=chunk)
+    count = rag.index_codebase(batch_size=batch_size, max_file_size_mb=max_file_size)
     click.echo(f"Indexing complete! Processed {count} files.")
 
 @cli.command()
@@ -330,12 +267,8 @@ def search(query, project_path, limit):
     
     for i, result in enumerate(results[:limit], 1):
         click.echo(f"\n{i}. {result['metadata']['file_path']}")
-        if 'line_start' in result['metadata']:
-            click.echo(f"   Lines: {result['metadata']['line_start']}-{result['metadata']['line_end']}")
-            click.echo(f"   Type: {result['metadata']['chunk_type']}")
-        else:
-            click.echo(f"   File type: {result['metadata'].get('file_type', 'unknown')}")
-            click.echo(f"   Lines: {result['metadata'].get('line_count', 'unknown')}")
+        click.echo(f"   Lines: {result['metadata']['line_start']}-{result['metadata']['line_end']}")
+        click.echo(f"   Type: {result['metadata']['chunk_type']}")
         click.echo(f"   Distance: {result['distance']:.4f}")
         click.echo(f"   Preview: {result['content'][:200]}...")
         click.echo("-" * 50)
@@ -343,7 +276,7 @@ def search(query, project_path, limit):
 @cli.command()
 def list_projects():
     """List all indexed projects"""
-    persist_dir = Path.home() / ".giant-ai-dev" / "rag" / "db"
+    persist_dir = Path.home() / ".claude" / "rag" / "db"
     if not persist_dir.exists():
         click.echo("No projects indexed yet.")
         return

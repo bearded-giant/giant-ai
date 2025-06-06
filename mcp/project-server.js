@@ -311,7 +311,7 @@ class ProjectMCPServer {
           text: JSON.stringify({
             error: "Search failed",
             message: error.message,
-            hint: "Make sure the project is indexed using: claude-rag index <project-path>"
+            hint: "Make sure the project is indexed using: ai-rag index <project-path>"
           }, null, 2)
         }]
       };
@@ -321,8 +321,8 @@ class ProjectMCPServer {
   async getProjectContext(projectPath) {
     const targetPath = projectPath || this.projectPath;
     
-    // Check for local .claude/context.md first
-    const localContext = path.join(targetPath, '.claude', 'context.md');
+    // Check for local .ai-setup/context.md first
+    const localContext = path.join(targetPath, '.ai-setup', 'context.md');
     const globalContext = path.join(__dirname, '../templates', 'default-context.md');
     
     try {
@@ -336,13 +336,13 @@ class ProjectMCPServer {
         try {
           context = await fs.readFile(globalContext, 'utf-8');
         } catch {
-          context = "No project context found. Create .claude/context.md in your project.";
+          context = "No project context found. Create .ai-setup/context.md in your project.";
         }
       }
       
-      // Also check for local .claude/conventions.yml
+      // Also check for local .ai-setup/conventions.yml
       try {
-        const conventionsPath = path.join(targetPath, '.claude', 'conventions.yml');
+        const conventionsPath = path.join(targetPath, '.ai-setup', 'conventions.yml');
         const conventions = await fs.readFile(conventionsPath, 'utf-8');
         const parsed = yaml.parse(conventions);
         

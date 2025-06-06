@@ -12,6 +12,22 @@ echo "============================"
 echo "Project directory: $PROJECT_DIR"
 echo ""
 
+# Offer smart initialization option
+echo "Initialization options:"
+echo "1. Smart initialization (auto-detects language/framework)"
+echo "2. Basic initialization (templates with placeholders)"
+echo ""
+read -p "Choose option (1/2, default: 1): " -n 1 -r
+echo ""
+
+if [[ $REPLY =~ ^[2]$ ]]; then
+    echo "Using basic initialization..."
+    echo ""
+else
+    echo "Using smart initialization..."
+    exec "$(dirname "$0")/ai-init-project-smart" "$PROJECT_DIR"
+fi
+
 # Create project .ai-setup directory
 mkdir -p "$AI_CONFIG_DIR"
 

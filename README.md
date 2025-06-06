@@ -76,17 +76,48 @@ export PATH="$HOME/.local/bin:$PATH"
 # Navigate to any project
 cd your-project
 
-# Initialize LLM project configuration
+# Initialize LLM project configuration (smart auto-detection)
 ai-init-project
 ```
 
-Creates:
+**Smart Initialization** automatically detects and configures:
+- **Language**: JavaScript/TypeScript, Python, Rust, Go, Java
+- **Framework**: React/Next.js, Express, Django/FastAPI/Flask, etc.
+- **Conventions**: File naming, indentation, quote style
+- **Project structure**: Components, routes, testing patterns
+
+Creates intelligent, pre-filled configuration:
 ```
 your-project/
 ├── .ai-setup/
-│   ├── context.md       # Project-specific AI instructions
-│   └── conventions.yml  # Coding standards and patterns
+│   ├── context.md       # Auto-generated with project analysis
+│   └── conventions.yml  # Detected coding standards and patterns
 └── .gitignore          # Updated with AI Dev entries
+```
+
+**Example Smart Output:**
+```yaml
+# conventions.yml (auto-detected)
+naming:
+  files: kebab-case        # ← Detected from existing files
+code_style:
+  indent: spaces           # ← Analyzed from codebase
+  indent_size: 2
+  quotes: single           # ← Found in JavaScript files
+```
+
+```markdown
+# context.md (auto-generated)
+## Architecture
+Primary Language: javascript
+Framework: nextjs
+
+### Key Technologies
+- Next.js React framework with SSR/SSG capabilities
+
+### When generating code:
+- Use Next.js App Router patterns and server components
+- Follow React hooks and functional components
 ```
 
 ### Index for Semantic Search
@@ -248,53 +279,71 @@ The MCP servers work with any editor that supports the Model Context Protocol.
 
 ## Project Configuration
 
-### Context File Template (`.ai-setup/context.md`)
+### Smart Auto-Generated Configuration
+
+When you run `ai-init-project`, it automatically analyzes your codebase and generates intelligent, pre-filled configuration files instead of generic placeholders.
+
+**Language & Framework Detection:**
+- Detects primary language by analyzing file counts and config files
+- Identifies frameworks (React, Next.js, Express, Django, FastAPI, etc.)
+- Extracts project description from README.md or package.json
+
+**Convention Analysis:**
+- File naming patterns (kebab-case, camelCase, snake_case)
+- Indentation style (tabs vs spaces, size)
+- Quote preferences (single vs double)
+- Test organization (alongside vs separate directories)
+
+### Generated Context File (`.ai-setup/context.md`)
+**Auto-populated based on project analysis:**
 ```markdown
 # Project Context
 
 ## Overview
-[Describe your project here - its purpose, main features, and target users]
+A modern web application built with Next.js and TypeScript... # ← From README
 
 ## Architecture
-[Describe the high-level architecture - main components, data flow, key technologies]
+Primary Language: javascript
+Framework: nextjs
+
+### Project Structure
+- Source code organized in `src/` directory
+- Component-based architecture
+- API layer structure
+
+### Key Technologies
+- Next.js React framework with SSR/SSG capabilities
 
 ## Development Guidelines
 
 ### Code Style
-- [Add project-specific code style guidelines]
-- [Naming conventions]
-- [File organization patterns]
+- Follow existing javascript conventions
+- File naming: kebab-case
+- Indentation: 2 spaces
 
 ### Testing Strategy
-- [Unit test requirements]
-- [Integration test approach]
-- [E2E test coverage]
-
-## Current Focus
-- [What are you currently working on?]
-- [Any specific areas that need attention?]
-- [Known issues or technical debt?]
-
-## AI Assistant Instructions
+- Component testing with React Testing Library
+- API testing with Jest/Mocha
 
 ### When generating code:
-- [Project-specific patterns to follow]
-- [Libraries/frameworks to use or avoid]
-- [Security considerations]
+- Use Next.js App Router patterns and server components where appropriate
+- Use React hooks and functional components
+- Follow javascript best practices and idioms
 ```
 
-### Conventions Template (`.ai-setup/conventions.yml`)
+### Generated Conventions File (`.ai-setup/conventions.yml`)
+**Auto-detected from your codebase:**
 ```yaml
-# Project Conventions
+# Project Conventions (Auto-detected)
 naming:
-  files: kebab-case  # or camelCase, PascalCase, snake_case
+  files: kebab-case        # ← Detected from existing files
   components: PascalCase
   functions: camelCase
   constants: UPPER_SNAKE_CASE
 
 structure:
-  src_layout: feature  # or layer (controllers/models/views)
-  test_location: alongside  # or separate (__tests__ folder)
+  src_layout: feature      # ← Based on project structure analysis
+  test_location: alongside # ← Detected from test file locations
   
 code_style:
   max_line_length: 100

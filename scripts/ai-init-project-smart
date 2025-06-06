@@ -1,0 +1,411 @@
+#!/bin/bash
+# Smart AI Dev Project Initialization - Auto-detects language, framework, and conventions
+# Creates .ai-setup directory with intelligent defaults
+
+set -e
+
+PROJECT_DIR="${1:-$(pwd)}"
+AI_CONFIG_DIR="$PROJECT_DIR/.ai-setup"
+
+echo "Smart AI Dev Project Initialization"
+echo "=================================="
+echo "Project directory: $PROJECT_DIR"
+echo ""
+
+# Function to detect primary language
+detect_language() {
+    local lang="unknown"
+    local primary_lang=""
+    local max_files=0
+    
+    # Count files by language
+    local js_files=$(find "$PROJECT_DIR" -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" 2>/dev/null | wc -l)
+    local py_files=$(find "$PROJECT_DIR" -name "*.py" 2>/dev/null | wc -l)
+    local rs_files=$(find "$PROJECT_DIR" -name "*.rs" 2>/dev/null | wc -l)
+    local go_files=$(find "$PROJECT_DIR" -name "*.go" 2>/dev/null | wc -l)
+    local java_files=$(find "$PROJECT_DIR" -name "*.java" 2>/dev/null | wc -l)
+    
+    # Check for config files (higher priority)
+    if [ -f "$PROJECT_DIR/package.json" ]; then
+        primary_lang="javascript"
+    elif [ -f "$PROJECT_DIR/Cargo.toml" ]; then
+        primary_lang="rust"
+    elif [ -f "$PROJECT_DIR/go.mod" ]; then
+        primary_lang="go"
+    elif [ -f "$PROJECT_DIR/requirements.txt" ] || [ -f "$PROJECT_DIR/pyproject.toml" ] || [ -f "$PROJECT_DIR/setup.py" ]; then
+        primary_lang="python"
+    elif [ -f "$PROJECT_DIR/pom.xml" ] || [ -f "$PROJECT_DIR/build.gradle" ]; then
+        primary_lang="java"
+    else
+        # Fall back to file count
+        if [ $js_files -gt $max_files ]; then
+            max_files=$js_files
+            primary_lang="javascript"
+        fi
+        if [ $py_files -gt $max_files ]; then
+            max_files=$py_files
+            primary_lang="python"
+        fi
+        if [ $rs_files -gt $max_files ]; then
+            max_files=$rs_files
+            primary_lang="rust"
+        fi
+        if [ $go_files -gt $max_files ]; then
+            max_files=$go_files
+            primary_lang="go"
+        fi
+        if [ $java_files -gt $max_files ]; then
+            max_files=$java_files
+            primary_lang="java"
+        fi
+    fi
+    
+    echo "$primary_lang"
+}
+
+# Function to detect framework
+detect_framework() {
+    local lang="$1"
+    local framework="unknown"
+    
+    case "$lang" in
+        "javascript")
+            if [ -f "$PROJECT_DIR/package.json" ]; then
+                if grep -q '"react"' "$PROJECT_DIR/package.json"; then
+                    if [ -f "$PROJECT_DIR/next.config.js" ] || grep -q '"next"' "$PROJECT_DIR/package.json"; then
+                        framework="nextjs"
+                    else
+                        framework="react"
+                    fi
+                elif grep -q '"express"' "$PROJECT_DIR/package.json"; then
+                    framework="express"
+                elif grep -q '"vue"' "$PROJECT_DIR/package.json"; then
+                    framework="vue"
+                elif grep -q '"@angular"' "$PROJECT_DIR/package.json"; then
+                    framework="angular"
+                else
+                    framework="nodejs"
+                fi
+            fi
+            ;;
+        "python")
+            if [ -f "$PROJECT_DIR/manage.py" ]; then
+                framework="django"
+            elif grep -q "fastapi\|uvicorn" "$PROJECT_DIR/requirements.txt" 2>/dev/null; then
+                framework="fastapi"
+            elif grep -q "flask" "$PROJECT_DIR/requirements.txt" 2>/dev/null; then
+                framework="flask"
+            else
+                framework="python"
+            fi
+            ;;
+        "rust")
+            if grep -q "axum\|warp\|actix" "$PROJECT_DIR/Cargo.toml" 2>/dev/null; then
+                framework="rust-web"
+            else
+                framework="rust"
+            fi
+            ;;
+        "go")
+            if find "$PROJECT_DIR" -name "*.go" -exec grep -l "gin\|echo\|mux" {} \; 2>/dev/null | head -1 > /dev/null; then
+                framework="go-web"
+            else
+                framework="go"
+            fi
+            ;;
+    esac
+    
+    echo "$framework"
+}
+
+# Function to analyze existing code structure
+analyze_project_structure() {
+    local has_src=$([ -d "$PROJECT_DIR/src" ] && echo "true" || echo "false")
+    local has_lib=$([ -d "$PROJECT_DIR/lib" ] && echo "true" || echo "false")
+    local has_components=$([ -d "$PROJECT_DIR/src/components" ] || [ -d "$PROJECT_DIR/components" ] && echo "true" || echo "false")
+    local has_routes=$([ -d "$PROJECT_DIR/src/routes" ] || [ -d "$PROJECT_DIR/routes" ] && echo "true" || echo "false")
+    local has_api=$([ -d "$PROJECT_DIR/src/api" ] || [ -d "$PROJECT_DIR/api" ] && echo "true" || echo "false")
+    local has_tests_dir=$([ -d "$PROJECT_DIR/tests" ] || [ -d "$PROJECT_DIR/__tests__" ] && echo "true" || echo "false")
+    
+    echo "has_src:$has_src,has_lib:$has_lib,has_components:$has_components,has_routes:$has_routes,has_api:$has_api,has_tests_dir:$has_tests_dir"
+}
+
+# Function to detect naming conventions
+detect_naming_conventions() {
+    local file_naming="unknown"
+    local indent_style="unknown"
+    local indent_size="unknown"
+    local quote_style="unknown"
+    
+    # Detect file naming convention
+    local kebab_files=$(find "$PROJECT_DIR" -name "*-*.*" -type f | head -5 | wc -l)
+    local camel_files=$(find "$PROJECT_DIR" -name "*[a-z][A-Z]*.*" -type f | head -5 | wc -l)
+    local snake_files=$(find "$PROJECT_DIR" -name "*_*.*" -type f | head -5 | wc -l)
+    
+    if [ $kebab_files -gt $camel_files ] && [ $kebab_files -gt $snake_files ]; then
+        file_naming="kebab-case"
+    elif [ $camel_files -gt $snake_files ]; then
+        file_naming="camelCase"
+    elif [ $snake_files -gt 0 ]; then
+        file_naming="snake_case"
+    fi
+    
+    # Detect indentation by looking at common files
+    local sample_file=""
+    for ext in "js" "ts" "py" "rs" "go"; do
+        sample_file=$(find "$PROJECT_DIR" -name "*.$ext" -type f | head -1)
+        if [ -n "$sample_file" ]; then break; fi
+    done
+    
+    if [ -n "$sample_file" ]; then
+        # Check first indented line
+        local first_indent=$(head -20 "$sample_file" | grep "^[[:space:]]\+" | head -1)
+        if [[ "$first_indent" == *$'\t'* ]]; then
+            indent_style="tabs"
+        elif [[ "$first_indent" == *"  "* ]]; then
+            indent_style="spaces"
+            # Count spaces
+            local space_count=$(echo "$first_indent" | sed 's/[^ ].*//' | wc -c)
+            space_count=$((space_count - 1))
+            if [ $space_count -eq 2 ]; then
+                indent_size="2"
+            elif [ $space_count -eq 4 ]; then
+                indent_size="4"
+            fi
+        fi
+        
+        # Detect quote style (for JS/TS)
+        if [[ "$sample_file" == *.js ]] || [[ "$sample_file" == *.ts ]]; then
+            local single_quotes=$(head -20 "$sample_file" | grep -o "'" | wc -l)
+            local double_quotes=$(head -20 "$sample_file" | grep -o '"' | wc -l)
+            if [ $single_quotes -gt $double_quotes ]; then
+                quote_style="single"
+            else
+                quote_style="double"
+            fi
+        fi
+    fi
+    
+    echo "file_naming:$file_naming,indent_style:$indent_style,indent_size:$indent_size,quote_style:$quote_style"
+}
+
+# Function to extract project description from README
+extract_project_description() {
+    local description=""
+    
+    if [ -f "$PROJECT_DIR/README.md" ]; then
+        # Get first paragraph after title
+        description=$(sed -n '/^#/,/^$/p' "$PROJECT_DIR/README.md" | sed '1d' | sed '/^$/,$d' | head -3 | tr '\n' ' ')
+    elif [ -f "$PROJECT_DIR/package.json" ]; then
+        # Extract description from package.json
+        description=$(grep '"description"' "$PROJECT_DIR/package.json" | sed 's/.*"description":[[:space:]]*"\([^"]*\)".*/\1/')
+    fi
+    
+    if [ -z "$description" ]; then
+        description="[Describe your project here - its purpose, main features, and target users]"
+    fi
+    
+    echo "$description"
+}
+
+# Main detection
+echo "🔍 Analyzing project..."
+DETECTED_LANG=$(detect_language)
+DETECTED_FRAMEWORK=$(detect_framework "$DETECTED_LANG")
+PROJECT_STRUCTURE=$(analyze_project_structure)
+NAMING_CONVENTIONS=$(detect_naming_conventions)
+PROJECT_DESCRIPTION=$(extract_project_description)
+
+echo "✅ Detected: $DETECTED_LANG ($DETECTED_FRAMEWORK)"
+echo ""
+
+# Create project .ai-setup directory
+mkdir -p "$AI_CONFIG_DIR"
+
+# Create smart context file
+if [ ! -f "$AI_CONFIG_DIR/context.md" ]; then
+    echo "📝 Creating intelligent context file..."
+    cat > "$AI_CONFIG_DIR/context.md" << EOF
+# Project Context
+
+## Overview
+$PROJECT_DESCRIPTION
+
+## Architecture
+Primary Language: $DETECTED_LANG
+Framework: $DETECTED_FRAMEWORK
+
+### Project Structure
+$(if [[ "$PROJECT_STRUCTURE" == *"has_src:true"* ]]; then echo "- Source code organized in \`src/\` directory"; fi)
+$(if [[ "$PROJECT_STRUCTURE" == *"has_components:true"* ]]; then echo "- Component-based architecture"; fi)
+$(if [[ "$PROJECT_STRUCTURE" == *"has_routes:true"* ]]; then echo "- Route-based organization"; fi)
+$(if [[ "$PROJECT_STRUCTURE" == *"has_api:true"* ]]; then echo "- API layer structure"; fi)
+
+### Key Technologies
+$(case "$DETECTED_FRAMEWORK" in
+    "nextjs") echo "- Next.js React framework with SSR/SSG capabilities" ;;
+    "react") echo "- React frontend library with component-based architecture" ;;
+    "express") echo "- Express.js web framework for Node.js" ;;
+    "fastapi") echo "- FastAPI Python web framework with automatic API documentation" ;;
+    "django") echo "- Django Python web framework with ORM and admin interface" ;;
+    "flask") echo "- Flask Python micro web framework" ;;
+    "rust-web") echo "- Rust web framework (Axum/Warp/Actix)" ;;
+    "go-web") echo "- Go web framework (Gin/Echo/Gorilla)" ;;
+    *) echo "- Standard $DETECTED_LANG development patterns" ;;
+esac)
+
+## Development Guidelines
+
+### Code Style
+- Follow existing $DETECTED_LANG conventions
+$(if [[ "$NAMING_CONVENTIONS" == *"file_naming:kebab-case"* ]]; then echo "- File naming: kebab-case"; fi)
+$(if [[ "$NAMING_CONVENTIONS" == *"file_naming:camelCase"* ]]; then echo "- File naming: camelCase"; fi)
+$(if [[ "$NAMING_CONVENTIONS" == *"file_naming:snake_case"* ]]; then echo "- File naming: snake_case"; fi)
+$(if [[ "$NAMING_CONVENTIONS" == *"indent_style:spaces"* ]] && [[ "$NAMING_CONVENTIONS" == *"indent_size:2"* ]]; then echo "- Indentation: 2 spaces"; fi)
+$(if [[ "$NAMING_CONVENTIONS" == *"indent_style:spaces"* ]] && [[ "$NAMING_CONVENTIONS" == *"indent_size:4"* ]]; then echo "- Indentation: 4 spaces"; fi)
+$(if [[ "$NAMING_CONVENTIONS" == *"indent_style:tabs"* ]]; then echo "- Indentation: tabs"; fi)
+
+### Testing Strategy
+$(if [[ "$PROJECT_STRUCTURE" == *"has_tests_dir:true"* ]]; then echo "- Tests organized in dedicated test directories"; else echo "- Tests alongside source files (recommended)"; fi)
+$(case "$DETECTED_FRAMEWORK" in
+    "nextjs"|"react") echo "- Component testing with React Testing Library" ;;
+    "express"|"nodejs") echo "- API testing with Jest/Mocha" ;;
+    "fastapi") echo "- API testing with pytest and TestClient" ;;
+    "django") echo "- Django test framework with fixtures" ;;
+    "rust"*) echo "- Unit tests with cargo test" ;;
+    "go"*) echo "- Go testing package with table-driven tests" ;;
+    *) echo "- Framework-appropriate testing patterns" ;;
+esac)
+
+## Current Focus
+- [What are you currently working on?]
+- [Any specific areas that need attention?]
+- [Known issues or technical debt?]
+
+## AI Assistant Instructions
+
+### When generating code:
+- Follow $DETECTED_LANG best practices and idioms
+$(case "$DETECTED_FRAMEWORK" in
+    "nextjs") echo "- Use Next.js App Router patterns and server components where appropriate" ;;
+    "react") echo "- Use React hooks and functional components" ;;
+    "express") echo "- Follow Express.js middleware patterns and async/await" ;;
+    "fastapi") echo "- Use FastAPI dependency injection and Pydantic models" ;;
+    "django") echo "- Follow Django MVT patterns and use Django ORM" ;;
+    "rust"*) echo "- Use Rust ownership principles and error handling patterns" ;;
+    "go"*) echo "- Follow Go conventions: interfaces, error handling, and package structure" ;;
+esac)
+- Maintain consistency with existing code patterns
+- Use appropriate error handling for the framework
+
+### When reviewing code:
+- Check for $DETECTED_LANG-specific anti-patterns
+- Ensure proper error handling and logging
+- Verify performance considerations for $DETECTED_FRAMEWORK
+
+### When debugging:
+- Use framework-appropriate debugging tools
+- Check common $DETECTED_FRAMEWORK gotchas
+- Consider performance implications
+EOF
+    echo "✅ Created intelligent context.md"
+else
+    echo "✓ context.md already exists"
+fi
+
+# Create smart conventions file based on detected patterns
+if [ ! -f "$AI_CONFIG_DIR/conventions.yml" ]; then
+    echo "📝 Creating convention file based on detected patterns..."
+    
+    # Extract detected values
+    file_naming=$(echo "$NAMING_CONVENTIONS" | grep -o 'file_naming:[^,]*' | cut -d: -f2)
+    indent_style=$(echo "$NAMING_CONVENTIONS" | grep -o 'indent_style:[^,]*' | cut -d: -f2)
+    indent_size=$(echo "$NAMING_CONVENTIONS" | grep -o 'indent_size:[^,]*' | cut -d: -f2)
+    quote_style=$(echo "$NAMING_CONVENTIONS" | grep -o 'quote_style:[^,]*' | cut -d: -f2)
+    
+    # Set defaults if unknown
+    [ "$file_naming" = "unknown" ] && file_naming="kebab-case"
+    [ "$indent_style" = "unknown" ] && indent_style="spaces"
+    [ "$indent_size" = "unknown" ] && indent_size="2"
+    [ "$quote_style" = "unknown" ] && quote_style="single"
+    
+    # Determine test location
+    test_location="alongside"
+    if [[ "$PROJECT_STRUCTURE" == *"has_tests_dir:true"* ]]; then
+        test_location="separate"
+    fi
+    
+    cat > "$AI_CONFIG_DIR/conventions.yml" << EOF
+# Project Conventions (Auto-detected)
+naming:
+  files: $file_naming
+  components: PascalCase
+  functions: camelCase
+  constants: UPPER_SNAKE_CASE
+
+structure:
+  src_layout: $(if [[ "$PROJECT_STRUCTURE" == *"has_components:true"* ]]; then echo "feature"; else echo "layer"; fi)
+  test_location: $test_location
+  
+code_style:
+  max_line_length: 100
+  indent: $indent_style
+$(if [ "$indent_size" != "unknown" ]; then echo "  indent_size: $indent_size"; fi)
+$(if [ "$DETECTED_LANG" = "javascript" ]; then echo "  quotes: $quote_style"; fi)
+$(if [ "$DETECTED_LANG" = "javascript" ]; then echo "  semicolons: true"; fi)
+  
+git:
+  branch_naming: feature/ticket-description
+  commit_style: conventional
+  
+dependencies:
+$(case "$DETECTED_LANG" in
+    "javascript") echo "  package_manager: npm" ;;
+    "python") echo "  package_manager: pip" ;;
+    "rust") echo "  package_manager: cargo" ;;
+    "go") echo "  package_manager: go" ;;
+    *) echo "  package_manager: npm" ;;
+esac)
+  version_strategy: exact
+EOF
+    echo "✅ Created conventions.yml with detected patterns"
+else
+    echo "✓ conventions.yml already exists"
+fi
+
+# Create .gitignore entries if needed
+if [ -f "$PROJECT_DIR/.gitignore" ]; then
+    if ! grep -q ".ai-setup/rag/" "$PROJECT_DIR/.gitignore"; then
+        echo "" >> "$PROJECT_DIR/.gitignore"
+        echo "# AI Dev local files" >> "$PROJECT_DIR/.gitignore"
+        echo ".ai-setup/rag/db/" >> "$PROJECT_DIR/.gitignore"
+        echo "✅ Added AI Dev entries to .gitignore"
+    else
+        echo "✓ .gitignore already has AI Dev entries"
+    fi
+fi
+
+# Ask if user wants to index the project now
+echo ""
+read -p "Would you like to index this project for semantic search now? (y/N) " -n 1 -r
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Indexing project..."
+    ai-rag index "$PROJECT_DIR"
+fi
+
+echo ""
+echo "🎉 Smart project initialization complete!"
+echo ""
+echo "Detected Configuration:"
+echo "• Language: $DETECTED_LANG"
+echo "• Framework: $DETECTED_FRAMEWORK" 
+echo "• File naming: $file_naming"
+echo "• Indentation: $indent_style$(if [ "$indent_size" != "unknown" ]; then echo " ($indent_size)"; fi)"
+echo ""
+echo "Next steps:"
+echo "1. Review and customize $AI_CONFIG_DIR/context.md"
+echo "2. Verify $AI_CONFIG_DIR/conventions.yml matches your preferences"
+echo "3. Run 'ai-rag index $PROJECT_DIR' to index/reindex if needed"
+echo ""
+echo "The AI assistant now has intelligent context about your $DETECTED_FRAMEWORK project!"

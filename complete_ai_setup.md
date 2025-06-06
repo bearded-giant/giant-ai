@@ -74,17 +74,35 @@ export PATH="$HOME/.local/bin:$PATH"
 # Navigate to any project
 cd your-project
 
-# Initialize AI configuration
+# Initialize AI configuration (smart auto-detection)
 ai-init-project
 ```
 
-This creates:
+**Smart Initialization** automatically detects and configures:
+- **Language**: JavaScript/TypeScript, Python, Rust, Go, Java
+- **Framework**: React/Next.js, Express, Django/FastAPI/Flask, etc.
+- **Conventions**: File naming, indentation, quote style from existing code
+- **Project Structure**: Components, routes, testing patterns
+
+This creates **intelligent, pre-filled** configuration:
 ```
 your-project/
 ├── .ai-setup/
-│   ├── context.md       # Project-specific AI instructions
-│   └── conventions.yml  # Coding standards and patterns
+│   ├── context.md       # Auto-generated project analysis & AI instructions
+│   └── conventions.yml  # Auto-detected coding standards from codebase
 └── .gitignore          # Updated with AI entries
+```
+
+**Example Smart Detection:**
+```bash
+🔍 Analyzing project...
+✅ Detected: javascript (nextjs)
+
+Detected Configuration:
+• Language: javascript
+• Framework: nextjs
+• File naming: kebab-case
+• Indentation: spaces (2)
 ```
 
 ### Index for Search
@@ -600,90 +618,107 @@ claude --context "reviewing pull request"
 - **MCP Tools**: Access to semantic search and analysis tools
 - **Convention Compliance**: Generates code following project standards
 
-## Project Configuration Templates
+## Smart Project Configuration
 
-### Context File Template (`.ai-setup/context.md`)
-The `ai-init-project` script creates a comprehensive template:
+### Intelligent Auto-Generation
+The `ai-init-project` script now **automatically analyzes your codebase** and generates intelligent, pre-filled configuration instead of generic templates.
+
+**Detection Capabilities:**
+- **Languages**: JavaScript/TypeScript, Python, Rust, Go, Java
+- **Frameworks**: React, Next.js, Express, Vue, Angular, Django, FastAPI, Flask, etc.
+- **Conventions**: File naming patterns, indentation style, quote preferences
+- **Structure**: Component architecture, test organization, API patterns
+- **Context**: Project description from README.md or package.json
+
+### Smart Context Generation (`.ai-setup/context.md`)
+**Example auto-generated content for a Next.js project:**
 
 ```markdown
 # Project Context
 
 ## Overview
-[Describe your project here - its purpose, main features, and target users]
+A modern web application built with Next.js and TypeScript for server-side rendering... # ← From README.md
 
 ## Architecture
-[Describe the high-level architecture - main components, data flow, key technologies]
+Primary Language: javascript
+Framework: nextjs
+
+### Project Structure
+- Source code organized in `src/` directory
+- Component-based architecture
+- API layer structure
+
+### Key Technologies
+- Next.js React framework with SSR/SSG capabilities
 
 ## Development Guidelines
 
 ### Code Style
-- [Add project-specific code style guidelines]
-- [Naming conventions]
-- [File organization patterns]
+- Follow existing javascript conventions
+- File naming: kebab-case        # ← Auto-detected
+- Indentation: 2 spaces          # ← Auto-detected
 
 ### Testing Strategy
-- [Unit test requirements]
-- [Integration test approach]
-- [E2E test coverage]
+- Component testing with React Testing Library  # ← Framework-specific
+- API testing with Jest/Mocha
 
-### Performance Considerations
-- [Key performance metrics]
-- [Optimization priorities]
-- [Resource constraints]
+## AI Assistant Instructions
+
+### When generating code:
+- Use Next.js App Router patterns and server components where appropriate
+- Use React hooks and functional components
+- Follow javascript best practices and idioms
 
 ## Current Focus
 - [What are you currently working on?]
 - [Any specific areas that need attention?]
 - [Known issues or technical debt?]
-
-## AI Assistant Instructions
-
-### When generating code:
-- [Project-specific patterns to follow]
-- [Libraries/frameworks to use or avoid]
-- [Security considerations]
-
-### When reviewing code:
-- [What to look for]
-- [Common pitfalls in this codebase]
-- [Performance hotspots to consider]
-
-### When debugging:
-- [Common issues in this project]
-- [Debugging tools and techniques]
-- [Logging patterns]
 ```
 
-### Conventions Template (`.ai-setup/conventions.yml`)
+### Smart Convention Detection (`.ai-setup/conventions.yml`)
+**Example auto-detected conventions for the same Next.js project:**
+
 ```yaml
-# Project Conventions
+# Project Conventions (Auto-detected)
 naming:
-  files: kebab-case  # or camelCase, PascalCase, snake_case
+  files: kebab-case        # ← Detected from existing files
   components: PascalCase
   functions: camelCase
   constants: UPPER_SNAKE_CASE
 
 structure:
-  src_layout: feature  # or layer (controllers/models/views)
-  test_location: alongside  # or separate (__tests__ folder)
+  src_layout: feature      # ← Based on component structure analysis
+  test_location: alongside # ← Detected from test file locations
   
 code_style:
   max_line_length: 100
-  indent: spaces  # or tabs
-  indent_size: 2
-  quotes: single  # or double
-  semicolons: false  # JS/TS specific
+  indent: spaces           # ← Analyzed from existing code
+  indent_size: 2           # ← Detected indentation size
+  quotes: single           # ← Found in JavaScript files
+  semicolons: true         # ← JavaScript-specific detection
   
 git:
   branch_naming: feature/ticket-description
-  commit_style: conventional  # conventional commits
+  commit_style: conventional
   
 dependencies:
-  package_manager: npm  # or yarn, pnpm, cargo, pip, etc.
-  version_strategy: exact  # or caret, tilde
+  package_manager: npm     # ← Detected from package.json
+  version_strategy: exact
 ```
 
-### Auto-Setup Features
+### Smart Auto-Setup Features
+
+**Project Analysis Output:**
+```bash
+🔍 Analyzing project...
+✅ Detected: javascript (nextjs)
+
+Detected Configuration:
+• Language: javascript
+• Framework: nextjs
+• File naming: kebab-case
+• Indentation: spaces (2)
+```
 
 **Smart .gitignore Updates:**
 The init script automatically adds AI-specific entries:
@@ -695,6 +730,16 @@ The init script automatically adds AI-specific entries:
 **Optional Immediate Indexing:**
 ```bash
 Would you like to index this project for semantic search now? (y/N)
+```
+
+**Fallback to Basic Mode:**
+If you prefer generic templates, choose option 2:
+```bash
+Initialization options:
+1. Smart initialization (auto-detects language/framework)
+2. Basic initialization (templates with placeholders)
+
+Choose option (1/2, default: 1):
 ```
 
 **CLI Tool Availability:**
