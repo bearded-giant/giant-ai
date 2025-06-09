@@ -113,6 +113,7 @@ This automatically:
 - Configures MCP hub with global servers
 - Sets up RAG database directory
 - Configures LLM integrations (Claude Desktop, etc.)
+- **Note**: Project initialization adds `.giant-ai/` to your global gitignore (preferred) or local `.gitignore` as fallback
 
 ### Add to PATH
 ```bash
@@ -146,7 +147,7 @@ your-project/
 ├── .giant-ai/
 │   ├── context.md       # Auto-generated with project analysis
 │   └── conventions.yml  # Detected coding standards and patterns
-└── .gitignore          # Updated with AI Dev entries
+└── .gitignore          # Updated with Giant AI entries (or added to global gitignore)
 ```
 
 **Example Smart Output:**

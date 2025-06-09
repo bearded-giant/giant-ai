@@ -180,16 +180,39 @@ else
     echo "✓ conventions.yml already exists"
 fi
 
-# Create .gitignore entries if needed
-if [ -f "$PROJECT_DIR/.gitignore" ]; then
-    if ! grep -q ".ai-setup/rag/" "$PROJECT_DIR/.gitignore"; then
-        echo "" >> "$PROJECT_DIR/.gitignore"
-        echo "# Giant AI Dev local files" >> "$PROJECT_DIR/.gitignore"
-        echo ".ai-setup/rag/db/" >> "$PROJECT_DIR/.gitignore"
-        echo "✅ Added Giant AI Dev entries to .gitignore"
-    else
-        echo "✓ .gitignore already has Giant AI Dev entries"
+# Add .giant-ai directory to gitignore (prefer global, fallback to local)
+GLOBAL_GITIGNORE=$(git config --global core.excludesfile 2>/dev/null || echo "")
+GITIGNORE_UPDATED=""
+
+if [ -n "$GLOBAL_GITIGNORE" ] && [ -f "$GLOBAL_GITIGNORE" ]; then
+    # Use global gitignore
+    if ! grep -q ".giant-ai/" "$GLOBAL_GITIGNORE" 2>/dev/null; then
+        echo "" >> "$GLOBAL_GITIGNORE"
+        echo "# Giant AI local files" >> "$GLOBAL_GITIGNORE"
+        echo ".giant-ai/" >> "$GLOBAL_GITIGNORE"
+        GITIGNORE_UPDATED="global ($GLOBAL_GITIGNORE)"
     fi
+else
+    # Fall back to local gitignore
+    if [ -f "$PROJECT_DIR/.gitignore" ]; then
+        if ! grep -q ".giant-ai/" "$PROJECT_DIR/.gitignore"; then
+            echo "" >> "$PROJECT_DIR/.gitignore"
+            echo "# Giant AI local files" >> "$PROJECT_DIR/.gitignore"
+            echo ".giant-ai/" >> "$PROJECT_DIR/.gitignore"
+            GITIGNORE_UPDATED="local (.gitignore)"
+        fi
+    else
+        # Create local .gitignore if it doesn't exist
+        echo "# Giant AI local files" > "$PROJECT_DIR/.gitignore"
+        echo ".giant-ai/" >> "$PROJECT_DIR/.gitignore"
+        GITIGNORE_UPDATED="local (.gitignore - created)"
+    fi
+fi
+
+if [ -n "$GITIGNORE_UPDATED" ]; then
+    echo "✅ Added Giant AI entries to $GITIGNORE_UPDATED"
+else
+    echo "✓ Giant AI entries already present in gitignore"
 fi
 
 # Ask if user wants to index the project now

@@ -27,7 +27,7 @@ ai-agent task "Add dark mode" --auto-accept  # Autonomous coding with checkpoint
 
 **What each does:**
 - `ai-setup`: One-time install of CLI tools, MCP servers, and optional Neovim integration
-- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.giant-ai/` config  
+- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.giant-ai/` config (adds to global gitignore when possible)
 - `ai-rag index`: Creates searchable index of your codebase
 - `ai-agent`: Autonomous agent mode with checkpoints (like Cursor)
 - `<leader>cc`: AI CLI with full project context and RAG integration
