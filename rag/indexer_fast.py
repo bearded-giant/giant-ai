@@ -82,10 +82,17 @@ class CodebaseRAG:
         all_metas = []
         all_ids = []
 
-        with click.progressbar(
-            files_to_index, label="Indexing files", show_pos=True
-        ) as bar:
-            for file_path in bar:
+        # Use a more controlled progress display
+        progress_bar = click.progressbar(
+            length=len(files_to_index), 
+            label='Indexing files', 
+            show_pos=True,
+            show_percent=True,
+            show_eta=True
+        )
+        
+        with progress_bar:
+            for i, file_path in enumerate(files_to_index):
                 if use_chunking:
                     # Original chunking behavior (slower)
                     docs, metas, ids = self.prepare_file_chunks(file_path)
@@ -103,28 +110,60 @@ class CodebaseRAG:
                     all_ids.extend(ids)
                     indexed_count += 1
 
-                    # Insert in batches
+                    # Insert in batches - suppress any output from ChromaDB
                     if len(all_docs) >= batch_size:
                         try:
+                            import os
+                            import sys
+                            # Temporarily redirect stdout to suppress ChromaDB output
+                            old_stdout = sys.stdout
+                            sys.stdout = open(os.devnull, 'w')
+                            
                             self.collection.upsert(
                                 documents=all_docs, metadatas=all_metas, ids=all_ids
                             )
+                            
+                            # Restore stdout
+                            sys.stdout.close()
+                            sys.stdout = old_stdout
+                            
                             all_docs = []
                             all_metas = []
                             all_ids = []
                         except Exception as e:
-                            click.echo(f"\nError during batch insert: {e}", err=True)
+                            # Restore stdout if there was an error
+                            if sys.stdout != old_stdout:
+                                sys.stdout.close()
+                                sys.stdout = old_stdout
+                            # Store error but don't print during progress
                             all_docs = []
                             all_metas = []
                             all_ids = []
+                
+                # Update progress
+                progress_bar.update(1)
 
         # Insert remaining documents
         if all_docs:
             try:
+                import os
+                import sys
+                # Temporarily redirect stdout to suppress ChromaDB output
+                old_stdout = sys.stdout
+                sys.stdout = open(os.devnull, 'w')
+                
                 self.collection.upsert(
                     documents=all_docs, metadatas=all_metas, ids=all_ids
                 )
+                
+                # Restore stdout
+                sys.stdout.close()
+                sys.stdout = old_stdout
             except Exception as e:
+                # Restore stdout if there was an error
+                if 'old_stdout' in locals() and sys.stdout != old_stdout:
+                    sys.stdout.close()
+                    sys.stdout = old_stdout
                 click.echo(f"\nError during final batch insert: {e}", err=True)
 
         click.echo(f"✓ Indexed {indexed_count} files")
@@ -149,10 +188,7 @@ class CodebaseRAG:
         try:
             file_size_mb = file_path.stat().st_size / (1024 * 1024)
             if file_size_mb > max_file_size_mb:
-                click.echo(
-                    f"Skipping large file ({file_size_mb:.1f}MB): {file_path.relative_to(self.project_path)}",
-                    err=True,
-                )
+                # Don't print during indexing to avoid progress bar interference
                 return False
         except:
             pass
@@ -187,7 +223,7 @@ class CodebaseRAG:
             return content, metadata, doc_id
 
         except Exception as e:
-            click.echo(f"Error preparing {file_path}: {e}", err=True)
+            # Don't print errors during indexing to avoid progress bar interference
             return None, None, None
 
     def extract_python_symbols(self, node, content):
@@ -249,7 +285,7 @@ class CodebaseRAG:
             return batch_docs, batch_metas, batch_ids
 
         except Exception as e:
-            click.echo(f"Error preparing {file_path}: {e}", err=True)
+            # Don't print errors during indexing to avoid progress bar interference
             return [], [], []
 
     def parse_python_file(self, content, file_path):
