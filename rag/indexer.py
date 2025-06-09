@@ -62,9 +62,13 @@ class CodebaseRAG:
             collections = client.list_collections()
             collection_name = f"codebase_{self.project_id}"
             
-            for collection in collections:
-                if collection.name == collection_name:
-                    # Check if collection has documents
+            for collection_info in collections:
+                if collection_info.name == collection_name:
+                    # Get the actual collection and check document count
+                    collection = client.get_collection(
+                        name=collection_name,
+                        embedding_function=None  # Don't need embedding function just to count
+                    )
                     count = collection.count()
                     return count > 0
             return False

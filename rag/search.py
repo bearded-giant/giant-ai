@@ -13,6 +13,22 @@ from indexer import CodebaseRAG
 
 def search_project(project_path, query, limit=10, format='json'):
     """Search a project's indexed codebase"""
+    project_path = Path(project_path)
+    
+    # Check if project is initialized (has .giant-ai directory)
+    giant_ai_dir = project_path / ".giant-ai"
+    if not giant_ai_dir.exists():
+        if format == 'json':
+            return json.dumps({
+                "error": "Project not initialized",
+                "message": f"Run 'ai-init-project-smart' in {project_path} to initialize Giant AI first",
+                "query": query,
+                "project": str(project_path),
+                "results": []
+            })
+        else:
+            return f"Error: Project {project_path} is not initialized.\nRun 'ai-init-project-smart' to initialize Giant AI first."
+    
     rag = CodebaseRAG(project_path)
     
     # Fast check if project is indexed

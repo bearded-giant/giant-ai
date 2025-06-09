@@ -24,17 +24,35 @@ local function get_project_root()
   return vim.fn.getcwd()
 end
 
+local function has_giant_ai_config(project_root)
+  -- Check if .giant-ai directory exists (project is initialized)
+  local giant_ai_dir = project_root .. "/.giant-ai"
+  return vim.fn.isdirectory(giant_ai_dir) == 1
+end
+
 local function is_project_indexed(project_root)
-  -- Quick check if project is indexed by testing ai-search
-  local cmd = string.format('ai-search "test" "%s" 1 json', project_root)
-  local result = vim.fn.system(cmd)
-  
-  -- Check if result contains error about not being indexed
-  if result:match('"error":%s*"Project not indexed"') then
+  -- First check if project has .giant-ai (is initialized)
+  if not has_giant_ai_config(project_root) then
     return false
   end
   
-  return true
+  -- Quick check if project is indexed by testing ai-search
+  local cmd = string.format('ai-search "test" "%s" 1 json 2>/dev/null', project_root)
+  local result = vim.fn.system(cmd)
+  
+  -- Parse the JSON result
+  local success, parsed = pcall(vim.fn.json_decode, result)
+  if not success or not parsed then
+    return false
+  end
+  
+  -- Check for explicit error about not being indexed
+  if parsed.error and parsed.error == "Project not indexed" then
+    return false
+  end
+  
+  -- If no error, assume indexed (whether it has results or not)
+  return not parsed.error
 end
 
 local function get_selection_or_word()
@@ -64,7 +82,12 @@ function M.rag_search_raw(query)
   
   local project_root = get_project_root()
   
-  -- Check if project is indexed
+  -- Check if project is initialized and indexed
+  if not has_giant_ai_config(project_root) then
+    notify("Project not initialized. Run 'ai-init-project-smart' to enable Giant AI", vim.log.levels.WARN)
+    return
+  end
+  
   if not is_project_indexed(project_root) then
     notify("Project not indexed. Run 'ai-rag index .' to enable semantic search", vim.log.levels.WARN)
     return
@@ -125,7 +148,12 @@ function M.rag_analyze(query)
   
   local project_root = get_project_root()
   
-  -- Check if project is indexed
+  -- Check if project is initialized and indexed
+  if not has_giant_ai_config(project_root) then
+    notify("Project not initialized. Run 'ai-init-project-smart' to enable Giant AI", vim.log.levels.WARN)
+    return
+  end
+  
   if not is_project_indexed(project_root) then
     notify("Project not indexed. Run 'ai-rag index .' to enable semantic search", vim.log.levels.WARN)
     return
@@ -207,18 +235,20 @@ end
 function M.status()
   local project_root = get_project_root()
   local has_avante = pcall(require, 'avante')
+  local has_config = has_giant_ai_config(project_root)
   local indexed = is_project_indexed(project_root)
   
   local status_lines = {
     "Giant AI Status:",
     "  Project: " .. project_root,
+    "  Initialized: " .. (has_config and "Yes" or "No"),
     "  Indexed: " .. (indexed and "Yes" or "No"),
     "  Provider: " .. config.provider,
     "  Avante: " .. (has_avante and "Yes" or "No"),
     "",
     "Commands:",
-    "  :GiantAISearch [query] - Raw search" .. (indexed and "" or " (requires indexing)"),
-    "  :GiantAIAnalyze [query] - AI analysis" .. (indexed and "" or " (requires indexing)"),
+    "  :GiantAISearch [query] - Raw search" .. (indexed and "" or " (requires setup)"),
+    "  :GiantAIAnalyze [query] - AI analysis" .. (indexed and "" or " (requires setup)"),
     "  :GiantAIStatus - This status",
     "",
     "Keymaps:",
@@ -226,7 +256,12 @@ function M.status()
     "  " .. config.search_analyze .. " - Analyze prompt",
   }
   
-  if not indexed then
+  if not has_config then
+    table.insert(status_lines, "")
+    table.insert(status_lines, "To enable Giant AI:")
+    table.insert(status_lines, "  1. Run: ai-init-project-smart")
+    table.insert(status_lines, "  2. Run: ai-rag index .")
+  elseif not indexed then
     table.insert(status_lines, "")
     table.insert(status_lines, "To enable semantic search:")
     table.insert(status_lines, "  Run: ai-rag index .")
@@ -282,12 +317,17 @@ function M.setup(opts)
     end, { desc = "Giant AI analyze" })
   end
   
-  -- Check if current project is indexed and show appropriate message
+  -- Check project status and show appropriate message
   local project_root = get_project_root()
-  if is_project_indexed(project_root) then
+  local has_config = has_giant_ai_config(project_root)
+  local indexed = is_project_indexed(project_root)
+  
+  if indexed then
     notify("Ready! Use " .. config.search_analyze .. " for AI analysis")
-  else
+  elseif has_config then
     notify("Ready! Run 'ai-rag index .' to enable semantic search")
+  else
+    notify("Ready! Run 'ai-init-project-smart' to enable Giant AI features")
   end
 end
 
