@@ -400,15 +400,15 @@ def execute_task(self, task: str, options: Dict[str, Any] = None):
 
 ```
 Pros:
-✅ Single database to manage
-✅ Cross-project pattern discovery
-✅ Efficient storage for common patterns
-✅ Centralized configuration
+- Single database to manage
+- Cross-project pattern discovery
+- Efficient storage for common patterns
+- Centralized configuration
 
 Cons:
-❌ No per-project customization
-❌ Potential privacy concerns (mixed projects)
-❌ Larger database size
+- No per-project customization
+- Potential privacy concerns (mixed projects)
+- Larger database size
 ```
 
 ### Alternative: Local Project RAG

@@ -1,10 +1,10 @@
 # LLM Connectivity Guide - How Giant AI Connects to AI Models
 
-## 🔗 Overview
+## Overview
 
 Giant AI provides a flexible architecture for connecting to different AI providers and models. Unlike monolithic AI coding tools, Giant AI acts as an **orchestration layer** that works with your preferred AI providers through standardized interfaces.
 
-## 📊 Connection Architecture
+## Connection Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -19,7 +19,7 @@ Giant AI provides a flexible architecture for connecting to different AI provide
 
 **Key Principle**: Giant AI doesn't replace your AI provider - it **enhances** your existing AI tools with semantic search, project context, and autonomous coding capabilities.
 
-## 🎯 Connection Methods
+## Connection Methods
 
 ### 1. **Agent Mode (Autonomous Coding)**
 
@@ -51,9 +51,9 @@ ai-agent task "Add dark mode support" --auto-accept
 ```
 
 **Supported Providers**:
-- ✅ **Claude Code**: Full auto-accept support
-- 🚧 **OpenAI CLI**: Planned (when available)
-- 🔧 **Custom CLIs**: Extensible via provider system
+- **Claude Code**: Full auto-accept support
+- **OpenAI CLI**: Planned (when available)
+- **Custom CLIs**: Extensible via provider system
 
 ### 2. **AI CLI Integration (Enhanced Terminal)**
 
@@ -167,7 +167,7 @@ ai-search "authentication middleware"
 - **Neovim**: `semantic_code_search` MCP tool
 - **Agent Mode**: Context-aware task planning
 
-## ⚙️ Configuration Hierarchy
+## Configuration Hierarchy
 
 ### Global Configuration
 ```
@@ -193,7 +193,7 @@ your-project/
 ~/.config/nvim/                # Neovim AI plugin config
 ```
 
-## 🔧 Provider System Architecture
+## Provider System Architecture
 
 ### Abstract Provider Interface
 ```python
@@ -214,8 +214,8 @@ class BaseLLMProvider(ABC):
 ```python
 class LLMProviderFactory:
     _providers = {
-        "claude-code": ClaudeCodeProvider,  # ✅ Full support
-        "openai": OpenAIProvider,          # 🚧 Placeholder
+        "claude-code": ClaudeCodeProvider,  # Full support
+        "openai": OpenAIProvider,          # Placeholder
     }
 ```
 
@@ -237,7 +237,7 @@ class ClaudeCodeProvider(BaseLLMProvider):
         return {"success": result.returncode == 0, "output": result.stdout}
 ```
 
-## 🎛️ How to Configure Your Setup
+## How to Configure Your Setup
 
 ### Step 1: Choose Your Primary AI Provider
 
@@ -345,7 +345,7 @@ ai-search "error handling patterns" . 5
 ai-rag list-projects
 ```
 
-## 🔄 Model Switching Workflows
+## Model Switching Workflows
 
 ### Switching Agent Provider
 ```bash
@@ -380,7 +380,7 @@ claude "analyze architecture"     # Claude: better at analysis
 openai "write unit test"         # OpenAI: faster for simple tasks
 ```
 
-## 🚀 Advanced Integration Patterns
+## Advanced Integration Patterns
 
 ### Custom Provider Implementation
 ```python
@@ -427,36 +427,36 @@ ai-agent task "generate boilerplate" --provider openai         # Code gen
 ai-agent task "optimize performance" --provider claude-code    # Optimization
 ```
 
-## 🎯 Benefits of This Architecture
+## Benefits of This Architecture
 
-### 🔓 **No Vendor Lock-in**
+### **No Vendor Lock-in**
 - Switch providers without changing workflows
 - Use multiple providers simultaneously
 - Maintain consistent tooling across teams
 
-### 🎛️ **Flexible Configuration**
+### **Flexible Configuration**
 - Global defaults with project overrides
 - Provider-specific optimizations
 - Easy A/B testing of different models
 
-### 🧠 **Enhanced Context**
+### **Enhanced Context**
 - Automatic project context injection
 - Semantic code search integration
 - MCP tool ecosystem
 
-### 💰 **Cost Optimization**
+### **Cost Optimization**
 - Use different models for different tasks
 - Local models for simple operations
 - Cloud models for complex reasoning
 
-### 🛡️ **Safety & Control**
+### **Safety & Control**
 - Checkpoint system for autonomous operations
 - Rollback capabilities
 - Manual override options
 
 ---
 
-## 🔗 Related Documentation
+## Related Documentation
 
 - [Agent Mode vs Manual Coding](agent-mode-vs-manual-coding.md) - When to use autonomous vs interactive AI
 - [MCP Demystified](mcp-demystified.md) - Model Context Protocol integration

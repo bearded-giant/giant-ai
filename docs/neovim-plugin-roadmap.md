@@ -1,10 +1,10 @@
 # Giant AI Neovim Plugin Roadmap
 
-## 🎯 Philosophy: Start Simple, Evolve Based on Feedback
+## Philosophy: Start Simple, Evolve Based on Feedback
 
 Giant AI's Neovim integration follows an evolutionary approach rather than building a massive plugin upfront.
 
-## 📍 Current State: Enhanced Lua Script
+## Current State: Enhanced Lua Script
 
 **What we have now:**
 - Single Lua file with clean API (`giant-ai-simple.lua`)
@@ -59,10 +59,10 @@ giant_ai.setup({
 3. Analysis automatically sent to Avante if available, clipboard otherwise
 4. Immediate feedback throughout the process (no hanging)
 
-## 🛣️ Evolution Path
+## Evolution Path
 
 ### **Phase 1: Enhanced Script** (Current - 2024)
-**Status**: ✅ Complete
+**Status**: Complete
 - [x] Clean Lua API with proper setup()
 - [x] Commands and keymaps
 - [x] Avante integration
@@ -109,7 +109,7 @@ giant-ai.nvim/
 - **Context Windows**: Show related code in sidebars
 - **Pattern Refactoring UI**: Visual interface for ai-pattern-refactor
 
-## 🤔 Why This Approach?
+## Why This Approach?
 
 ### **Advantages of Starting Simple:**
 
@@ -132,7 +132,7 @@ giant-ai.nvim/
 - Avante integration works well for AI interaction
 - Users prefer CLI tools over Neovim UI for some features
 
-## 🎛️ Current Recommendation
+## Current Recommendation
 
 **For users**: Start with the enhanced Lua script (`giant-ai-simple.lua`). It provides:
 - All core functionality
@@ -146,7 +146,7 @@ giant-ai.nvim/
 - Note integration pain points
 - Watch for requests that current approach can't satisfy
 
-## 🔧 Implementation Examples
+## Implementation Examples
 
 ### **Current Approach Usage:**
 ```lua
@@ -195,7 +195,7 @@ require('telescope').setup({
 -- Usage: :Telescope giant_ai search
 ```
 
-## 🎯 Decision Framework
+## Decision Framework
 
 **Stay with enhanced script if:**
 - Current functionality meets user needs
@@ -209,7 +209,7 @@ require('telescope').setup({
 - UI limitations become significant pain points
 - Project has resources for proper plugin maintenance
 
-## 📊 Success Metrics
+## Success Metrics
 
 **For current approach:**
 - User adoption of the Lua script

@@ -24,6 +24,19 @@ local function get_project_root()
   return vim.fn.getcwd()
 end
 
+local function is_project_indexed(project_root)
+  -- Quick check if project is indexed by testing ai-search
+  local cmd = string.format('ai-search "test" "%s" 1 json', project_root)
+  local result = vim.fn.system(cmd)
+  
+  -- Check if result contains error about not being indexed
+  if result:match('"error":%s*"Project not indexed"') then
+    return false
+  end
+  
+  return true
+end
+
 local function get_selection_or_word()
   local mode = vim.api.nvim_get_mode().mode
   if mode == 'v' or mode == 'V' then
@@ -51,7 +64,13 @@ function M.rag_search_raw(query)
   
   local project_root = get_project_root()
   
-  notify("🔍 Searching...")
+  -- Check if project is indexed
+  if not is_project_indexed(project_root) then
+    notify("Project not indexed. Run 'ai-rag index .' to enable semantic search", vim.log.levels.WARN)
+    return
+  end
+  
+  notify("Searching...")
   
   local cmd = string.format('ai-search "%s" "%s" %d text', query, project_root, config.limit)
   
@@ -106,7 +125,13 @@ function M.rag_analyze(query)
   
   local project_root = get_project_root()
   
-  notify("🤖 Analyzing with " .. config.provider .. "... (10-30s)")
+  -- Check if project is indexed
+  if not is_project_indexed(project_root) then
+    notify("Project not indexed. Run 'ai-rag index .' to enable semantic search", vim.log.levels.WARN)
+    return
+  end
+  
+  notify("Analyzing with " .. config.provider .. "... (10-30s)")
   
   local cmd = string.format('ai-search-pipe "%s" "%s" %d %s', 
     query, project_root, config.limit, config.provider)
@@ -182,22 +207,30 @@ end
 function M.status()
   local project_root = get_project_root()
   local has_avante = pcall(require, 'avante')
+  local indexed = is_project_indexed(project_root)
   
   local status_lines = {
     "Giant AI Status:",
     "  Project: " .. project_root,
+    "  Indexed: " .. (indexed and "Yes" or "No"),
     "  Provider: " .. config.provider,
-    "  Avante: " .. (has_avante and "✅" or "❌"),
+    "  Avante: " .. (has_avante and "Yes" or "No"),
     "",
     "Commands:",
-    "  :GiantAISearch [query] - Raw search",
-    "  :GiantAIAnalyze [query] - AI analysis",
+    "  :GiantAISearch [query] - Raw search" .. (indexed and "" or " (requires indexing)"),
+    "  :GiantAIAnalyze [query] - AI analysis" .. (indexed and "" or " (requires indexing)"),
     "  :GiantAIStatus - This status",
     "",
     "Keymaps:",
     "  " .. config.search_raw .. " - Search prompt",
     "  " .. config.search_analyze .. " - Analyze prompt",
   }
+  
+  if not indexed then
+    table.insert(status_lines, "")
+    table.insert(status_lines, "To enable semantic search:")
+    table.insert(status_lines, "  Run: ai-rag index .")
+  end
   
   print(table.concat(status_lines, "\n"))
 end
@@ -249,7 +282,13 @@ function M.setup(opts)
     end, { desc = "Giant AI analyze" })
   end
   
-  notify("Ready! Use " .. config.search_analyze .. " for AI analysis")
+  -- Check if current project is indexed and show appropriate message
+  local project_root = get_project_root()
+  if is_project_indexed(project_root) then
+    notify("Ready! Use " .. config.search_analyze .. " for AI analysis")
+  else
+    notify("Ready! Run 'ai-rag index .' to enable semantic search")
+  end
 end
 
 return M

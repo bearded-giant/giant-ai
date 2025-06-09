@@ -30,18 +30,46 @@ class CodebaseRAG:
         # Project identifier for collection name
         self.project_id = self.project_path.name.replace(" ", "_").replace("/", "_")
         
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="all-MiniLM-L6-v2"
-        )
-        
-        self.client = chromadb.PersistentClient(path=str(self.persist_dir))
-        self.collection = self.client.get_or_create_collection(
-            name=f"codebase_{self.project_id}",
-            embedding_function=self.ef
-        )
+        # Lazy initialization - only load expensive resources when needed
+        self.model = None
+        self.ef = None
+        self.client = None
+        self.collection = None
         
         self.setup_parsers()
+    
+    def _init_chromadb(self):
+        """Initialize ChromaDB resources lazily"""
+        if self.client is None:
+            self.model = SentenceTransformer('all-MiniLM-L6-v2')
+            self.ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+                model_name="all-MiniLM-L6-v2"
+            )
+            self.client = chromadb.PersistentClient(path=str(self.persist_dir))
+            self.collection = self.client.get_or_create_collection(
+                name=f"codebase_{self.project_id}",
+                embedding_function=self.ef
+            )
+    
+    def has_index(self):
+        """Check if this project has been indexed (fast check without loading models)"""
+        try:
+            if not self.persist_dir.exists():
+                return False
+                
+            # Quick check without loading sentence transformers
+            client = chromadb.PersistentClient(path=str(self.persist_dir))
+            collections = client.list_collections()
+            collection_name = f"codebase_{self.project_id}"
+            
+            for collection in collections:
+                if collection.name == collection_name:
+                    # Check if collection has documents
+                    count = collection.count()
+                    return count > 0
+            return False
+        except Exception:
+            return False
     
     def setup_parsers(self):
         try:
@@ -52,6 +80,7 @@ class CodebaseRAG:
             self.parser = None
     
     def index_codebase(self, batch_size=100, max_file_size_mb=10, use_chunking=False):
+        self._init_chromadb()
         file_patterns = ['*.py', '*.js', '*.ts', '*.tsx', '*.jsx', '*.rs', '*.go', '*.java', '*.cpp', '*.h', '*.lua', '*.vim']
         indexed_count = 0
         
@@ -316,6 +345,7 @@ class CodebaseRAG:
         return chunks
     
     def search(self, query, n_results=10):
+        self._init_chromadb()
         results = self.collection.query(
             query_texts=[query],
             n_results=n_results
@@ -336,6 +366,7 @@ class CodebaseRAG:
     
     def clear_project_index(self):
         """Clear the index for this specific project"""
+        self._init_chromadb()
         try:
             self.client.delete_collection(f"codebase_{self.project_id}")
             click.echo(f"Cleared index for project: {self.project_id}")

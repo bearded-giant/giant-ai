@@ -1,10 +1,10 @@
 # RAG + AI Analysis Workflow Guide
 
-## 🔍 Problem Solved
+## Problem Solved
 
 Previously, RAG search returned raw code chunks that weren't useful on their own. Now you have multiple options for making search results actionable with AI analysis.
 
-## 🛠️ Available Tools
+## Available Tools
 
 ### 1. **Enhanced Command Line Search**
 
@@ -43,7 +43,7 @@ rag.setup({
 <leader>ra   " Search selected text + AI analysis
 ```
 
-## 🔄 Workflow Examples
+## Workflow Examples
 
 ### Terminal Workflow
 
@@ -82,7 +82,7 @@ ai-search "auth middleware" > patterns.md
 claude --file patterns.md "Review these auth patterns for security"
 ```
 
-## 🎯 What the AI Analysis Provides
+## What the AI Analysis Provides
 
 The AI analysis includes:
 
@@ -93,7 +93,7 @@ The AI analysis includes:
 5. **Recommendations** - Specific improvement suggestions
 6. **Relevance Ranking** - Most useful code sections highlighted
 
-## 📋 Example: Before vs After
+## Example: Before vs After
 
 ### Before (Raw Search)
 ```
@@ -142,9 +142,9 @@ Based on your search for "caching strategies", I found 2 distinct approaches in 
 
 ## Analysis
 
-**Consistency**: ✅ Both use similar TTL patterns  
-**Quality**: ⚠️  No error handling in wrapper class
-**Architecture**: ✅ Good separation of concerns
+**Consistency**: Both use similar TTL patterns  
+**Quality**: No error handling in wrapper class
+**Architecture**: Good separation of concerns
 
 ## Recommendations
 
@@ -157,7 +157,7 @@ Based on your search for "caching strategies", I found 2 distinct approaches in 
 The CacheWrapper pattern (utils/cache-wrapper.js) is your best foundation for standardizing caching across the application.
 ```
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### 1. Install the Enhanced Tools
 ```bash
@@ -198,7 +198,7 @@ rag.setup({
 " Should show AI analysis
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### "ai-search-analyze: command not found"
 ```bash
@@ -235,7 +235,7 @@ ai-search-analyze "test" --analyze --provider claude
 - Without Avante, results will open in a buffer (still useful!)
 - You can copy analysis results to any AI tool
 
-## 🎯 Next Steps
+## Next Steps
 
 1. **Try the enhanced search** on your current project
 2. **Set up Neovim integration** if you use Neovim

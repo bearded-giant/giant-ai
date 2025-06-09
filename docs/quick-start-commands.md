@@ -1,8 +1,8 @@
 # Giant AI Commands & Location Cheat Sheet
 
-## 🎯 Quick Reference: Where to Run What
+## Quick Reference: Where to Run What
 
-### 🌍 **Global Commands (Run from ANYWHERE)**
+### **Global Commands (Run from ANYWHERE)**
 These work from any directory once Giant AI is installed:
 
 ```bash
@@ -28,7 +28,7 @@ ai-pattern-refactor analyze "pattern"      # Analyze patterns
 ai-pattern-refactor refactor "pattern" --execute  # Apply refactoring
 ```
 
-### 🏠 **Core Giant AI Directory Commands (cd ~/dotfiles/giant-ai-dev first)**
+### **Core Giant AI Directory Commands (cd ~/dotfiles/giant-ai-dev first)**
 These must be run from the Giant AI source directory:
 
 ```bash
@@ -43,7 +43,7 @@ git commit -m "Add new feature"
 git push
 ```
 
-### 📁 **Project Directory Commands (cd to your project first)**
+### **Project Directory Commands (cd to your project first)**
 These must be run from within a project you're working on:
 
 ```bash
@@ -67,20 +67,20 @@ ls -la .giant-ai/          # Check project AI configuration
 cat .giant-ai/context.md   # View project AI context
 ```
 
-## 📍 **Command Location Matrix**
+## **Command Location Matrix**
 
 | Command | Global (anywhere) | Core Giant AI Dir | Project Dir | Notes |
 |---------|-------------------|-------------------|-------------|-------|
-| `ai-setup` | ✅ | ✅ (direct) | ✅ | Global system install/update |
-| `ai-init-project-smart` | ❌ | ❌ | ✅ | Must be in target project |
-| `ai-rag index .` | ❌ | ❌ | ✅ | Indexes current project |
-| `ai-search "query"` | ❌ | ❌ | ✅ | Searches current project |
-| `ai-agent task "..."` | ❌ | ❌ | ✅ | Modifies current project |
-| `git commit` (giant-ai) | ❌ | ✅ | ❌ | Only for Giant AI development |
+| `ai-setup` | ✓ | ✓ (direct) | ✓ | Global system install/update |
+| `ai-init-project-smart` | ✗ | ✗ | ✓ | Must be in target project |
+| `ai-rag index .` | ✗ | ✗ | ✓ | Indexes current project |
+| `ai-search "query"` | ✗ | ✗ | ✓ | Searches current project |
+| `ai-agent task "..."` | ✗ | ✗ | ✓ | Modifies current project |
+| `git commit` (giant-ai) | ✗ | ✓ | ✗ | Only for Giant AI development |
 
-## 🔄 **Common Workflows**
+## **Common Workflows**
 
-### **🆕 Setting Up Giant AI (First Time)**
+### **Setting Up Giant AI (First Time)**
 ```bash
 # 1. From anywhere:
 cd ~/dotfiles/giant-ai-dev  # Go to Giant AI source
@@ -91,7 +91,7 @@ which ai-setup              # Should show ~/.local/bin/ai-setup
 ai-setup                    # Should work from anywhere now
 ```
 
-### **📦 Setting Up a New Project**
+### **Setting Up a New Project**
 ```bash
 # Must be in your project directory:
 cd ~/my-awesome-project
@@ -104,7 +104,7 @@ ai-rag index .              # Index for semantic search
 ai-search "main function"   # Should find code
 ```
 
-### **🔧 Updating Giant AI System**
+### **Updating Giant AI System**
 ```bash
 # 1. Update source (if you have changes):
 cd ~/dotfiles/giant-ai-dev
@@ -114,7 +114,7 @@ git pull                    # Get latest changes
 ai-setup                    # Updates all global commands
 ```
 
-### **🔍 Daily Development Usage**
+### **Daily Development Usage**
 ```bash
 # In any project directory:
 cd ~/my-project
@@ -131,7 +131,7 @@ ai-pattern-refactor analyze "API endpoints"
 ai-pattern-refactor refactor "API endpoints" --execute
 ```
 
-### **🛠️ Contributing to Giant AI**
+### **Contributing to Giant AI**
 ```bash
 # Must be in Giant AI source directory:
 cd ~/dotfiles/giant-ai-dev
@@ -145,7 +145,7 @@ git push
 ./scripts/ai-setup          # Or just: ai-setup (from anywhere)
 ```
 
-## ⚠️ **Common Mistakes & Fixes**
+## **Common Mistakes & Fixes**
 
 ### **"Command not found" errors:**
 ```bash
@@ -179,7 +179,7 @@ cd ~/correct-project        # ← Important!
 ai-search "your query"      # Searches THIS project, not previous one
 ```
 
-## 🎯 **Memory Aids**
+## **Memory Aids**
 
 ### **"Where am I?" Quick Check**
 ```bash
@@ -203,7 +203,7 @@ git status                  # Check for Giant AI development changes
 ./scripts/ai-setup          # Direct setup bypass
 ```
 
-## 🚀 **Power User Tips**
+## **Power User Tips**
 
 ### **Batch Project Setup**
 ```bash
@@ -228,13 +228,13 @@ alias giant-status='pwd && ls -la .giant-ai/ 2>/dev/null && ai-rag list-projects
 ```bash
 # Add project-aware prompt:
 # In .bashrc/.zshrc:
-export PS1='[\W$([ -d .giant-ai ] && echo " 🤖" || echo "")] $ '
-# Shows 🤖 when in a Giant AI enabled project
+export PS1='[\W$([ -d .giant-ai ] && echo " [AI]" || echo "")] $ '
+# Shows [AI] when in a Giant AI enabled project
 ```
 
 ---
 
-## 📋 **TL;DR - The Essentials**
+## **TL;DR - The Essentials**
 
 ```bash
 # Setup (run once):

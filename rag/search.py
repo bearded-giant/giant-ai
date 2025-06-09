@@ -14,6 +14,20 @@ from indexer import CodebaseRAG
 def search_project(project_path, query, limit=10, format='json'):
     """Search a project's indexed codebase"""
     rag = CodebaseRAG(project_path)
+    
+    # Fast check if project is indexed
+    if not rag.has_index():
+        if format == 'json':
+            return json.dumps({
+                "error": "Project not indexed",
+                "message": f"Run 'ai-rag index {project_path}' to index this project first",
+                "query": query,
+                "project": str(project_path),
+                "results": []
+            })
+        else:
+            return f"Error: Project {project_path} is not indexed.\nRun 'ai-rag index {project_path}' to index this project first."
+    
     results = rag.search(query, limit)
     
     if format == 'json':

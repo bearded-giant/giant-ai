@@ -100,13 +100,13 @@ ai-search "configuration management" # Discover config patterns
 
 ## When RAG Search Makes Sense
 
-### ✅ Good Use Cases
+### Good Use Cases
 - **Unfamiliar codebases**: "How is authentication handled?"
 - **Architecture patterns**: "Show me all API endpoints"
 - **Feature research**: "How are background jobs implemented?"
 - **Code style discovery**: "What's the error handling pattern?"
 
-### ❌ Poor Use Cases  
+### Poor Use Cases  
 - **Exact text search**: Use `grep` or `rg`
 - **File finding**: Use `fd` or `find`
 - **Simple debugging**: Use LSP go-to-definition
@@ -123,9 +123,9 @@ RAG search isn't meant to replace grep - it's meant to give AI assistants like A
 
 ## Setup Status in Your Environment
 
-- ✅ RAG indexing works (`ai-rag index .`)
-- ✅ Manual search works (`ai-search "query" .`)
-- ✅ Neovim integration ready (`<leader>rs`)
-- ✅ Isolated Python environment (no global pollution)
+- RAG indexing works (`ai-rag index .`)
+- Manual search works (`ai-search "query" .`)
+- Neovim integration ready (`<leader>rs`)
+- Isolated Python environment (no global pollution)
 
 **Bottom Line**: RAG search alone ≈ fancy grep. RAG search + Avante = AI that understands your codebase.

@@ -117,7 +117,7 @@ def batch_execute(self, tasks: List[str], options: Dict[str, Any] = None) -> Lis
 
 ## Decision Matrix: When to Use Each Approach
 
-### ✅ Agent Mode Excels
+### Agent Mode Excels
 
 #### 1. **Multi-Step Refactoring**
 ```bash
@@ -175,7 +175,7 @@ ai-agent task "Migrate from class components to hooks in React codebase"
 - Updates tests consistently
 - Handles prop passing changes
 
-### ❌ Manual Coding Is Better
+### Manual Coding Is Better
 
 #### 1. **Exploratory Development**
 ```bash

@@ -186,7 +186,7 @@ When you run `ai-setup`, here's what happens with MCP:
 
 ## When MCP Is Useful vs Overkill
 
-### ✅ MCP Provides Real Value
+### MCP Provides Real Value
 
 #### 1. **Architecture Understanding**
 ```bash
@@ -214,7 +214,7 @@ When you run `ai-setup`, here's what happens with MCP:
 
 **Example:** "Add validation to the user model" - MCP helps AI find related validation logic in other models.
 
-### ❌ MCP Is Overkill
+### MCP Is Overkill
 
 #### 1. **Simple File Operations**
 ```bash
