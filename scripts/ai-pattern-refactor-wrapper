@@ -1,0 +1,4 @@
+#!/bin/bash
+# Wrapper script for ai-pattern-refactor that uses isolated Python environment
+source "$(dirname "$(dirname "$0")")/.venv/bin/activate" 2>/dev/null
+exec python3 "$(dirname "$(dirname "$0")")/tools/ai-pattern-refactor" "$@"

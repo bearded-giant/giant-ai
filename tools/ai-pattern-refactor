@@ -1,0 +1,456 @@
+#!/usr/bin/env python3
+"""
+AI Pattern Refactor - Semantic refactoring across multiple files
+Uses RAG to find similar code patterns and apply consistent refactoring
+"""
+
+import sys
+import os
+import json
+import click
+import subprocess
+from pathlib import Path
+from typing import List, Dict, Any, Optional, Tuple
+import tempfile
+import shutil
+from datetime import datetime
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from rag.indexer import CodebaseRAG
+from agent.providers.base import LLMProviderFactory
+
+class PatternRefactor:
+    """Semantic pattern-based refactoring tool"""
+    
+    def __init__(self, project_path: str = "."):
+        self.project_path = Path(project_path).resolve()
+        self.rag = CodebaseRAG(project_path)
+        self.backup_dir = self.project_path / ".ai-setup" / "refactor-backups"
+        self.backup_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Load provider configuration
+        self.provider_config = self._load_provider_config()
+        self.provider = LLMProviderFactory.create(
+            self.provider_config.get("provider", "claude-code"),
+            self.provider_config
+        )
+        
+    def _load_provider_config(self) -> Dict[str, Any]:
+        """Load provider configuration from project settings"""
+        config_path = self.project_path / ".ai-setup" / "agent.yml"
+        if config_path.exists():
+            import yaml
+            with open(config_path) as f:
+                return yaml.safe_load(f) or {}
+        return {}
+    
+    def find_similar_patterns(self, query: str, threshold: float = 0.4, limit: int = 20) -> List[Dict[str, Any]]:
+        """Use RAG to find semantically similar code patterns"""
+        results = self.rag.search(query, n_results=limit)
+        
+        # Filter by similarity threshold
+        similar_patterns = []
+        for result in results:
+            if result['distance'] < threshold:
+                similar_patterns.append({
+                    'file_path': result['metadata']['file_path'],
+                    'content': result['content'],
+                    'distance': result['distance'],
+                    'functions': json.loads(result['metadata'].get('functions', '[]')),
+                    'line_count': result['metadata'].get('line_count', 0)
+                })
+        
+        return similar_patterns
+    
+    def analyze_patterns(self, similar_code: List[Dict[str, Any]], pattern_description: str) -> Dict[str, Any]:
+        """Use LLM to analyze commonalities and differences in similar code"""
+        # Prepare code samples for analysis
+        code_samples = []
+        for i, code in enumerate(similar_code[:5]):  # Limit to top 5 for context
+            code_samples.append(f"File: {code['file_path']}\n```\n{code['content'][:500]}\n```")
+        
+        prompt = f"""
+Analyze these code patterns for refactoring. The user is looking for: {pattern_description}
+
+Code samples found:
+{chr(10).join(code_samples)}
+
+Identify:
+1. Common patterns across these code samples
+2. Variations that need to be preserved
+3. Refactoring opportunities
+4. Suggested refactoring approach
+
+Return as JSON with structure:
+{{
+    "common_patterns": ["pattern1", "pattern2"],
+    "variations": ["variation1", "variation2"],
+    "refactoring_opportunities": ["opportunity1", "opportunity2"],
+    "suggested_approach": "description of refactoring approach"
+}}
+"""
+        
+        # Call LLM for analysis
+        result = self._call_llm(prompt)
+        try:
+            return json.loads(result)
+        except json.JSONDecodeError:
+            return {
+                "common_patterns": ["Unable to parse LLM response"],
+                "variations": [],
+                "refactoring_opportunities": [],
+                "suggested_approach": result
+            }
+    
+    def generate_refactoring_plan(self, patterns: List[Dict[str, Any]], 
+                                  analysis: Dict[str, Any],
+                                  target_pattern: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Create a detailed refactoring plan"""
+        plan = []
+        
+        for pattern in patterns:
+            file_path = self.project_path / pattern['file_path']
+            
+            # Create refactoring step
+            step = {
+                'file_path': str(file_path),
+                'relative_path': pattern['file_path'],
+                'original_content': pattern['content'],
+                'distance': pattern['distance'],
+                'suggested_changes': analysis['suggested_approach'],
+                'risk_level': self._assess_risk(pattern, analysis)
+            }
+            
+            plan.append(step)
+        
+        # Sort by risk level (lower risk first)
+        plan.sort(key=lambda x: x['risk_level'])
+        
+        return plan
+    
+    def _assess_risk(self, pattern: Dict[str, Any], analysis: Dict[str, Any]) -> str:
+        """Assess risk level of refactoring this pattern"""
+        # Simple heuristic based on file type and complexity
+        if 'test' in pattern['file_path'].lower():
+            return 'low'
+        elif len(pattern.get('functions', [])) > 5:
+            return 'high'
+        elif pattern['distance'] > 0.3:
+            return 'medium'
+        else:
+            return 'low'
+    
+    def create_backup(self, files: List[str]) -> str:
+        """Create backup of files before refactoring"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = self.backup_dir / f"refactor_{timestamp}"
+        backup_path.mkdir(parents=True, exist_ok=True)
+        
+        # Copy files to backup
+        for file_path in files:
+            source = Path(file_path)
+            if source.exists():
+                relative = source.relative_to(self.project_path)
+                dest = backup_path / relative
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, dest)
+        
+        # Save backup metadata
+        metadata = {
+            'timestamp': timestamp,
+            'files': files,
+            'file_count': len(files)
+        }
+        
+        with open(backup_path / 'metadata.json', 'w') as f:
+            json.dump(metadata, f, indent=2)
+        
+        return str(backup_path)
+    
+    def execute_refactoring(self, plan: List[Dict[str, Any]], 
+                           target_pattern: Optional[str] = None,
+                           dry_run: bool = True,
+                           auto_accept: bool = False) -> Dict[str, Any]:
+        """Execute the refactoring plan"""
+        results = {
+            'success': [],
+            'failed': [],
+            'skipped': [],
+            'backup_path': None
+        }
+        
+        # Create backup if not dry run
+        if not dry_run:
+            files_to_backup = [step['file_path'] for step in plan]
+            results['backup_path'] = self.create_backup(files_to_backup)
+            click.echo(f"Created backup at: {results['backup_path']}")
+        
+        # Process each file in the plan
+        for i, step in enumerate(plan):
+            click.echo(f"\n[{i+1}/{len(plan)}] Processing: {step['relative_path']}")
+            click.echo(f"Risk level: {step['risk_level']}")
+            click.echo(f"Similarity distance: {step['distance']:.3f}")
+            
+            if not auto_accept and not dry_run:
+                if not click.confirm("Apply refactoring to this file?"):
+                    results['skipped'].append(step['relative_path'])
+                    continue
+            
+            try:
+                if dry_run:
+                    # Show what would be done
+                    click.echo("Dry run - would apply refactoring:")
+                    click.echo(f"  Suggested changes: {step['suggested_changes']}")
+                else:
+                    # Apply refactoring
+                    refactored_content = self._apply_refactoring(
+                        step['file_path'],
+                        step['original_content'],
+                        target_pattern,
+                        step['suggested_changes']
+                    )
+                    
+                    # Write refactored content
+                    with open(step['file_path'], 'w') as f:
+                        f.write(refactored_content)
+                    
+                    results['success'].append(step['relative_path'])
+                    click.echo("✅ Refactoring applied successfully")
+                    
+            except Exception as e:
+                results['failed'].append({
+                    'file': step['relative_path'],
+                    'error': str(e)
+                })
+                click.echo(f"❌ Failed: {e}")
+        
+        return results
+    
+    def _apply_refactoring(self, file_path: str, original_content: str, 
+                          target_pattern: Optional[str], suggested_changes: str) -> str:
+        """Apply refactoring to a single file using LLM"""
+        prompt = f"""
+Apply the following refactoring to this code:
+
+File: {file_path}
+Original code:
+```
+{original_content}
+```
+
+Refactoring instructions: {suggested_changes}
+"""
+        
+        if target_pattern:
+            prompt += f"\nTarget pattern to follow:\n```\n{target_pattern}\n```"
+        
+        prompt += """
+Return ONLY the refactored code without any explanation or markdown formatting.
+Preserve all functionality while applying the refactoring pattern.
+"""
+        
+        return self._call_llm(prompt)
+    
+    def _call_llm(self, prompt: str) -> str:
+        """Call LLM provider for code analysis/generation"""
+        # For now, use subprocess to call claude CLI
+        # In future, this will use the provider abstraction
+        cmd = ["claude", "--print", prompt]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            raise Exception(f"LLM call failed: {result.stderr}")
+        
+        return result.stdout.strip()
+    
+    def restore_backup(self, backup_path: str) -> bool:
+        """Restore files from a backup"""
+        backup_dir = Path(backup_path)
+        if not backup_dir.exists():
+            click.echo(f"Backup not found: {backup_path}")
+            return False
+        
+        metadata_path = backup_dir / 'metadata.json'
+        if not metadata_path.exists():
+            click.echo("Invalid backup: metadata.json not found")
+            return False
+        
+        with open(metadata_path) as f:
+            metadata = json.load(f)
+        
+        # Restore each file
+        restored_count = 0
+        for file_path in metadata['files']:
+            source_file = Path(file_path)
+            relative = source_file.relative_to(self.project_path)
+            backup_file = backup_dir / relative
+            
+            if backup_file.exists():
+                shutil.copy2(backup_file, source_file)
+                restored_count += 1
+        
+        click.echo(f"Restored {restored_count} files from backup")
+        return True
+
+@click.group()
+def cli():
+    """AI Pattern Refactor - Semantic refactoring across multiple files"""
+    pass
+
+@cli.command()
+@click.argument('pattern_query')
+@click.option('--threshold', '-t', default=0.4, help='Similarity threshold (0-1, lower is more similar)')
+@click.option('--limit', '-l', default=20, help='Maximum number of files to analyze')
+@click.option('--target-pattern', '-p', help='File containing target pattern to follow')
+@click.option('--dry-run', is_flag=True, default=True, help='Show what would be done without making changes')
+@click.option('--execute', is_flag=True, help='Actually execute the refactoring')
+@click.option('--auto-accept', is_flag=True, help='Auto-accept all refactoring without prompting')
+@click.option('--project-path', default='.', help='Project root directory')
+def refactor(pattern_query, threshold, limit, target_pattern, dry_run, execute, auto_accept, project_path):
+    """Find and refactor similar code patterns across the codebase
+    
+    Examples:
+        ai-pattern-refactor refactor "error handling" --dry-run
+        ai-pattern-refactor refactor "authentication middleware" --execute --auto-accept
+        ai-pattern-refactor refactor "database queries" --target-pattern patterns/query.js --execute
+    """
+    refactorer = PatternRefactor(project_path)
+    
+    click.echo(f"🔍 Searching for patterns similar to: {pattern_query}")
+    click.echo(f"   Threshold: {threshold}")
+    click.echo(f"   Max files: {limit}")
+    
+    # Find similar patterns
+    patterns = refactorer.find_similar_patterns(pattern_query, threshold, limit)
+    
+    if not patterns:
+        click.echo("No similar patterns found. Try adjusting the threshold or query.")
+        return
+    
+    click.echo(f"\n📊 Found {len(patterns)} similar patterns:")
+    for i, pattern in enumerate(patterns[:10]):  # Show first 10
+        click.echo(f"   {i+1}. {pattern['file_path']} (distance: {pattern['distance']:.3f})")
+    
+    if len(patterns) > 10:
+        click.echo(f"   ... and {len(patterns) - 10} more")
+    
+    # Analyze patterns
+    click.echo("\n🤔 Analyzing patterns...")
+    analysis = refactorer.analyze_patterns(patterns, pattern_query)
+    
+    click.echo("\n📋 Analysis Results:")
+    click.echo(f"Common patterns: {', '.join(analysis['common_patterns'])}")
+    click.echo(f"Variations to preserve: {', '.join(analysis['variations'])}")
+    click.echo(f"Refactoring opportunities: {', '.join(analysis['refactoring_opportunities'])}")
+    click.echo(f"\nSuggested approach: {analysis['suggested_approach']}")
+    
+    # Generate refactoring plan
+    target_content = None
+    if target_pattern:
+        with open(target_pattern) as f:
+            target_content = f.read()
+    
+    plan = refactorer.generate_refactoring_plan(patterns, analysis, target_content)
+    
+    # Execute or show plan
+    if execute and not dry_run:
+        if not click.confirm("\n⚠️  Ready to execute refactoring. Continue?"):
+            click.echo("Refactoring cancelled.")
+            return
+        
+        results = refactorer.execute_refactoring(plan, target_content, dry_run=False, auto_accept=auto_accept)
+        
+        click.echo("\n✨ Refactoring Complete:")
+        click.echo(f"   Success: {len(results['success'])} files")
+        click.echo(f"   Failed: {len(results['failed'])} files")
+        click.echo(f"   Skipped: {len(results['skipped'])} files")
+        
+        if results['backup_path']:
+            click.echo(f"\n💾 Backup saved at: {results['backup_path']}")
+            click.echo("   Use 'ai-pattern-refactor restore' to undo changes")
+    else:
+        click.echo("\n🔍 Dry run mode - no changes will be made")
+        results = refactorer.execute_refactoring(plan, target_content, dry_run=True, auto_accept=True)
+
+@cli.command()
+@click.argument('pattern_query')
+@click.option('--threshold', '-t', default=0.4, help='Similarity threshold')
+@click.option('--limit', '-l', default=20, help='Maximum results')
+@click.option('--project-path', default='.', help='Project root directory')
+def analyze(pattern_query, threshold, limit, project_path):
+    """Analyze code patterns without refactoring"""
+    refactorer = PatternRefactor(project_path)
+    
+    patterns = refactorer.find_similar_patterns(pattern_query, threshold, limit)
+    if not patterns:
+        click.echo("No similar patterns found.")
+        return
+    
+    analysis = refactorer.analyze_patterns(patterns, pattern_query)
+    
+    # Detailed output
+    click.echo(f"\n🔍 Pattern Analysis for: {pattern_query}")
+    click.echo("=" * 50)
+    
+    click.echo("\n📊 Files with similar patterns:")
+    for pattern in patterns:
+        click.echo(f"  • {pattern['file_path']}")
+        click.echo(f"    Distance: {pattern['distance']:.3f}")
+        if pattern['functions']:
+            click.echo(f"    Functions: {', '.join(pattern['functions'][:3])}")
+        click.echo()
+    
+    click.echo("\n🎯 Common Patterns Detected:")
+    for cp in analysis['common_patterns']:
+        click.echo(f"  • {cp}")
+    
+    click.echo("\n🔀 Variations Found:")
+    for var in analysis['variations']:
+        click.echo(f"  • {var}")
+    
+    click.echo("\n💡 Refactoring Opportunities:")
+    for opp in analysis['refactoring_opportunities']:
+        click.echo(f"  • {opp}")
+
+@cli.command()
+@click.option('--list', '-l', is_flag=True, help='List available backups')
+@click.option('--restore', '-r', help='Restore from specific backup')
+@click.option('--project-path', default='.', help='Project root directory')
+def backup(list, restore, project_path):
+    """Manage refactoring backups"""
+    refactorer = PatternRefactor(project_path)
+    
+    if list:
+        backup_dir = refactorer.backup_dir
+        if not backup_dir.exists():
+            click.echo("No backups found.")
+            return
+        
+        backups = sorted(backup_dir.glob("refactor_*"))
+        if not backups:
+            click.echo("No backups found.")
+            return
+        
+        click.echo("Available backups:")
+        for backup in backups:
+            metadata_path = backup / 'metadata.json'
+            if metadata_path.exists():
+                with open(metadata_path) as f:
+                    meta = json.load(f)
+                click.echo(f"  • {backup.name}")
+                click.echo(f"    Timestamp: {meta['timestamp']}")
+                click.echo(f"    Files: {meta['file_count']}")
+    
+    elif restore:
+        if refactorer.restore_backup(restore):
+            click.echo("✅ Backup restored successfully")
+        else:
+            click.echo("❌ Failed to restore backup")
+    
+    else:
+        click.echo("Use --list to see backups or --restore to restore")
+
+if __name__ == '__main__':
+    cli()

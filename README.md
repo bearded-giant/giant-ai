@@ -41,6 +41,21 @@ Transform your development workflow with:
 - **Template Generation** - Smart POC and boilerplate creation
 - **Agent Mode** - Autonomous coding with checkpoints and safety controls
 - **CLI Tools** - Global commands for project initialization and search
+- **AI-Enhanced Tooling** - Semantic refactoring, test generation, documentation sync
+
+## 🛠️ Available Tools
+
+### ✅ **Implemented Tools**
+- **`ai-rag`** - Semantic code indexing and search
+- **`ai-search`** - Quick codebase search
+- **`ai-init-project-smart`** - Intelligent project setup with auto-detection
+- **`ai-agent`** - Autonomous coding with safety controls and checkpoints  
+- **`ai-pattern-refactor`** - Semantic pattern-based refactoring across multiple files
+
+### 🚧 **Planned Tools** (Coming Soon)
+- **`ai-test-generate`** - Context-aware test generation following your patterns
+- **`ai-doc-sync`** - Keep documentation synchronized with code changes
+- **`ai-bridge`** - Basic tooling layer for non-tooling LLMs (OpenAI, local models)
 
 ## Architecture
 

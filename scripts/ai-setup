@@ -103,6 +103,15 @@ exec python3 "$AI_DEV_DIR/scripts/ai-agent" "\$@"
 EOF
 chmod +x ~/.local/bin/ai-agent
 
+# Create ai-pattern-refactor wrapper with virtual environment
+cat > ~/.local/bin/ai-pattern-refactor << EOF
+#!/bin/bash
+# Wrapper script for ai-pattern-refactor that uses isolated Python environment
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/tools/ai-pattern-refactor" "\$@"
+EOF
+chmod +x ~/.local/bin/ai-pattern-refactor
+
 # Other tools (bash scripts, don't need venv)
 ln -sf "$AI_DEV_DIR/scripts/ai-setup" ~/.local/bin/ai-setup
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project" ~/.local/bin/ai-init-project
@@ -156,5 +165,6 @@ echo "  ai-init-project-smart      - Initialize with smart auto-detection (recom
 echo "  ai-init-project-smart --clean - Fresh install with auto-detection"
 echo "  ai-agent task <desc>       - Execute autonomous agent task"
 echo "  ai-agent interactive       - Interactive agent mode with checkpoints"
+echo "  ai-pattern-refactor        - Semantic pattern-based refactoring across files"
 echo ""
 
