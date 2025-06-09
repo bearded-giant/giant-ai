@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+Giant AI RAG Indexer - Semantic code search and indexing
+
+Author: Bearded Giant, LLC
+License: Apache License 2.0
+"""
 import os
 import json
 import click

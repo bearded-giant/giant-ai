@@ -7,11 +7,21 @@ Giant AI's Neovim integration follows an evolutionary approach rather than build
 ## 📍 Current State: Enhanced Lua Script
 
 **What we have now:**
-- Single Lua file with clean API (`giant-ai.lua`)
+- Single Lua file with clean API (`giant-ai-simple.lua`)
 - Commands: `:GiantAISearch`, `:GiantAIAnalyze`, `:GiantAIStatus`
 - Smart integration with Avante (when available)
-- Floating windows and proper UI
-- Configurable keymaps and behavior
+- Immediate feedback during search operations
+- Clipboard integration with fallback handling
+- Real AI analysis via provider integration
+- Simple, reliable bash pipe implementation
+
+**Key Features:**
+- **Immediate feedback** - Shows search progress instantly (no hanging feel)
+- **Real AI analysis** - Actually calls your AI provider for useful insights
+- **Clipboard integration** - Results go to clipboard (immediately useful)
+- **Avante integration** - Automatically sends to Avante if available
+- **Fallback handling** - Graceful degradation when things fail
+- **Simple implementation** - Bash pipes instead of complex async code
 
 **Installation:**
 ```lua
@@ -19,16 +29,35 @@ Giant AI's Neovim integration follows an evolutionary approach rather than build
 local giant_ai_path = "/path/to/giant-ai"
 package.path = package.path .. ";" .. giant_ai_path .. "/nvim/?.lua"
 
-local giant_ai = require('giant-ai')
+local giant_ai = require('giant-ai-simple')
 giant_ai.setup({
-  default_provider = "claude",
-  auto_avante = true,
-  keymaps = {
-    search_prompt = "<leader>rs",
-    search_analyze = "<leader>ra",
-  }
+  provider = "claude",  -- or your AI CLI tool
+  limit = 5,
 })
 ```
+
+**Usage Examples:**
+```vim
+" Raw search (copies to clipboard)
+<leader>rs  " or :GiantAISearch
+
+" AI analysis (sends to Avante or clipboard)
+<leader>ra  " or :GiantAIAnalyze
+
+" Check status and configuration
+:GiantAIStatus
+```
+
+**What each command does:**
+- `<leader>rs` - Semantic search, copies results to clipboard with file references
+- `<leader>ra` - Semantic search + AI analysis, sends to Avante or clipboard
+- `:GiantAIStatus` - Shows project root, provider status, Avante availability
+
+**How it works:**
+1. `ai-search` gets semantic search results from RAG index
+2. Results piped to AI provider (claude, etc.) for analysis  
+3. Analysis automatically sent to Avante if available, clipboard otherwise
+4. Immediate feedback throughout the process (no hanging)
 
 ## 🛣️ Evolution Path
 
@@ -105,7 +134,7 @@ giant-ai.nvim/
 
 ## 🎛️ Current Recommendation
 
-**For users**: Start with the enhanced Lua script (`giant-ai.lua`). It provides:
+**For users**: Start with the enhanced Lua script (`giant-ai-simple.lua`). It provides:
 - All core functionality
 - Clean, discoverable commands  
 - Smart Avante integration
@@ -122,13 +151,12 @@ giant-ai.nvim/
 ### **Current Approach Usage:**
 ```lua
 -- Simple setup
-require('giant-ai').setup()
+require('giant-ai-simple').setup()
 
 -- Custom configuration  
-require('giant-ai').setup({
-  default_provider = "claude",
-  use_floating_windows = true,
-  auto_avante = true,
+require('giant-ai-simple').setup({
+  provider = "claude",
+  limit = 10,
   keymaps = {
     search_analyze = "<leader>fa",  -- Custom keymap
   }

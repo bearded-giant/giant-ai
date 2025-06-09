@@ -1,14 +1,15 @@
 {
-  "name": "claude-global-mcp-server",
+  "name": "giant-ai-mcp-server",
   "version": "1.0.0",
   "type": "module",
-  "description": "Global MCP server for Claude Code with project context support",
+  "description": "Giant AI MCP server with project context support",
+  "author": "Bearded Giant, LLC",
   "dependencies": {
     "@modelcontextprotocol/sdk": "latest",
     "glob": "^10.3.10",
     "yaml": "^2.3.4"
   },
   "bin": {
-    "claude-mcp-server": "./project-server.js"
+    "giant-ai-mcp-server": "./project-server.js"
   }
 }

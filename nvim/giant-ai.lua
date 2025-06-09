@@ -39,7 +39,34 @@ local function notify(msg, level)
   vim.notify("[Giant AI] " .. msg, level or vim.log.levels.INFO)
 end
 
-local function execute_command(cmd)
+local function execute_command_async(cmd, callback)
+  -- Show immediate feedback
+  notify("Executing: " .. cmd:match("^[^%s]+"))
+  
+  -- Use vim.system for async execution (Neovim 0.10+) or fallback to sync
+  if vim.system then
+    vim.system(vim.split(cmd, " "), {
+      text = true,
+      timeout = 30000, -- 30 second timeout
+    }, function(result)
+      vim.schedule(function()
+        if result.code == 0 then
+          callback(result.stdout, nil)
+        else
+          callback(nil, "Command failed: " .. (result.stderr or "Unknown error"))
+        end
+      end)
+    end)
+  else
+    -- Fallback for older Neovim versions
+    vim.defer_fn(function()
+      local result, err = execute_command_sync(cmd)
+      callback(result, err)
+    end, 10) -- Small delay to show feedback
+  end
+end
+
+local function execute_command_sync(cmd)
   local handle = io.popen(cmd .. " 2>&1")
   if not handle then
     return nil, "Failed to execute command"
@@ -132,16 +159,33 @@ end
 
 local function send_to_avante(content)
   if not state.has_avante then
+    notify("Avante not available - install yetone/avante.nvim for AI chat", vim.log.levels.WARN)
     return false
   end
   
-  local avante = require('avante')
-  if avante and avante.ask then
-    avante.ask(content)
-    return true
+  local ok, avante = pcall(require, 'avante')
+  if not ok then
+    notify("Failed to load Avante", vim.log.levels.ERROR)
+    return false
   end
   
-  return false
+  -- Try different Avante API methods
+  if avante.ask then
+    avante.ask(content)
+    notify("Analysis sent to Avante chat")
+    return true
+  elseif avante.chat then
+    avante.chat(content)
+    notify("Analysis sent to Avante chat")
+    return true
+  elseif avante.open then
+    avante.open()
+    notify("Opened Avante - paste the analysis manually")
+    return false
+  else
+    notify("Avante API not compatible - check plugin version", vim.log.levels.WARN)
+    return false
+  end
 end
 
 -- Main search functions
@@ -150,21 +194,31 @@ function M.rag_search(query, opts)
   local limit = opts.limit or config.default_limit
   local project_root = get_project_root()
   
-  notify("Searching: " .. query)
+  notify("🔍 Searching for: " .. query)
   
   local cmd = string.format('%s "%s" "%s" %d text', 
     config.rag_search_cmd, query, project_root, limit)
   
-  local result, err = execute_command(cmd)
-  if err then
-    notify("Search failed: " .. err, vim.log.levels.ERROR)
-    return
-  end
-  
-  local buf = create_result_buffer(result, "Giant AI Search: " .. query)
-  open_floating_window(buf, "🔍 " .. query)
-  
-  notify("Search completed")
+  execute_command_async(cmd, function(result, err)
+    if err then
+      notify("❌ Search failed: " .. err, vim.log.levels.ERROR)
+      return
+    end
+    
+    if not result or result:match("^%s*$") then
+      notify("❌ No results found for: " .. query, vim.log.levels.WARN)
+      return
+    end
+    
+    -- Check if it's just JSON dump and warn user
+    if result:match("^%s*{") then
+      notify("⚠️  Raw JSON results - use <leader>ra for AI analysis instead", vim.log.levels.WARN)
+    end
+    
+    local buf = create_result_buffer(result, "Giant AI Search: " .. query)
+    open_floating_window(buf, "🔍 " .. query)
+    notify("✅ Search completed - " .. (result:match("\n") and "multiple" or "single") .. " result(s)")
+  end)
 end
 
 function M.rag_analyze(query, opts)
@@ -173,26 +227,51 @@ function M.rag_analyze(query, opts)
   local provider = opts.provider or config.default_provider
   local project_root = get_project_root()
   
-  notify("Analyzing with " .. provider .. ": " .. query)
+  notify("🤖 Analyzing with " .. provider .. ": " .. query .. " (this may take 10-30s)")
   
   local cmd = string.format('%s "%s" "%s" --limit %d --analyze --provider %s', 
     config.ai_search_cmd, query, project_root, limit, provider)
   
-  local result, err = execute_command(cmd)
-  if err then
-    notify("Analysis failed: " .. err, vim.log.levels.ERROR)
-    return
-  end
-  
-  -- Try to send to Avante first
-  if config.auto_avante and send_to_avante(result) then
-    notify("Analysis sent to Avante")
-  else
-    -- Fallback to buffer
-    local buf = create_result_buffer(result, "Giant AI Analysis: " .. query)
-    open_floating_window(buf, "🤖 " .. query)
-    notify("Analysis complete (consider installing Avante for interactive AI)")
-  end
+  execute_command_async(cmd, function(result, err)
+    if err then
+      notify("❌ Analysis failed: " .. err, vim.log.levels.ERROR)
+      return
+    end
+    
+    if not result or result:match("^%s*$") then
+      notify("❌ No analysis results for: " .. query, vim.log.levels.WARN)
+      return
+    end
+    
+    -- Check if we got JSON instead of analysis (command failed)
+    if result:match("^%s*{") then
+      notify("⚠️  Got raw results instead of analysis - check ai-search-analyze installation", vim.log.levels.WARN)
+      local buf = create_result_buffer(result, "Giant AI Search (Raw): " .. query)
+      open_floating_window(buf, "⚠️ " .. query .. " (Raw)")
+      return
+    end
+    
+    -- Try to send to Avante first
+    if config.auto_avante and send_to_avante(result) then
+      -- Success notification already sent by send_to_avante
+    else
+      -- Fallback: show in a more useful way than raw buffer
+      notify("📋 Analysis complete - copying to clipboard and showing preview")
+      vim.fn.setreg('+', result) -- Copy to system clipboard
+      
+      -- Show a brief preview instead of full buffer
+      local lines = vim.split(result, "\n")
+      local preview = {}
+      for i = 1, math.min(10, #lines) do
+        table.insert(preview, lines[i])
+      end
+      if #lines > 10 then
+        table.insert(preview, "... (full analysis copied to clipboard)")
+      end
+      
+      notify("📄 Analysis preview:\n" .. table.concat(preview, "\n"), vim.log.levels.INFO)
+    end
+  end)
 end
 
 -- Input handlers

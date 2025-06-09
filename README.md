@@ -2,7 +2,11 @@
 
 A standalone AI-powered development toolkit that provides semantic code search, enhanced AI context, and project-aware assistance. Works with multiple LLM providers (Claude, OpenAI, etc.) through Model Context Protocol (MCP) and CLI tools.
 
-## 🚀 Quick Start (TLDR)
+Created and maintained by **Bearded Giant, LLC**.
+
+## Quick Start (TLDR)
+
+**Need the complete command reference?** → **[Quick Start Commands Guide](docs/quick-start-commands.md)** - Essential cheat sheet for where to run what!
 
 ```bash
 # 1. One-time setup (installs CLI tools, creates symlinks)
@@ -43,16 +47,16 @@ Transform your development workflow with:
 - **CLI Tools** - Global commands for project initialization and search
 - **AI-Enhanced Tooling** - Semantic refactoring, test generation, documentation sync
 
-## 🛠️ Available Tools
+## Available Tools
 
-### ✅ **Implemented Tools**
+### **Implemented Tools**
 - **`ai-rag`** - Semantic code indexing and search
 - **`ai-search`** - Quick codebase search
 - **`ai-init-project-smart`** - Intelligent project setup with auto-detection
 - **`ai-agent`** - Autonomous coding with safety controls and checkpoints  
 - **`ai-pattern-refactor`** - Semantic pattern-based refactoring across multiple files
 
-### 🚧 **Planned Tools** (Coming Soon)
+### **Planned Tools** (Coming Soon)
 - **`ai-test-generate`** - Context-aware test generation following your patterns
 - **`ai-doc-sync`** - Keep documentation synchronized with code changes
 - **`ai-bridge`** - Basic tooling layer for non-tooling LLMs (OpenAI, local models)
@@ -102,13 +106,13 @@ cd giant-ai
 ```
 
 This automatically:
-- ✅ Creates isolated Python environment in `.venv/` (no global pollution)
-- ✅ Installs Python dependencies for RAG in isolation
-- ✅ Installs Node.js dependencies for MCP servers
-- ✅ Creates wrapper scripts in `~/.local/bin/` that use the isolated environment
-- ✅ Configures MCP hub with global servers
-- ✅ Sets up RAG database directory
-- ✅ Configures LLM integrations (Claude Desktop, etc.)
+- Creates isolated Python environment in `.venv/` (no global pollution)
+- Installs Python dependencies for RAG in isolation
+- Installs Node.js dependencies for MCP servers
+- Creates wrapper scripts in `~/.local/bin/` that use the isolated environment
+- Configures MCP hub with global servers
+- Sets up RAG database directory
+- Configures LLM integrations (Claude Desktop, etc.)
 
 ### Add to PATH
 ```bash
@@ -252,7 +256,7 @@ giant-ai/                    # Standalone AI development toolkit
 
 ## RAG System - Semantic Code Search
 
-> **💡 When to Use RAG vs Grep?** See [docs/rag-search-usage-guide.md](docs/rag-search-usage-guide.md) for a detailed comparison and practical examples of when RAG search provides value over traditional text search.
+> **When to Use RAG vs Grep?** See [docs/rag-search-usage-guide.md](docs/rag-search-usage-guide.md) for a detailed comparison and practical examples of when RAG search provides value over traditional text search.
 
 ### Intelligent Chunking
 The RAG system uses intelligent chunking and stores indexes per-project:
@@ -619,12 +623,15 @@ jobs:
 - Implement caching for expensive operations
 - Monitor server resource usage
 
-## 📚 Documentation
+## Documentation
+
+### **Essential Guides** (Start Here)
+- **[Quick Start Commands Guide](docs/quick-start-commands.md)** - **ESSENTIAL**: Complete command reference - where to run what when
+- **[LLM Connectivity Guide](docs/llm-connectivity-guide.md)** - How Giant AI connects to different AI providers (Claude, OpenAI, etc.)
+- **[RAG + AI Analysis Workflow](docs/rag-ai-analysis-workflow.md)** - Making RAG search results actionable with AI analysis
 
 ### Getting Started
-- **[LLM Connectivity Guide](docs/llm-connectivity-guide.md)** - How Giant AI connects to different AI providers (Claude, OpenAI, etc.)
 - **[RAG vs Grep Usage Guide](docs/rag-search-usage-guide.md)** - When to use semantic search vs traditional text search
-- **[RAG + AI Analysis Workflow](docs/rag-ai-analysis-workflow.md)** - NEW: Making RAG search results actionable with AI analysis
 
 ### Core Concepts
 - **[MCP Demystified](docs/mcp-demystified.md)** - Understanding Model Context Protocol and enhanced AI interactions
@@ -644,7 +651,7 @@ jobs:
 - **[Complete Setup Guide](complete_ai_setup.md)** - Comprehensive installation and configuration (technical details)
 - **[Giant Agent Documentation](giant-agent.md)** - Autonomous coding mode with checkpoints and safety controls
 
-**💡 Pro Tip**: Start with the [LLM Connectivity Guide](docs/llm-connectivity-guide.md) to understand how Giant AI works with your preferred AI provider, then explore the RAG and MCP guides to unlock advanced features.
+**Pro Tip**: Start with the [LLM Connectivity Guide](docs/llm-connectivity-guide.md) to understand how Giant AI works with your preferred AI provider, then explore the RAG and MCP guides to unlock advanced features.
 
 ## Contributing
 
@@ -663,8 +670,12 @@ Areas where we especially welcome contributions:
 
 ## License
 
-Giant AI Dev is licensed under the [Apache License 2.0](LICENSE).
+Giant AI is licensed under the [Apache License 2.0](LICENSE).
+
+Copyright 2024 Bearded Giant, LLC. All rights reserved.
 
 ---
 
 *A next-generation development toolkit that understands your code, respects your privacy, and amplifies your productivity.*
+
+**Built by [Bearded Giant, LLC](https://beardedgiant.com) - Empowering developers with intelligent AI-assisted workflows.**

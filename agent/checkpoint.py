@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Checkpoint system for agent mode - create and restore project states"""
+"""
+Giant AI Checkpoint System - Project state management for agent mode
+
+Author: Bearded Giant, LLC
+License: Apache License 2.0
+"""
 
 import os
 import json

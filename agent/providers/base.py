@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Base LLM Provider interface for agent mode"""
+"""
+Giant AI LLM Provider Interface - Base classes for AI provider integration
+
+Author: Bearded Giant, LLC
+License: Apache License 2.0
+"""
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional

@@ -2,18 +2,19 @@
 
 Welcome to the Giant AI documentation! This directory contains comprehensive guides for understanding and using Giant AI's features.
 
-## 🚀 Getting Started
+## Getting Started
 
 **New to Giant AI?** Start here:
 
-1. **[LLM Connectivity Guide](llm-connectivity-guide.md)** - Essential reading: How Giant AI connects to your AI provider (Claude, OpenAI, etc.)
-2. **[RAG vs Grep Usage Guide](rag-search-usage-guide.md)** - Learn when semantic search provides value over traditional text search  
-3. **[RAG + AI Analysis Workflow](rag-ai-analysis-workflow.md)** - NEW: Making RAG search results actionable with AI analysis
-4. **[Quick Start Guide](../README.md#quick-start-tldr)** - Get up and running in 5 minutes
+1. **[Quick Start Commands Guide](quick-start-commands.md)** - **ESSENTIAL**: Where to run what commands when - eliminates confusion!
+2. **[LLM Connectivity Guide](llm-connectivity-guide.md)** - How Giant AI connects to your AI provider (Claude, OpenAI, etc.)
+3. **[RAG + AI Analysis Workflow](rag-ai-analysis-workflow.md)** - Making RAG search results actionable with AI analysis
+4. **[RAG vs Grep Usage Guide](rag-search-usage-guide.md)** - When semantic search provides value over traditional text search
 
-## 📋 Documentation Index
+## Documentation Index
 
 ### Core Concepts
+- **[Quick Start Commands Guide](quick-start-commands.md)** - **ESSENTIAL**: Command reference and workflow guide
 - **[LLM Connectivity Guide](llm-connectivity-guide.md)** - Provider architecture, configuration, and model switching
 - **[MCP Demystified](mcp-demystified.md)** - Model Context Protocol and enhanced AI interactions  
 - **[RAG Overview Explained](rag-overview-explained.md)** - Semantic search system architecture and benefits
@@ -35,7 +36,7 @@ Welcome to the Giant AI documentation! This directory contains comprehensive gui
 - **[Complete Setup Guide](../complete_ai_setup.md)** - Comprehensive installation and configuration details
 - **[Giant Agent Documentation](../giant-agent.md)** - Autonomous coding mode with checkpoints and safety controls
 
-## 🔍 Find What You Need
+## Find What You Need
 
 ### By Use Case
 
@@ -68,20 +69,20 @@ Welcome to the Giant AI documentation! This directory contains comprehensive gui
 
 **Advanced**: Tools & Utilities → Setup & Configuration → Architecture deep-dives
 
-## 💡 Documentation Tips
+## Documentation Tips
 
 - **Code examples** are provided throughout - try them in your own projects
 - **Architecture diagrams** show how components work together
 - **Troubleshooting sections** help resolve common issues
 - **Best practices** are highlighted for optimal results
 
-## 🔗 External Resources
+## External Resources
 
 - **[Main README](../README.md)** - Project overview and quick start
 - **[Contributing Guide](../CONTRIBUTING.md)** - How to contribute to Giant AI
 - **[License](../LICENSE)** - Apache 2.0 license details
 
-## 📝 Documentation Standards
+## Documentation Standards
 
 Our documentation follows these principles:
 - **Practical examples** over theoretical explanations
@@ -90,7 +91,7 @@ Our documentation follows these principles:
 - **Troubleshooting** for common issues
 - **Architecture insights** for understanding how things work
 
-## 🤝 Improving Documentation
+## Improving Documentation
 
 Found an issue or want to improve the docs?
 1. Check our [Contributing Guide](../CONTRIBUTING.md)

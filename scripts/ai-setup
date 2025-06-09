@@ -4,8 +4,26 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Robust path detection - handle symlinks and direct execution
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+if [ -L "$SCRIPT_PATH" ]; then
+    # If script is a symlink, resolve to original location
+    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 AI_DEV_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Verify we found the right directory by checking for required files
+if [ ! -f "$AI_DEV_DIR/rag/requirements.txt" ] || [ ! -f "$AI_DEV_DIR/mcp/package.json" ]; then
+    echo "Error: Could not locate Giant AI project directory"
+    echo "Expected to find: $AI_DEV_DIR"
+    echo "Please run this script from the Giant AI project directory:"
+    echo "  cd /path/to/giant-ai-dev"
+    echo "  ./scripts/ai-setup"
+    exit 1
+fi
+
 DOTFILES_DIR="$(dirname "$(dirname "$AI_DEV_DIR")")"
 
 echo "Giant AI Setup"
@@ -36,7 +54,7 @@ if ! command_exists npm; then
     exit 1
 fi
 
-echo "✅ All prerequisites met"
+echo "All prerequisites met"
 echo ""
 
 # Create isolated Python environment
@@ -53,14 +71,14 @@ pip install --upgrade pip >/dev/null 2>&1
 cd "$AI_DEV_DIR/rag"
 pip install -r requirements.txt
 deactivate
-echo "✅ Python dependencies installed in isolated environment"
+echo "Python dependencies installed in isolated environment"
 echo ""
 
 # Install Node.js dependencies
 echo "Installing Node.js dependencies for MCP..."
 cd "$AI_DEV_DIR/mcp"
 npm install
-echo "✅ Node.js dependencies installed"
+echo "Node.js dependencies installed"
 echo ""
 
 # Make scripts executable
@@ -69,7 +87,7 @@ chmod +x "$AI_DEV_DIR/scripts/"*
 chmod +x "$AI_DEV_DIR/rag/indexer.py"
 chmod +x "$AI_DEV_DIR/rag/search.py"
 chmod +x "$AI_DEV_DIR/mcp/project-server.js"
-echo "✅ Scripts made executable"
+echo "Scripts made executable"
 echo ""
 
 # Create wrapper scripts for Python tools that use the virtual environment
@@ -103,6 +121,14 @@ exec python3 "$AI_DEV_DIR/scripts/ai-search-analyze" "\$@"
 EOF
 chmod +x ~/.local/bin/ai-search-analyze
 
+# Create ai-search-pipe wrapper (simpler, more reliable analysis)
+cat > ~/.local/bin/ai-search-pipe << EOF
+#!/bin/bash
+# Simple pipe from ai-search to AI provider
+exec "$AI_DEV_DIR/scripts/ai-search-pipe" "\$@"
+EOF
+chmod +x ~/.local/bin/ai-search-pipe
+
 # Create ai-agent wrapper with virtual environment
 cat > ~/.local/bin/ai-agent << EOF
 #!/bin/bash
@@ -126,7 +152,7 @@ ln -sf "$AI_DEV_DIR/scripts/ai-setup" ~/.local/bin/ai-setup
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project" ~/.local/bin/ai-init-project
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project-smart" ~/.local/bin/ai-init-project-smart
 
-echo "✅ CLI tools created with isolated Python environment"
+echo "CLI tools created with isolated Python environment"
 echo ""
 
 # Set up MCP hub configuration
@@ -147,17 +173,17 @@ cat >"$MCP_CONFIG_DIR/config.json" <<EOF
 }
 EOF
 
-echo "✅ MCP hub configured"
+echo "MCP hub configured"
 echo ""
 
 # Create global RAG database directory
 echo "Creating global RAG database directory..."
 mkdir -p ~/.giant-ai/rag/db
-echo "✅ RAG database directory created"
+echo "RAG database directory created"
 echo ""
 
 # Setup complete
-echo "🎉 Setup complete!"
+echo "Setup complete!"
 echo ""
 echo "Next steps:"
 echo "1. Add ~/.local/bin to your PATH if not already there"

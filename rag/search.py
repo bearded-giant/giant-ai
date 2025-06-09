@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+Giant AI RAG Search - Semantic codebase search interface
+
+Author: Bearded Giant, LLC
+License: Apache License 2.0
+"""
 import sys
 import json
 import click

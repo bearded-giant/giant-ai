@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Agent mode for giant-ai - autonomous coding with safety controls"""
+"""
+Giant AI Agent Mode - Autonomous coding with safety controls
+
+Author: Bearded Giant, LLC
+License: Apache License 2.0
+"""
 
 import os
 import json
