@@ -1,0 +1,65 @@
+#!/bin/bash
+# Isolated AI Dev Setup - Creates a dedicated virtual environment for AI tools
+# This keeps RAG dependencies separate from your project environments
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AI_DEV_DIR="$(dirname "$SCRIPT_DIR")"
+VENV_DIR="$AI_DEV_DIR/.venv"
+
+echo "Giant AI Dev Isolated Setup"
+echo "==========================="
+echo "Creating isolated environment at: $VENV_DIR"
+echo ""
+
+# Create virtual environment if it doesn't exist
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating virtual environment..."
+    python3 -m venv "$VENV_DIR"
+    echo "✅ Virtual environment created"
+else
+    echo "✓ Virtual environment already exists"
+fi
+
+# Activate virtual environment
+source "$VENV_DIR/bin/activate"
+
+# Install Python dependencies in isolated environment
+echo "Installing Python dependencies in isolated environment..."
+pip install --upgrade pip
+pip install -r "$AI_DEV_DIR/rag/requirements.txt"
+echo "✅ Python dependencies installed in isolation"
+
+# Create wrapper scripts that use the virtual environment
+echo "Creating isolated wrapper scripts..."
+mkdir -p ~/.local/bin
+
+# Create ai-rag wrapper
+cat > ~/.local/bin/ai-rag << 'EOF'
+#!/bin/bash
+GIANT_AI_DEV_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+source "$GIANT_AI_DEV_DIR/.venv/bin/activate" 2>/dev/null || source "~/dotfiles/giant-ai-dev/.venv/bin/activate"
+exec python3 "$GIANT_AI_DEV_DIR/rag/indexer.py" "$@"
+EOF
+
+# Create ai-search wrapper
+cat > ~/.local/bin/ai-search << 'EOF'
+#!/bin/bash
+GIANT_AI_DEV_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+source "$GIANT_AI_DEV_DIR/.venv/bin/activate" 2>/dev/null || source "~/dotfiles/giant-ai-dev/.venv/bin/activate"
+exec python3 "$GIANT_AI_DEV_DIR/rag/search.py" "$@"
+EOF
+
+# Make wrappers executable
+chmod +x ~/.local/bin/ai-rag
+chmod +x ~/.local/bin/ai-search
+
+echo "✅ Isolated wrapper scripts created"
+
+# Rest of the setup continues as normal...
+echo ""
+echo "🎉 Isolated setup complete!"
+echo ""
+echo "The AI tools now use their own Python environment and won't interfere with your projects."
+echo "You can use ai-rag and ai-search without installing dependencies globally."

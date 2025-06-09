@@ -87,9 +87,10 @@ cd giant-ai-dev
 ```
 
 This automatically:
-- ✅ Installs Python dependencies for RAG (sentence-transformers, chromadb, tree-sitter)
+- ✅ Creates isolated Python environment in `.venv/` (no global pollution)
+- ✅ Installs Python dependencies for RAG in isolation
 - ✅ Installs Node.js dependencies for MCP servers
-- ✅ Creates CLI symlinks in `~/.local/bin/`
+- ✅ Creates wrapper scripts in `~/.local/bin/` that use the isolated environment
 - ✅ Configures MCP hub with global servers
 - ✅ Sets up RAG database directory
 - ✅ Configures LLM integrations (Claude Desktop, etc.)
@@ -451,9 +452,14 @@ ai-search "function" . 5
 
 **Missing Dependencies:**
 ```bash
-# If indexing fails
-cd giant-ai-dev/rag
-pip3 install -r requirements.txt
+# If indexing fails - dependencies are isolated in .venv
+cd giant-ai-dev
+source .venv/bin/activate
+pip install -r rag/requirements.txt
+deactivate
+
+# Or just re-run setup to fix everything
+./scripts/ai-setup
 
 # If MCP server fails
 cd giant-ai-dev/mcp  
@@ -530,7 +536,8 @@ For detailed agent mode documentation, see [giant-agent.md](giant-agent.md).
 - **Editor Choice** - Works with any editor supporting MCP  
 - **Cost Effective** - No subscription required  
 - **Privacy First** - Control your data completely  
-- **Agent Mode** - Cursor-like autonomous coding across providers  
+- **Agent Mode** - Cursor-like autonomous coding across providers
+- **Isolated Dependencies** - Python deps in `.venv/`, no global pollution  
 
 ## Team Setup
 

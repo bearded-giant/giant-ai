@@ -39,11 +39,21 @@ fi
 echo "✅ All prerequisites met"
 echo ""
 
-# Install Python dependencies
-echo "Installing Python dependencies for RAG..."
+# Create isolated Python environment
+VENV_DIR="$AI_DEV_DIR/.venv"
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating isolated Python environment..."
+    python3 -m venv "$VENV_DIR"
+fi
+
+# Install Python dependencies in isolated environment
+echo "Installing Python dependencies in isolated environment..."
+source "$VENV_DIR/bin/activate"
+pip install --upgrade pip >/dev/null 2>&1
 cd "$AI_DEV_DIR/rag"
-pip3 install -r requirements.txt
-echo "✅ Python dependencies installed"
+pip install -r requirements.txt
+deactivate
+echo "✅ Python dependencies installed in isolated environment"
 echo ""
 
 # Install Node.js dependencies
@@ -62,21 +72,43 @@ chmod +x "$AI_DEV_DIR/mcp/project-server.js"
 echo "✅ Scripts made executable"
 echo ""
 
-# Create symlinks for CLI tools
-echo "Creating CLI symlinks..."
+# Create wrapper scripts for Python tools that use the virtual environment
+echo "Creating CLI wrapper scripts..."
 mkdir -p ~/.local/bin
 
-# RAG tools
-ln -sf "$AI_DEV_DIR/rag/indexer.py" ~/.local/bin/ai-rag
-ln -sf "$AI_DEV_DIR/rag/search.py" ~/.local/bin/ai-search
+# Create ai-rag wrapper with virtual environment
+cat > ~/.local/bin/ai-rag << EOF
+#!/bin/bash
+# Wrapper script for ai-rag that uses isolated Python environment
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/rag/indexer.py" "\$@"
+EOF
+chmod +x ~/.local/bin/ai-rag
 
-# Other tools
+# Create ai-search wrapper with virtual environment
+cat > ~/.local/bin/ai-search << EOF
+#!/bin/bash
+# Wrapper script for ai-search that uses isolated Python environment
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/rag/search.py" "\$@"
+EOF
+chmod +x ~/.local/bin/ai-search
+
+# Create ai-agent wrapper with virtual environment
+cat > ~/.local/bin/ai-agent << EOF
+#!/bin/bash
+# Wrapper script for ai-agent that uses isolated Python environment
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/scripts/ai-agent" "\$@"
+EOF
+chmod +x ~/.local/bin/ai-agent
+
+# Other tools (bash scripts, don't need venv)
 ln -sf "$AI_DEV_DIR/scripts/ai-setup" ~/.local/bin/ai-setup
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project" ~/.local/bin/ai-init-project
 ln -sf "$AI_DEV_DIR/scripts/ai-init-project-smart" ~/.local/bin/ai-init-project-smart
-ln -sf "$AI_DEV_DIR/scripts/ai-agent" ~/.local/bin/ai-agent
 
-echo "✅ CLI tools linked to ~/.local/bin"
+echo "✅ CLI tools created with isolated Python environment"
 echo ""
 
 # Set up MCP hub configuration

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# RAG database (local to each user)
+rag/db/
+
+# Node modules
+node_modules/
+
+# MCP logs
+*.log
+
+# Local settings
+settings.local.json
+
+# Agent checkpoints (user-specific)
+agent/checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
