@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Agent mode for giant-ai-dev - autonomous coding with safety controls"""
+"""Agent mode for giant-ai - autonomous coding with safety controls"""
 
 import os
 import json
@@ -16,7 +16,7 @@ class AgentMode:
     
     def __init__(self, project_dir: str = "."):
         self.project_dir = Path(project_dir).resolve()
-        self.config_dir = self.project_dir / ".ai-setup"
+        self.config_dir = self.project_dir / ".giant-ai"
         self.checkpoint_manager = CheckpointManager(project_dir)
         self.session_log = []
         
@@ -110,7 +110,7 @@ class AgentMode:
     
     def interactive_mode(self):
         """Interactive agent mode with checkpoint controls"""
-        print("🤖 Giant AI Dev - Agent Mode")
+        print("🤖 Giant AI - Agent Mode")
         print("Commands: task <description>, checkpoint, restore <id>, list, exit")
         print("-" * 50)
         
@@ -137,7 +137,7 @@ class AgentMode:
                 print("Unknown command. Use: task, checkpoint, restore, list, or exit")
     
     def _load_project_context(self) -> Dict[str, Any]:
-        """Load project context from .ai-setup"""
+        """Load project context from .giant-ai"""
         context = {}
         
         # Load context.md

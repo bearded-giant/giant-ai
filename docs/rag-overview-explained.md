@@ -38,9 +38,9 @@ Results: Files about login, JWT, sessions, security, user verification
 
 **The breakthrough:** RAG understands **meaning**, not just **text**.
 
-## Giant AI Dev's RAG Architecture
+## Giant AI's RAG Architecture
 
-Let's examine how Giant AI Dev implements semantic search:
+Let's examine how Giant AI implements semantic search:
 
 ### Vector Database Design
 
@@ -50,7 +50,7 @@ class CodebaseRAG:
     def __init__(self, project_path, persist_directory=None):
         # Global RAG database with project-specific collections
         if persist_directory is None:
-            self.persist_dir = Path.home() / ".giant-ai-dev" / "rag" / "db"
+            self.persist_dir = Path.home() / ".giant-ai" / "rag" / "db"
         
         # Project identifier for isolation
         self.project_id = self.project_path.name.replace(" ", "_").replace("/", "_")
@@ -140,7 +140,7 @@ def search(self, query, n_results=10):
 ```bash
 # User workflow
 cd my-project
-ai-init-project-smart    # Creates .ai-setup/ with context
+ai-init-project-smart    # Creates .giant-ai/ with context
 ai-rag index .           # Indexes codebase for semantic search
 
 # What happens behind the scenes:
@@ -251,7 +251,7 @@ end
 ### Database Structure
 
 ```
-~/.giant-ai-dev/rag/db/
+~/.giant-ai/rag/db/
 ├── chroma.sqlite3                    # ChromaDB metadata
 ├── index/                           # Vector index files
 │   ├── index_*.bin                  # Embeddings
@@ -340,7 +340,7 @@ From `mcp/project-server.js`:
 ```javascript
 async semanticSearch(query, limit, projectPath) {
     try {
-        // Call Giant AI Dev's RAG search
+        // Call Giant AI's RAG search
         const searchScript = path.join(__dirname, '../rag/search.py');
         const cmd = `python3 "${searchScript}" "${query}" "${targetPath}" ${limit} json`;
         const output = execSync(cmd, { encoding: 'utf-8' });
@@ -416,7 +416,7 @@ Cons:
 ```python
 # Hypothetical local RAG storage
 project_dir/
-├── .ai-setup/
+├── .giant-ai/
 │   ├── context.md
 │   ├── conventions.yml
 │   └── rag/                    # Local RAG database
@@ -436,9 +436,9 @@ project_dir/
 class CodebaseRAG:
     def __init__(self, project_path, use_local_rag=False):
         if use_local_rag:
-            self.persist_dir = Path(project_path) / ".ai-setup" / "rag"
+            self.persist_dir = Path(project_path) / ".giant-ai" / "rag"
         else:
-            self.persist_dir = Path.home() / ".giant-ai-dev" / "rag" / "db"
+            self.persist_dir = Path.home() / ".giant-ai" / "rag" / "db"
 ```
 
 ## Real-World RAG Usage Examples
@@ -604,7 +604,7 @@ class EnhancedRAG:
 - **Consistency enforcement** - New code follows established patterns
 - **Knowledge preservation** - Capture and reuse architectural decisions
 
-### Giant AI Dev's RAG Implementation
+### Giant AI's RAG Implementation
 
 - **Global vector database** with project-specific collections
 - **Smart indexing** using tree-sitter for structural understanding

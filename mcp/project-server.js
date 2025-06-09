@@ -321,8 +321,8 @@ class ProjectMCPServer {
   async getProjectContext(projectPath) {
     const targetPath = projectPath || this.projectPath;
     
-    // Check for local .ai-setup/context.md first
-    const localContext = path.join(targetPath, '.ai-setup', 'context.md');
+    // Check for local .giant-ai/context.md first
+    const localContext = path.join(targetPath, '.giant-ai', 'context.md');
     const globalContext = path.join(__dirname, '../templates', 'default-context.md');
     
     try {
@@ -336,13 +336,13 @@ class ProjectMCPServer {
         try {
           context = await fs.readFile(globalContext, 'utf-8');
         } catch {
-          context = "No project context found. Create .ai-setup/context.md in your project.";
+          context = "No project context found. Create .giant-ai/context.md in your project.";
         }
       }
       
-      // Also check for local .ai-setup/conventions.yml
+      // Also check for local .giant-ai/conventions.yml
       try {
-        const conventionsPath = path.join(targetPath, '.ai-setup', 'conventions.yml');
+        const conventionsPath = path.join(targetPath, '.giant-ai', 'conventions.yml');
         const conventions = await fs.readFile(conventionsPath, 'utf-8');
         const parsed = yaml.parse(conventions);
         

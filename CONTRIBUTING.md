@@ -1,10 +1,10 @@
-# Contributing to Giant AI Dev
+# Contributing to Giant AI
 
-We welcome contributions to Giant AI Dev! This document outlines the process for contributing to the project and helps ensure that contributions can be incorporated effectively.
+We welcome contributions to Giant AI! This document outlines the process for contributing to the project and helps ensure that contributions can be incorporated effectively.
 
 ## 🎯 Contributing Philosophy
 
-Giant AI Dev aims to be the premier open-source AI development toolkit. We encourage contributions that:
+Giant AI aims to be the premier open-source AI development toolkit. We encourage contributions that:
 
 - **Enhance semantic understanding** - Improve RAG, MCP, or context management
 - **Add specialized tools** - RAG-integrated utilities that provide unique value
@@ -27,8 +27,8 @@ Giant AI Dev aims to be the premier open-source AI development toolkit. We encou
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/giant-ai-dev.git
-cd giant-ai-dev
+git clone https://github.com/your-org/giant-ai.git
+cd giant-ai
 
 # Run setup to install dependencies
 ./scripts/ai-setup
@@ -45,7 +45,7 @@ ai-search "test query" . 3
 git checkout -b feature/your-feature-name
 
 # Make your changes following the project conventions
-# (See .ai-setup/conventions.yml for coding standards)
+# (See .giant-ai/conventions.yml for coding standards)
 
 # Test your changes
 ./scripts/test-all.sh  # If available, or manual testing
@@ -70,10 +70,10 @@ git push origin feature/your-feature-name
 
 ## 🛡️ Contributor License Agreement (CLA)
 
-**Important**: By contributing to Giant AI Dev, you agree to the following terms:
+**Important**: By contributing to Giant AI, you agree to the following terms:
 
 ### Grant of Rights
-You grant the Giant AI Dev project maintainers:
+You grant the Giant AI project maintainers:
 - **Perpetual license** to use, modify, and distribute your contributions
 - **Rights to relicense** your contributions under compatible licenses
 - **Patent license** for any patents your contributions may infringe
@@ -164,7 +164,7 @@ Clear description of the issue or request
 - OS: [e.g., macOS 14, Ubuntu 22.04]
 - Python version: [e.g., 3.11]
 - Node.js version: [e.g., 18.x]
-- Giant AI Dev version: [e.g., 1.2.3]
+- Giant AI version: [e.g., 1.2.3]
 
 ## Additional Context
 Any other relevant information
@@ -181,12 +181,12 @@ Contributors will be recognized in:
 
 - **Questions about contributing** - Open a GitHub issue with the "question" label
 - **Technical discussions** - Use GitHub Discussions
-- **Security issues** - Email security@giant-ai-dev.com (if project email exists)
+- **Security issues** - Email security@giant-ai.com (if project email exists)
 
 ## 📜 Legal Notes
 
 ### Copyright Assignment
-By contributing, you assign copyright of your contributions to the Giant AI Dev project. This ensures:
+By contributing, you assign copyright of your contributions to the Giant AI project. This ensures:
 - Consistent ownership structure
 - Ability to enforce license terms
 - Flexibility for future licensing decisions
@@ -200,7 +200,7 @@ Your contributions are covered under Apache 2.0's patent protection clauses, pro
 
 Before submitting a PR, ensure:
 
-- [ ] **Code follows project conventions** (see .ai-setup/conventions.yml)
+- [ ] **Code follows project conventions** (see .giant-ai/conventions.yml)
 - [ ] **Tests are included** for new functionality
 - [ ] **Documentation is updated** (README, inline docs, etc.)
 - [ ] **Commit messages are clear** and descriptive
@@ -210,4 +210,4 @@ Before submitting a PR, ensure:
 
 ---
 
-Thank you for contributing to Giant AI Dev! Your contributions help make AI-powered development more accessible and powerful for developers worldwide. 🚀
+Thank you for contributing to Giant AI! Your contributions help make AI-powered development more accessible and powerful for developers worldwide. 🚀

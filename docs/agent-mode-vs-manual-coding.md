@@ -2,7 +2,7 @@
 
 ## The Magic Users See
 
-When you use autonomous AI coding tools like Cursor's agent mode, Claude's computer use, or Giant AI Dev's agent mode, you see:
+When you use autonomous AI coding tools like Cursor's agent mode, Claude's computer use, or Giant AI's agent mode, you see:
 - **"AI completed your feature"** - Full implementations appear magically
 - **"Checkpoints created"** - Safety nets that let you roll back changes
 - **"Multi-file refactoring"** - Complex changes across dozens of files
@@ -33,9 +33,9 @@ You → Agent → [Analyze → Plan → Execute → Verify → Repeat] → Final
               ↑_________Checkpoint System_________↑
 ```
 
-## Giant AI Dev's Agent Implementation
+## Giant AI's Agent Implementation
 
-Let's examine the actual agent code in `giant-ai-dev/agent/`:
+Let's examine the actual agent code in `giant-ai/agent/`:
 
 ### Agent Task Execution
 
@@ -50,7 +50,7 @@ def execute_task(self, task: str, options: Dict[str, Any] = None) -> Dict[str, A
     
     # Prepare task context
     task_context = {
-        "project_context": self.context,        # Your .ai-setup/context.md
+        "project_context": self.context,        # Your .giant-ai/context.md
         "task": task,
         "auto_accept": options.get("auto_accept", False),
         "continue_session": options.get("continue_session", False)
@@ -320,7 +320,7 @@ Total: ~4,000 tokens, 1 interaction, 15 minutes
 # Rollback and retry cycle is expensive
 ```
 
-## Giant AI Dev Agent Configuration
+## Giant AI Agent Configuration
 
 ### Task Templates
 
@@ -362,7 +362,7 @@ self.provider = LLMProviderFactory.create(provider_name, self.agent_config)
 
 ### Configuration Example
 
-`.ai-setup/agent.yml`:
+`.giant-ai/agent.yml`:
 ```yaml
 provider: claude-code
 
@@ -501,7 +501,7 @@ ai-agent task "Add user registration endpoint"
 - ❌ **Quick fixes** where you know exactly what to change
 - ❌ **Ambiguous requirements** that need clarification
 
-**Giant AI Dev's agent mode** makes autonomous coding practical with:
+**Giant AI's agent mode** makes autonomous coding practical with:
 - **Safety-first design** (checkpoints, rollback, boundaries)
 - **Provider flexibility** (works with Claude, OpenAI, custom tools)
 - **Project awareness** (uses your conventions and context)

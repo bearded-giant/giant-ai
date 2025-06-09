@@ -27,7 +27,7 @@ ai-agent task "Add dark mode" --auto-accept  # Autonomous coding with checkpoint
 
 **What each does:**
 - `ai-setup`: One-time install of CLI tools, MCP servers, and optional Neovim integration
-- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.ai-setup/` config  
+- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.giant-ai/` config  
 - `ai-rag index`: Creates searchable index of your codebase
 - `ai-agent`: Autonomous agent mode with checkpoints (like Cursor)
 - `<leader>cc`: AI CLI with full project context and RAG integration
@@ -78,9 +78,9 @@ This setup transforms your development workflow with:
 
 ### One-Time Installation
 ```bash
-# 1. Clone the giant-ai-dev setup
-git clone <giant-ai-dev-repo>
-cd giant-ai-dev
+# 1. Clone the giant-ai setup
+git clone <giant-ai-repo>
+cd giant-ai
 
 # 2. Run global setup
 ./scripts/ai-setup
@@ -123,7 +123,7 @@ ai-init-project --clean
 This creates **intelligent, pre-filled** configuration:
 ```
 your-project/
-├── .ai-setup/
+├── .giant-ai/
 │   ├── context.md       # Auto-generated project analysis & AI instructions
 │   └── conventions.yml  # Auto-detected coding standards from codebase
 └── .gitignore          # Updated with AI entries
@@ -161,9 +161,9 @@ require("config.claude-status")
 
 ## 📁 Directory Structure & Storage
 
-### Giant AI Dev Setup
+### Giant AI Setup
 ```
-giant-ai-dev/                    # Standalone AI development toolkit
+giant-ai/                    # Standalone AI development toolkit
 ├── rag/
 │   ├── db/                    # ChromaDB storage for all projects
 │   │   ├── project_abc123/    # Hashed project path
@@ -185,13 +185,13 @@ giant-ai-dev/                    # Standalone AI development toolkit
 └── settings.local.json    # Local configuration
 
 ~/.local/bin/              # CLI tools (symlinked by setup)
-├── ai-rag            # → giant-ai-dev/rag/indexer.py
-├── ai-search        # → giant-ai-dev/rag/search.py
-├── ai-setup         # → giant-ai-dev/scripts/ai-setup
-└── ai-init-project  # → giant-ai-dev/scripts/ai-init-project
+├── ai-rag            # → giant-ai/rag/indexer.py
+├── ai-search        # → giant-ai/rag/search.py
+├── ai-setup         # → giant-ai/scripts/ai-setup
+└── ai-init-project  # → giant-ai/scripts/ai-init-project
 
-~/.ai-setup/                # AI setup runtime (managed separately)
-├── CLAUDE.md@           # → dotfiles/claude-code/.ai-setup/CLAUDE.md (stowed)
+~/.giant-ai/                # AI setup runtime (managed separately)
+├── CLAUDE.md@           # → dotfiles/claude-code/.giant-ai/CLAUDE.md (stowed)
 ├── projects/            # AI project sessions
 ├── todos/              # AI todo management
 └── statsig/            # AI analytics
@@ -206,19 +206,19 @@ giant-ai-dev/                    # Standalone AI development toolkit
 ### Per-Project Structure
 ```
 your-project/
-├── .ai-setup/
+├── .giant-ai/
 │   ├── context.md           # Project-specific AI context
 │   ├── conventions.yml      # Coding standards
 │   └── mcp/                # Optional project MCP server
 │       └── server.js
-├── .gitignore              # Updated to exclude .ai-setup/rag/db/
+├── .gitignore              # Updated to exclude .giant-ai/rag/db/
 └── [your project files]
 ```
 
 ### RAG Storage Details
 
 **Project-Specific Collections:**
-Each project gets its own ChromaDB collection stored in `~/.ai-setup/rag/db/`:
+Each project gets its own ChromaDB collection stored in `~/.giant-ai/rag/db/`:
 
 ```python
 # Collection naming
@@ -226,7 +226,7 @@ project_id = Path(project_path).name.replace(" ", "_").replace("/", "_")
 collection_name = f"codebase_{project_id}"
 
 # Storage location
-giant-ai-dev/rag/db/
+giant-ai/rag/db/
 ├── chroma.sqlite3           # ChromaDB database file
 └── [hash-based-folders]/    # Project-specific vector storage
 ```
@@ -275,7 +275,7 @@ class CodeChunker:
 
 **Storage Structure:**
 ```
-giant-ai-dev/rag/db/
+giant-ai/rag/db/
 ├── project_abc123/          # Hashed project path
 │   ├── chroma.sqlite3       # ChromaDB database
 │   ├── metadata.json       # Project info, last index time
@@ -337,7 +337,7 @@ extract_function_context({
 ```
 
 ### Project-Specific MCP
-Create `.ai-setup/mcp/server.js` for custom tools:
+Create `.giant-ai/mcp/server.js` for custom tools:
 ```javascript
 const server = new Server({
   name: "project-tools",
@@ -366,8 +366,8 @@ function load_project_context()
   local context = {}
   
   -- Load project-specific context
-  context.project = read_file(".ai-setup/context.md")
-  context.conventions = read_file(".ai-setup/conventions.yml")
+  context.project = read_file(".giant-ai/context.md")
+  context.conventions = read_file(".giant-ai/conventions.yml"
   
   -- Get MCP server status and available tools
   context.mcp_tools = mcphub.list_available_tools()
@@ -400,7 +400,7 @@ User: <leader>ca (analyze this function)
 Avante receives selected code
   ↓
 System prompt includes:
-  • Project context from .ai-setup/context.md
+  • Project context from .giant-ai/context.md
   • Available MCP tools
   • RAG search capabilities
   ↓
@@ -440,7 +440,7 @@ Avante calls: get_proof_of_concept_template({
   ↓
 Returns: Template following project conventions
   ↓
-Avante customizes: Based on .ai-setup/conventions.yml
+Avante customizes: Based on .giant-ai/conventions.yml
 ```
 
 ### RAG Integration in Avante
@@ -494,7 +494,7 @@ Response: Detailed analysis of error handling across your project
       max_tokens = 30000,
     },
     system_prompt = function()
-      -- Loads .ai-setup/context.md + MCP awareness
+      -- Loads .giant-ai/context.md + MCP awareness
       return load_project_context()
     end,
     mappings = {
@@ -533,7 +533,7 @@ Response: Detailed analysis of error handling across your project
       servers = {
         ["project-context"] = {
           command = "node",
-          args = { "./.ai-setup/mcp/server.js" },
+          args = { "./.giant-ai/mcp/server.js" },
           auto_start = true,
         },
       },
@@ -612,7 +612,7 @@ vim.api.nvim_create_autocmd("DirChanged", {
 ```
 
 **Smart Context Loading**
-- Loads `.ai-setup/context.md` for project-specific instructions
+- Loads `.giant-ai/context.md` for project-specific instructions
 - Detects available MCP servers automatically
 - Checks RAG indexing status and suggests reindex if needed
 - Updates Avante system prompt with full project awareness
@@ -626,8 +626,8 @@ The AI CLI automatically inherits all your setup:
 ```bash
 # When you run the AI CLI in a project directory:
 # 1. Detects git repository boundaries
-# 2. Loads .ai-setup/context.md if present
-# 3. Reads .ai-setup/conventions.yml
+# 2. Loads .giant-ai/context.md if present
+# 3. Reads .giant-ai/conventions.yml
 # 4. Includes recent git changes
 # 5. Maps directory structure
 # 6. Connects to available MCP servers
@@ -666,7 +666,7 @@ The `ai-init-project` script now **automatically analyzes your codebase** and ge
 - **Structure**: Component architecture, test organization, API patterns
 - **Context**: Project description from README.md or package.json
 
-### Smart Context Generation (`.ai-setup/context.md`)
+### Smart Context Generation (`.giant-ai/context.md`)
 **Example auto-generated content for a Next.js project:**
 
 ```markdown
@@ -711,7 +711,7 @@ Framework: nextjs
 - [Known issues or technical debt?]
 ```
 
-### Smart Convention Detection (`.ai-setup/conventions.yml`)
+### Smart Convention Detection (`.giant-ai/conventions.yml`)
 **Example auto-detected conventions for the same Next.js project:**
 
 ```yaml
@@ -760,7 +760,7 @@ Detected Configuration:
 The init script automatically adds AI-specific entries:
 ```bash
 # AI setup local files
-.ai-setup/rag/db/
+.giant-ai/rag/db/
 ```
 
 **Optional Immediate Indexing:**
@@ -801,7 +801,7 @@ ai-setup                  # Re-run global setup
 <leader>ra "authentication flow"
 # → RAG search + Avante analyzes the flow across files
 # → Avante has access to:
-#   • Project context (.ai-setup/context.md)
+#   • Project context (.giant-ai/context.md)
 #   • Found code patterns via RAG
 #   • Architecture info via MCP tools
 #   • Project conventions
@@ -873,7 +873,7 @@ Ask Avante: "What should new developers know about our error handling?"
 
 ### Custom MCP Tool Creation for Avante
 ```javascript
-// .ai-setup/mcp/server.js - Project-specific tools
+// .giant-ai/mcp/server.js - Project-specific tools
 const projectTools = {
   analyze_test_coverage: async (args) => {
     const coverage = await runCoverage(args.file);
@@ -958,7 +958,7 @@ end
 
 ### Custom MCP Tools
 ```javascript
-// .ai-setup/mcp/server.js
+// .giant-ai/mcp/server.js
 const customTools = {
   run_tests: async (args) => {
     const result = await exec(`npm test ${args.pattern}`);
@@ -979,7 +979,7 @@ const customTools = {
 
 ### Template Customization
 ```json
-// ~/.ai-setup/templates/poc-templates.json
+// ~/.giant-ai/templates/poc-templates.json
 {
   "typescript": {
     "microservice": {
@@ -995,7 +995,7 @@ const customTools = {
 
 ### RAG Configuration
 ```python
-# ~/.ai-setup/rag/config.py
+# ~/.giant-ai/rag/config.py
 RAG_CONFIG = {
     "chunk_size": 1000,
     "chunk_overlap": 200,
@@ -1033,7 +1033,7 @@ ai-search "function" . 5
 **Missing Dependencies:**
 ```bash
 # If indexing fails - dependencies are isolated in .venv
-cd giant-ai-dev
+cd giant-ai
 source .venv/bin/activate
 pip install -r rag/requirements.txt
 deactivate
@@ -1042,7 +1042,7 @@ deactivate
 ./scripts/ai-setup
 
 # If MCP server fails
-cd giant-ai-dev/mcp  
+cd giant-ai/mcp  
 npm install
 ```
 
@@ -1058,7 +1058,7 @@ source ~/.bashrc
 # Clear and rebuild index
 ai-rag index . --clear
 
-# Check permissions (from giant-ai-dev directory)
+# Check permissions (from giant-ai directory)
 ls -la ./rag/db/
 
 # Manual cleanup
@@ -1068,7 +1068,7 @@ rm -rf ./rag/db/project_*
 **MCP Server Issues:**
 ```bash
 # Test MCP server manually
-node giant-ai-dev/mcp/project-server.js --test
+node giant-ai/mcp/project-server.js --test
 
 # Check MCP hub configuration
 cat ~/.config/mcp-hub/config.json
@@ -1104,7 +1104,7 @@ exclude_dirs = {'.git', 'node_modules', 'dist', 'build', 'target', '.next', '.ve
 ```
 
 **Context Management:**
-- Keep `.ai-setup/context.md` under 2000 words
+- Keep `.giant-ai/context.md` under 2000 words
 - Focus on current development priorities
 - Remove outdated architectural decisions
 - Update conventions after team changes
@@ -1118,7 +1118,7 @@ exclude_dirs = {'.git', 'node_modules', 'dist', 'build', 'target', '.next', '.ve
 - Use specific search terms for better results
 
 ### Context Management
-- Keep `.ai-setup/context.md` under 2000 words
+- Keep `.giant-ai/context.md` under 2000 words
 - Focus on current sprint/focus areas
 - Remove outdated architectural decisions
 - Update conventions after team changes
@@ -1172,7 +1172,7 @@ ai-agent restore 20240106_143022
 
 **Provider Configuration:**
 ```yaml
-# .ai-setup/agent.yml
+# .giant-ai/agent.yml
 provider: claude-code  # or openai, custom
 
 checkpoint_before_tasks: true
@@ -1227,8 +1227,8 @@ For comprehensive agent mode documentation, see [giant-agent.md](giant-agent.md)
 
 ### For Team Leads
 1. Initialize project: `ai-init-project`
-2. Customize `.ai-setup/context.md` with team patterns
-3. Commit `.ai-setup/` directory to repo
+2. Customize `.giant-ai/context.md` with team patterns
+3. Commit `.giant-ai/` directory to repo
 4. Share this README with team
 
 ### For Developers  

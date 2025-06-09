@@ -29,9 +29,9 @@ Behind the scenes, **Model Context Protocol (MCP) servers** are running speciali
 
 **The difference:** MCP provides **semantic operations** instead of basic file operations.
 
-## Giant AI Dev's MCP Implementation
+## Giant AI's MCP Implementation
 
-Let's examine the actual MCP server code in `giant-ai-dev/mcp/project-server.js`:
+Let's examine the actual MCP server code in `giant-ai/mcp/project-server.js`:
 
 ### Available Tools
 
@@ -103,9 +103,9 @@ async semanticSearch(query, limit, projectPath) {
 **What really happens:**
 ```javascript
 async getProjectContext(projectPath) {
-  // Reads your .ai-setup/context.md and conventions.yml
-  const localContext = path.join(targetPath, '.ai-setup', 'context.md');
-  const conventionsPath = path.join(targetPath, '.ai-setup', 'conventions.yml');
+  // Reads your .giant-ai/context.md and conventions.yml
+  const localContext = path.join(targetPath, '.giant-ai', 'context.md');
+  const conventionsPath = path.join(targetPath, '.giant-ai', 'conventions.yml');
   
   let context = await fs.readFile(localContext, 'utf-8');
   const conventions = await fs.readFile(conventionsPath, 'utf-8');
@@ -152,7 +152,7 @@ async extractFunctionContext(filePath, lineNumber, projectPath) {
 
 **The difference:** Instead of AI seeing random lines, it gets complete function context with boundaries.
 
-### Giant AI Dev MCP Setup Process
+### Giant AI MCP Setup Process
 
 When you run `ai-setup`, here's what happens with MCP:
 
@@ -162,7 +162,7 @@ When you run `ai-setup`, here's what happens with MCP:
   "servers": {
     "ai-project-context": {
       "command": "node",
-      "args": ["/path/to/giant-ai-dev/mcp/project-server.js"],
+      "args": ["/path/to/giant-ai/mcp/project-server.js"],
       "env": {},
       "auto_start": false
     }
@@ -176,13 +176,13 @@ When you run `ai-setup`, here's what happens with MCP:
   "mcpServers": {
     "ai-project-context": {
       "command": "node",
-      "args": ["/path/to/giant-ai-dev/mcp/project-server.js"]
+      "args": ["/path/to/giant-ai/mcp/project-server.js"]
     }
   }
 }
 ```
 
-**⚠️ Current Gap in Giant AI Dev:** The `ai-setup` script creates MCP hub config but doesn't automatically configure Claude Desktop. This is a manual step users need to do.
+**⚠️ Current Gap in Giant AI:** The `ai-setup` script creates MCP hub config but doesn't automatically configure Claude Desktop. This is a manual step users need to do.
 
 ## When MCP Is Useful vs Overkill
 
@@ -286,9 +286,9 @@ When you trigger Avante in Neovim (`<leader>aa`), here's what happens:
    ```
 3. **Combines with your request** to provide context-aware assistance
 
-### Giant AI Dev + Neovim Workflow
+### Giant AI + Neovim Workflow
 
-Your current Neovim setup integrates with Giant AI Dev through:
+Your current Neovim setup integrates with Giant AI through:
 
 ```lua
 -- From ai-keymaps.lua - RAG search integration
@@ -305,7 +305,7 @@ end)
 
 **What's happening:**
 1. You press `<leader>rs` in Neovim
-2. Neovim calls `ai-search` (which uses the Giant AI Dev RAG system)
+2. Neovim calls `ai-search` (which uses the Giant AI RAG system)
 3. RAG system returns semantic search results
 4. Results displayed in Neovim for navigation
 
@@ -315,7 +315,7 @@ end)
 
 ### The Avante Enhancement
 
-When Avante is configured with Giant AI Dev's MCP server:
+When Avante is configured with Giant AI's MCP server:
 ```lua
 -- Avante automatically has access to:
 -- - analyze_codebase_structure (understands your architecture)
@@ -338,20 +338,20 @@ With MCP: Finds your existing error patterns, suggests consistent approach
 **Reality:** MCP provides semantic operations. It's the difference between asking for "all files" vs "authentication patterns."
 
 ### Myth 2: "MCP servers are complex to build"
-**Reality:** Giant AI Dev's MCP server is ~650 lines of JavaScript with clear patterns. Most of it is helper functions.
+**Reality:** Giant AI's MCP server is ~650 lines of JavaScript with clear patterns. Most of it is helper functions.
 
 ### Myth 3: "MCP replaces documentation"
 **Reality:** MCP **enhances** documentation by making it actionable. Instead of reading docs about your project, AI can query it directly.
 
 ### Myth 4: "MCP only works with Claude"
-**Reality:** MCP is an open protocol. Giant AI Dev's server works with any MCP-compatible AI tool.
+**Reality:** MCP is an open protocol. Giant AI's server works with any MCP-compatible AI tool.
 
 ## Troubleshooting MCP Issues
 
 ### Check MCP Server Status
 ```bash
 # Test MCP server manually
-node giant-ai-dev/mcp/project-server.js --test
+node giant-ai/mcp/project-server.js --test
 
 # Check MCP hub configuration
 cat ~/.config/mcp-hub/config.json
@@ -366,7 +366,7 @@ cat ~/.config/claude-desktop/claude_desktop_config.json
 **Symptom:** AI tools don't have enhanced context
 **Solution:** 
 ```bash
-cd giant-ai-dev/mcp
+cd giant-ai/mcp
 npm install  # Ensure dependencies are installed
 node project-server.js  # Test manual start
 ```
@@ -390,7 +390,7 @@ ai-search "test query" . 5
 ai-init-project-smart
 
 # Verify context files exist
-ls .ai-setup/
+ls .giant-ai/
 ```
 
 ## When NOT to Use MCP
@@ -417,6 +417,6 @@ ls .ai-setup/
 - **Without MCP:** AI reads files, guesses patterns, provides generic solutions
 - **With MCP:** AI queries structured information, understands your architecture, suggests consistent solutions
 
-**Giant AI Dev's MCP server** makes this practical by providing battle-tested tools for common development tasks while maintaining flexibility for custom extensions.
+**Giant AI's MCP server** makes this practical by providing battle-tested tools for common development tasks while maintaining flexibility for custom extensions.
 
 The "magic" isn't magic - it's well-designed tooling that bridges the gap between unstructured code and structured AI reasoning.

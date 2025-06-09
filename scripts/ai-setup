@@ -1,5 +1,5 @@
 #!/bin/bash
-# Giant AI Dev Setup - LLM-agnostic AI development toolkit
+# Giant AI Setup - LLM-agnostic AI development toolkit
 # Supports Claude, OpenAI, and other LLM providers
 
 set -e
@@ -8,9 +8,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AI_DEV_DIR="$(dirname "$SCRIPT_DIR")"
 DOTFILES_DIR="$(dirname "$(dirname "$AI_DEV_DIR")")"
 
-echo "Giant AI Dev Setup"
+echo "Giant AI Setup"
 echo "========================="
-echo "Giant AI Dev directory: $AI_DEV_DIR"
+echo "Giant AI directory: $AI_DEV_DIR"
 echo ""
 
 # Function to check if command exists
@@ -143,7 +143,7 @@ echo ""
 
 # Create global RAG database directory
 echo "Creating global RAG database directory..."
-mkdir -p ~/.ai-dev/rag/db
+mkdir -p ~/.giant-ai/rag/db
 echo "✅ RAG database directory created"
 echo ""
 

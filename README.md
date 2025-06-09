@@ -1,4 +1,4 @@
-# Giant AI Dev - Intelligent Development Toolkit
+# Giant AI - Intelligent Development Toolkit
 
 A standalone AI-powered development toolkit that provides semantic code search, enhanced AI context, and project-aware assistance. Works with multiple LLM providers (Claude, OpenAI, etc.) through Model Context Protocol (MCP) and CLI tools.
 
@@ -27,7 +27,7 @@ ai-agent task "Add dark mode to settings page" --auto-accept
 
 **What each does:**
 - `ai-setup`: One-time install of CLI tools and MCP servers
-- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.ai-setup/` config
+- `ai-init-project-smart`: Auto-detects your project and creates intelligent `.giant-ai/` config
 - `ai-rag index`: Creates searchable index of your codebase  
 - `ai-search`: Find code by meaning, not keywords
 - `ai-agent`: Autonomous coding with checkpoints (like Cursor's agent mode)
@@ -93,9 +93,9 @@ Transform your development workflow with:
 
 ### Installation
 ```bash
-# 1. Clone or download giant-ai-dev
-git clone <giant-ai-dev-repo>
-cd giant-ai-dev
+# 1. Clone or download giant-ai
+git clone <giant-ai-repo>
+cd giant-ai
 
 # 2. Run setup script
 ./scripts/ai-setup
@@ -139,7 +139,7 @@ ai-init-project --clean
 Creates intelligent, pre-filled configuration:
 ```
 your-project/
-├── .ai-setup/
+├── .giant-ai/
 │   ├── context.md       # Auto-generated with project analysis
 │   └── conventions.yml  # Detected coding standards and patterns
 └── .gitignore          # Updated with AI Dev entries
@@ -210,7 +210,7 @@ claude --context "reviewing pull request"
 ## Directory Structure
 
 ```
-giant-ai-dev/                    # Standalone AI development toolkit
+giant-ai/                    # Standalone AI development toolkit
 ├── docs/
 │   └── rag-search-usage-guide.md # RAG vs grep usage guide
 ├── rag/
@@ -235,10 +235,10 @@ giant-ai-dev/                    # Standalone AI development toolkit
 └── settings.local.json    # Local configuration
 
 ~/.local/bin/              # CLI tools (symlinked by setup)
-├── ai-rag               # → giant-ai-dev/rag/indexer.py
-├── ai-search            # → giant-ai-dev/rag/search.py
-├── ai-setup             # → giant-ai-dev/scripts/ai-setup
-└── ai-init-project      # → giant-ai-dev/scripts/ai-init-project
+├── ai-rag               # → giant-ai/rag/indexer.py
+├── ai-search            # → giant-ai/rag/search.py
+├── ai-setup             # → giant-ai/scripts/ai-setup
+└── ai-init-project      # → giant-ai/scripts/ai-init-project
 ```
 
 ## RAG System - Semantic Code Search
@@ -269,7 +269,7 @@ class CodeChunker:
 
 ### Storage Structure
 ```
-giant-ai-dev/rag/db/
+giant-ai/rag/db/
 ├── project_abc123/          # Hashed project path
 │   ├── chroma.sqlite3       # ChromaDB database
 │   ├── metadata.json       # Project info, last index time
@@ -348,7 +348,7 @@ When you run `ai-init-project`, it automatically analyzes your codebase and gene
 - Quote preferences (single vs double)
 - Test organization (alongside vs separate directories)
 
-### Generated Context File (`.ai-setup/context.md`)
+### Generated Context File (`.giant-ai/context.md`)
 **Auto-populated based on project analysis:**
 ```markdown
 # Project Context
@@ -385,7 +385,7 @@ Framework: nextjs
 - Follow javascript best practices and idioms
 ```
 
-### Generated Conventions File (`.ai-setup/conventions.yml`)
+### Generated Conventions File (`.giant-ai/conventions.yml`)
 **Auto-detected from your codebase:**
 ```yaml
 # Project Conventions (Auto-detected)
@@ -472,7 +472,7 @@ ai-search "function" . 5
 **Missing Dependencies:**
 ```bash
 # If indexing fails - dependencies are isolated in .venv
-cd giant-ai-dev
+cd giant-ai
 source .venv/bin/activate
 pip install -r rag/requirements.txt
 deactivate
@@ -481,7 +481,7 @@ deactivate
 ./scripts/ai-setup
 
 # If MCP server fails
-cd giant-ai-dev/mcp  
+cd giant-ai/mcp  
 npm install
 ```
 
@@ -497,7 +497,7 @@ source ~/.bashrc
 # Clear and rebuild index
 ai-rag index . --clear
 
-# Check permissions (from giant-ai-dev directory)
+# Check permissions (from giant-ai directory)
 ls -la ./rag/db/
 
 # Manual cleanup
@@ -507,7 +507,7 @@ rm -rf ./rag/db/project_*
 **MCP Server Issues:**
 ```bash
 # Test MCP server manually
-node giant-ai-dev/mcp/project-server.js --test
+node giant-ai/mcp/project-server.js --test
 
 # Check MCP hub configuration
 cat ~/.config/mcp-hub/config.json
@@ -562,8 +562,8 @@ For detailed agent mode documentation, see [giant-agent.md](giant-agent.md).
 
 ### For Team Leads
 1. Initialize project: `ai-init-project`
-2. Customize `.ai-setup/context.md` with team patterns
-3. Commit `.ai-setup/` directory to repo
+2. Customize `.giant-ai/context.md` with team patterns
+3. Commit `.giant-ai/` directory to repo
 4. Share this README with team
 
 ### For Developers  
@@ -599,7 +599,7 @@ jobs:
 - Use specific search terms for better results
 
 ### Context Management
-- Keep `.ai-setup/context.md` under 2000 words
+- Keep `.giant-ai/context.md` under 2000 words
 - Focus on current sprint/focus areas
 - Remove outdated architectural decisions
 - Update conventions after team changes

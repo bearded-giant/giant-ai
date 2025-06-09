@@ -1,6 +1,6 @@
 #!/bin/bash
-# Giant AI Dev Project Initialization - LLM-agnostic project setup
-# Creates .ai-setup directory with context and conventions
+# Giant AI Project Initialization - LLM-agnostic project setup
+# Creates .giant-ai directory with context and conventions
 
 set -e
 
@@ -34,9 +34,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-AI_CONFIG_DIR="$PROJECT_DIR/.ai-setup"
+AI_CONFIG_DIR="$PROJECT_DIR/.giant-ai"
 
-echo "Giant AI Dev Project Initialization"
+echo "Giant AI Project Initialization"
 echo "============================"
 echo "Project directory: $PROJECT_DIR"
 if [ "$CLEAN_INSTALL" = true ]; then

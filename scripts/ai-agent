@@ -134,7 +134,7 @@ Examples:
     elif args.command == "config":
         if args.init:
             # Initialize agent configuration
-            config_dir = Path(".ai-setup")
+            config_dir = Path(".giant-ai")
             config_dir.mkdir(exist_ok=True)
             
             config_file = config_dir / "agent.yml"

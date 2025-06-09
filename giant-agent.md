@@ -50,7 +50,7 @@ graph LR
 Checkpoints are automatic snapshots of your project state before agent tasks:
 
 - **Git Projects**: Uses `git stash` for efficient storage
-- **Non-Git Projects**: Creates file backups in `.ai-setup/checkpoints/`
+- **Non-Git Projects**: Creates file backups in `.giant-ai/checkpoints/`
 - **Metadata Tracking**: Timestamps, descriptions, modified files
 - **Auto-Cleanup**: Keeps latest 20 checkpoints by default
 
@@ -71,7 +71,7 @@ The agent operates within strict boundaries:
 
 ```bash
 # Run the global setup if you haven't already
-./giant-ai-dev/scripts/ai-setup
+./giant-ai/scripts/ai-setup
 
 # This creates the ai-agent command
 which ai-agent  # Should show: ~/.local/bin/ai-agent
@@ -83,7 +83,7 @@ which ai-agent  # Should show: ~/.local/bin/ai-agent
 # In your project directory
 ai-agent config --init
 
-# This creates .ai-setup/agent.yml with defaults
+# This creates .giant-ai/agent.yml with defaults
 ```
 
 ### 3. First Agent Task
@@ -348,7 +348,7 @@ Create your own in `agent/prompts/`:
 ### Claude Code (Default)
 
 ```yaml
-# .ai-setup/agent.yml
+# .giant-ai/agent.yml
 provider: claude-code
 
 claude_code:
@@ -506,7 +506,7 @@ ai-agent task "Complex refactoring task" --provider openai
 import json
 from pathlib import Path
 
-checkpoint_file = Path(".ai-setup/checkpoints/20240106_143022.json")
+checkpoint_file = Path(".giant-ai/checkpoints/20240106_143022.json")
 with open(checkpoint_file) as f:
     metadata = json.load(f)
     
@@ -565,7 +565,7 @@ jobs:
       
       - name: Setup AI Agent
         run: |
-          ./giant-ai-dev/scripts/ai-setup
+          ./giant-ai/scripts/ai-setup
           
       - name: Run AI Analysis
         run: |
@@ -596,16 +596,16 @@ jobs:
 python3 -c "from agent.providers.base import LLMProviderFactory; print(LLMProviderFactory.list_providers())"
 
 # Verify provider in config
-cat .ai-setup/agent.yml
+cat .giant-ai/agent.yml
 ```
 
 **"No checkpoint found" error:**
 ```bash
 # List all checkpoints with full paths
-ls -la .ai-setup/checkpoints/
+ls -la .giant-ai/checkpoints/
 
 # Check checkpoint metadata
-cat .ai-setup/checkpoints/*.json | jq .
+cat .giant-ai/checkpoints/*.json | jq .
 ```
 
 **Auto-accept not working:**
@@ -629,7 +629,7 @@ git stash list
 git stash list | grep "AI Agent Checkpoint" | cut -d: -f1 | xargs -n1 git stash drop
 
 # Use file-based checkpoints instead
-# Add to .ai-setup/agent.yml:
+# Add to .giant-ai/agent.yml:
 checkpoint_strategy: files  # Instead of git
 ```
 
@@ -645,7 +645,7 @@ export AI_AGENT_DEBUG=1
 ai-agent task "Debug task" --auto-accept
 
 # Check session logs
-tail -f .ai-setup/agent_sessions.jsonl | jq .
+tail -f .giant-ai/agent_sessions.jsonl | jq .
 ```
 
 ### Performance Tips

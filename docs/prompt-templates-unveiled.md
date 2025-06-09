@@ -30,7 +30,7 @@ User Request: "Add authentication"
 Template Engine: Combines user request with:
       ↓
 System Prompt: "You are a senior developer..."
-Project Context: Your .ai-setup/context.md
+Project Context: Your .giant-ai/context.md
 Conventions: Your coding standards
 Task Template: Authentication-specific workflow
 Safety Constraints: "Do not commit to git"
@@ -42,9 +42,9 @@ AI Model: Follows detailed template instructions
 Consistent Output: High-quality, safe, styled code
 ```
 
-## Giant AI Dev's Template Architecture
+## Giant AI's Template Architecture
 
-Let's examine the actual prompt templates in Giant AI Dev:
+Let's examine the actual prompt templates in Giant AI:
 
 ### Base Agent Template Structure
 
@@ -143,8 +143,8 @@ def _build_agent_prompt(self, task, template_name="default"):
     # Substitute variables
     prompt = template.format(
         task=task,
-        project_context=self.context,      # Your .ai-setup/context.md
-        conventions=self.conventions       # Your .ai-setup/conventions.yml
+        project_context=self.context,      # Your .giant-ai/context.md
+        conventions=self.conventions       # Your .giant-ai/conventions.yml
     )
     
     return prompt
@@ -174,7 +174,7 @@ function login(username, password) {
 - No testing considerations
 - Could be insecure
 
-### With Templates (Giant AI Dev)
+### With Templates (Giant AI)
 ```
 User: ai-agent task "Add authentication"
 
@@ -445,7 +445,7 @@ templates/
 ### Custom Organization Templates
 
 ```yaml
-# .ai-setup/templates.yml
+# .giant-ai/templates.yml
 organization: "acme-corp"
 templates:
   feature:
@@ -540,12 +540,12 @@ def debug_template(template_name, variables):
     return rendered
 ```
 
-## Integration with Giant AI Dev
+## Integration with Giant AI
 
 ### Template Configuration
 
 ```yaml
-# .ai-setup/agent.yml
+# .giant-ai/agent.yml
 prompt_templates:
   default: default
   refactor: refactor
@@ -604,9 +604,9 @@ def track_template_effectiveness():
 - **Expertise** - Encode best practices into every AI interaction
 - **Customization** - Adapt AI behavior to your team's specific needs
 
-### Giant AI Dev's Template Advantage
+### Giant AI's Template Advantage
 - **Specialized templates** for different task types (feature, refactor, debug)
-- **Project-aware context** injection based on your .ai-setup/ files
+- **Project-aware context** injection based on your .giant-ai/ files
 - **Safety-first design** with explicit constraints and boundaries
 - **Template inheritance** for consistency across related workflows
 - **Dynamic selection** based on task content analysis
@@ -618,4 +618,4 @@ def track_template_effectiveness():
 4. **Inject context** - Use project-specific information dynamically
 5. **Iterate based on results** - Monitor effectiveness and refine
 
-The invisible layer of prompt templates is what transforms raw AI capability into reliable, professional coding assistance. Giant AI Dev makes this visible and customizable, giving you control over how AI approaches your specific development challenges.
+The invisible layer of prompt templates is what transforms raw AI capability into reliable, professional coding assistance. Giant AI makes this visible and customizable, giving you control over how AI approaches your specific development challenges.

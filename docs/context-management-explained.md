@@ -33,9 +33,9 @@ AI can see: ~500 lines at once (0.1% of your code)
 
 **The challenge:** How does AI choose which 0.1% of your code to look at?
 
-## Giant AI Dev's Context Management Strategy
+## Giant AI's Context Management Strategy
 
-Let's examine how Giant AI Dev solves context management:
+Let's examine how Giant AI solves context management:
 
 ### 1. Project-Aware Context Loading
 
@@ -92,12 +92,12 @@ def prepare_file_fast(self, file_path):
 
 ### 3. Context Layering Strategy
 
-Giant AI Dev uses a **layered context approach**:
+Giant AI uses a **layered context approach**:
 
 ```
-Layer 1: Project conventions (.ai-setup/conventions.yml)
+Layer 1: Project conventions (.giant-ai/conventions.yml)
     ↓
-Layer 2: Architecture overview (.ai-setup/context.md)  
+Layer 2: Architecture overview (.giant-ai/context.md)  
     ↓
 Layer 3: Semantic search results (relevant code via RAG)
     ↓
@@ -110,11 +110,11 @@ Layer 5: Conversation history (recent only)
 ```javascript
 async getProjectContext(projectPath) {
     // Layer 1: Local project context
-    const localContext = path.join(targetPath, '.ai-setup', 'context.md');
+    const localContext = path.join(targetPath, '.giant-ai', 'context.md');
     let context = await fs.readFile(localContext, 'utf-8');
     
     // Layer 2: Project conventions
-    const conventionsPath = path.join(targetPath, '.ai-setup', 'conventions.yml');
+    const conventionsPath = path.join(targetPath, '.giant-ai', 'conventions.yml');
     const conventions = await fs.readFile(conventionsPath, 'utf-8');
     context += "\n\n## Project Conventions\n" + yaml.stringify(parsed);
     
@@ -126,7 +126,7 @@ async getProjectContext(projectPath) {
 
 ### Smart Context Selection
 
-Instead of including random files, Giant AI Dev uses **relevance ranking**:
+Instead of including random files, Giant AI uses **relevance ranking**:
 
 ```python
 # From semantic search
@@ -222,7 +222,7 @@ After 20 exchanges:
 
 **What happens:** AI "forgets" your project context as conversation history fills the window.
 
-### Giant AI Dev's Solutions
+### Giant AI's Solutions
 
 #### 1. **Session Boundaries**
 ```python
@@ -283,7 +283,7 @@ ai-search "authentication patterns" . 5
 
 #### 1. **Maintain Quality Context Files**
 ```yaml
-# .ai-setup/conventions.yml - Keep this current
+# .giant-ai/conventions.yml - Keep this current
 naming:
   files: kebab-case
   components: PascalCase
@@ -299,7 +299,7 @@ errors:
 
 #### 2. **Document Architecture Decisions**
 ```markdown
-# .ai-setup/context.md - Update after major changes
+# .giant-ai/context.md - Update after major changes
 ## Recent Architecture Changes
 - Migrated from REST to GraphQL (Q2 2024)
 - Added microservices for user management
@@ -318,9 +318,9 @@ errors:
 **Problem:** AI suggests class components in a hooks-based codebase
 **Context Issue:** AI can't see enough examples to understand current patterns
 
-**Giant AI Dev Solution:**
+**Giant AI Solution:**
 ```yaml
-# .ai-setup/conventions.yml
+# .giant-ai/conventions.yml
 react:
   component_style: "functional with hooks"
   state_management: "Redux Toolkit"
@@ -335,7 +335,7 @@ react:
 **Problem:** AI mixes Python and Node.js patterns when working on Go service
 **Context Issue:** Semantic search returns results from all languages
 
-**Giant AI Dev Solution:**
+**Giant AI Solution:**
 ```bash
 # Project-specific indexing
 cd user-service-go
@@ -350,9 +350,9 @@ ai-search "API error handling" . 10  # Only Go results
 **Problem:** AI suggests modern patterns that break legacy system constraints
 **Context Issue:** Constraints not visible in code structure
 
-**Giant AI Dev Solution:**
+**Giant AI Solution:**
 ```markdown
-# .ai-setup/context.md
+# .giant-ai/context.md
 ## Legacy Constraints
 - Must support IE11 (no modern JS features)
 - Cannot modify database schema (migrations forbidden)
@@ -423,7 +423,7 @@ wc -w conversation.txt  # Rough token estimate
 - **Your codebase is large** (thousands of files, millions of lines)
 - **Relevance is subjective** (what's "related" depends on your task)
 
-### Giant AI Dev's Approach
+### Giant AI's Approach
 - **Structured project understanding** via smart initialization
 - **Semantic search** for relevance-based context selection  
 - **Layered context** with conventions, architecture, and current focus
@@ -431,7 +431,7 @@ wc -w conversation.txt  # Rough token estimate
 - **Session management** to prevent context degradation
 
 ### Best Practices
-1. **Keep context files current** - Update .ai-setup/ files regularly
+1. **Keep context files current** - Update .giant-ai/ files regularly
 2. **Start fresh when quality degrades** - Don't fight context overflow
 3. **Use semantic search** - Let RAG find relevant context for you
 4. **Be specific in requests** - Help AI understand what context matters

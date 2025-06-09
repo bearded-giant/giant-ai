@@ -15,7 +15,7 @@ class CodebaseRAG:
         
         # Use global RAG db location with project-specific collection
         if persist_directory is None:
-            self.persist_dir = Path.home() / ".giant-ai-dev" / "rag" / "db"
+            self.persist_dir = Path.home() / ".giant-ai" / "rag" / "db"
         else:
             self.persist_dir = Path(persist_directory)
             
@@ -343,7 +343,7 @@ def search(query, project_path, limit):
 @cli.command()
 def list_projects():
     """List all indexed projects"""
-    persist_dir = Path.home() / ".giant-ai-dev" / "rag" / "db"
+    persist_dir = Path.home() / ".giant-ai" / "rag" / "db"
     if not persist_dir.exists():
         click.echo("No projects indexed yet.")
         return

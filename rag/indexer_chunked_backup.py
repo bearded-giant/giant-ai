@@ -16,7 +16,7 @@ class CodebaseRAG:
         
         # Use global RAG db location with project-specific collection
         if persist_directory is None:
-            self.persist_dir = Path.home() / ".giant-ai-dev" / "rag" / "db"
+            self.persist_dir = Path.home() / ".giant-ai" / "rag" / "db"
         else:
             self.persist_dir = Path(persist_directory)
             

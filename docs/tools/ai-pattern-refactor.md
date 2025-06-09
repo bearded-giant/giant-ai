@@ -16,7 +16,7 @@ Traditional refactoring tools work on exact text matches or AST patterns. AI Pat
 The tool is automatically installed when you run `ai-setup`. To install manually:
 
 ```bash
-cd giant-ai-dev
+cd giant-ai
 ./scripts/ai-setup
 ```
 
@@ -192,7 +192,7 @@ Pattern files in `patterns/` directory provide templates for common refactoring 
 ## Configuration
 
 ### Project Configuration
-Create `.ai-setup/tools.yml` for project-specific settings:
+Create `.giant-ai/tools.yml` for project-specific settings:
 
 ```yaml
 tools:
@@ -213,7 +213,7 @@ tools:
 ```
 
 ### Global Configuration
-Set defaults in `~/.ai-setup/tools.yml`:
+Set defaults in `~/.giant-ai/tools.yml`:
 
 ```yaml
 ai-pattern-refactor:
@@ -250,10 +250,10 @@ ai-pattern-refactor:
 
 ## Integration with Other Tools
 
-Works seamlessly with Giant AI Dev ecosystem:
+Works seamlessly with Giant AI ecosystem:
 - Uses **RAG indexes** for semantic search
 - Integrates with **agent mode** for complex refactoring
-- Respects **project conventions** from .ai-setup/
+- Respects **project conventions** from .giant-ai/
 - Can be used in **CI/CD pipelines** for code quality
 
 ## Future Enhancements

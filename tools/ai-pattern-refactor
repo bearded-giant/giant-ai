@@ -27,7 +27,7 @@ class PatternRefactor:
     def __init__(self, project_path: str = "."):
         self.project_path = Path(project_path).resolve()
         self.rag = CodebaseRAG(project_path)
-        self.backup_dir = self.project_path / ".ai-setup" / "refactor-backups"
+        self.backup_dir = self.project_path / ".giant-ai" / "refactor-backups"
         self.backup_dir.mkdir(parents=True, exist_ok=True)
         
         # Load provider configuration
@@ -39,7 +39,7 @@ class PatternRefactor:
         
     def _load_provider_config(self) -> Dict[str, Any]:
         """Load provider configuration from project settings"""
-        config_path = self.project_path / ".ai-setup" / "agent.yml"
+        config_path = self.project_path / ".giant-ai" / "agent.yml"
         if config_path.exists():
             import yaml
             with open(config_path) as f:

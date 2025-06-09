@@ -23,9 +23,9 @@ Behind the scenes, **LLM providers have fundamental differences** in:
 6. **Latency characteristics** - How fast they respond to requests
 7. **Integration features** - What development tools they connect with
 
-## Giant AI Dev's Provider Architecture
+## Giant AI's Provider Architecture
 
-Giant AI Dev supports multiple providers through a unified interface. Let's examine the implementation:
+Giant AI supports multiple providers through a unified interface. Let's examine the implementation:
 
 ### Provider Factory Pattern
 
@@ -204,7 +204,7 @@ ollama "Explain this algorithm implementation"
 **Recommended:** GPT-3.5 Turbo + Claude Haiku for complex tasks
 
 ```yaml
-# .ai-setup/agent.yml
+# .giant-ai/agent.yml
 provider: openai
 model: gpt-3.5-turbo
 
@@ -341,12 +341,12 @@ export AI_PROVIDER=claude-3-5-sonnet
 ai-agent task "Review and improve API documentation"
 ```
 
-## Integration Patterns in Giant AI Dev
+## Integration Patterns in Giant AI
 
 ### Provider Configuration
 
 ```yaml
-# .ai-setup/agent.yml
+# .giant-ai/agent.yml
 provider: claude-code
 
 # Provider-specific settings
@@ -380,7 +380,7 @@ class SmartProviderSelector:
 ### Fallback Chains
 
 ```yaml
-# .ai-setup/agent.yml
+# .giant-ai/agent.yml
 provider_chain:
   primary: claude-code
   fallback:
@@ -395,7 +395,7 @@ provider_chain:
 ### Response Time Tracking
 
 ```python
-# Built into Giant AI Dev agent
+# Built into Giant AI agent
 def track_performance(provider, task_type, response_time):
     metrics = {
         "provider": provider,
@@ -525,7 +525,7 @@ def check_provider_health():
    - Quality critical → Claude 3.5 Sonnet
    - Balanced → GPT-4 Turbo
 
-### Giant AI Dev Advantages
+### Giant AI Advantages
 
 - **Provider abstraction** - Switch providers without changing workflow
 - **Smart routing** - Route tasks to optimal provider automatically
@@ -533,4 +533,4 @@ def check_provider_health():
 - **Fallback support** - Graceful degradation when providers fail
 - **Unified configuration** - Single config file for all providers
 
-**The key insight:** Different providers excel at different tasks. Giant AI Dev's architecture lets you use the right tool for each job while maintaining a consistent development experience.
+**The key insight:** Different providers excel at different tasks. Giant AI's architecture lets you use the right tool for each job while maintaining a consistent development experience.

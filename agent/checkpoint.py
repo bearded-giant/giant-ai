@@ -14,7 +14,7 @@ class CheckpointManager:
     
     def __init__(self, project_dir: str):
         self.project_dir = Path(project_dir).resolve()
-        self.checkpoint_dir = self.project_dir / ".ai-setup" / "checkpoints"
+        self.checkpoint_dir = self.project_dir / ".giant-ai" / "checkpoints"
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         
     def create_checkpoint(self, description: str = "") -> str:
@@ -149,7 +149,7 @@ class CheckpointManager:
         """Create file backups for non-git projects"""
         # Simple implementation - can be enhanced
         for item in self.project_dir.iterdir():
-            if item.name not in [".ai-setup", "node_modules", ".venv", "__pycache__"]:
+            if item.name not in [".giant-ai", "node_modules", ".venv", "__pycache__"]:
                 if item.is_file():
                     shutil.copy2(item, backup_path / item.name)
                 elif item.is_dir():
