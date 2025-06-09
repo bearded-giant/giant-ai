@@ -336,8 +336,10 @@ After setup, compatible LLM desktop applications (like Claude Desktop) automatic
 
 ## Editor Integration
 
-### Neovim (Optional)
-Complete Neovim integration available with AI keybindings and workflow automation. See `nvim/NEOVIM_AI_SETUP.md` for details.
+### Neovim Integration
+Official Neovim plugin available: **[giant-ai.nvim](https://github.com/bearded-giant/giant-ai.nvim)**
+
+Complete Neovim integration with semantic search and AI analysis directly in your editor. See the plugin repository for installation and usage details.
 
 ### VS Code (Future)
 MCP support coming to VS Code and other editors.

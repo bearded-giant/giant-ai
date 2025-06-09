@@ -7,9 +7,10 @@ Welcome to the Giant AI documentation! This directory contains comprehensive gui
 **New to Giant AI?** Start here:
 
 1. **[Quick Start Commands Guide](quick-start-commands.md)** - **ESSENTIAL**: Where to run what commands when - eliminates confusion!
-2. **[LLM Connectivity Guide](llm-connectivity-guide.md)** - How Giant AI connects to your AI provider (Claude, OpenAI, etc.)
-3. **[RAG + AI Analysis Workflow](rag-ai-analysis-workflow.md)** - Making RAG search results actionable with AI analysis
-4. **[RAG vs Grep Usage Guide](rag-search-usage-guide.md)** - When semantic search provides value over traditional text search
+2. **[Neovim Plugin](https://github.com/bearded-giant/giant-ai.nvim)** - Official Neovim integration for semantic search and AI analysis
+3. **[LLM Connectivity Guide](llm-connectivity-guide.md)** - How Giant AI connects to your AI provider (Claude, OpenAI, etc.)
+4. **[RAG + AI Analysis Workflow](rag-ai-analysis-workflow.md)** - Making RAG search results actionable with AI analysis
+5. **[RAG vs Grep Usage Guide](rag-search-usage-guide.md)** - When semantic search provides value over traditional text search
 
 ## Documentation Index
 
@@ -30,6 +31,7 @@ Welcome to the Giant AI documentation! This directory contains comprehensive gui
 - **[LLM Provider Practical Guide](llm-provider-practical-guide.md)** - Claude vs OpenAI vs local models for different tasks
 
 ### Tools & Utilities
+- **[Neovim Plugin](https://github.com/bearded-giant/giant-ai.nvim)** - Official Neovim integration (external repository)
 - **[AI Pattern Refactor](tools/ai-pattern-refactor.md)** - Semantic code refactoring across multiple files
 
 ### Setup & Configuration

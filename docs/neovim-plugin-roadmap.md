@@ -1,5 +1,11 @@
 # Giant AI Neovim Plugin Roadmap
 
+## Current Status: Dedicated Plugin Available
+
+**Giant AI now has a dedicated Neovim plugin**: **[giant-ai.nvim](https://github.com/bearded-giant/giant-ai.nvim)**
+
+This is the official Neovim integration for Giant AI, providing semantic code search and AI analysis directly in your editor.
+
 ## Philosophy: Start Simple, Evolve Based on Feedback
 
 Giant AI's Neovim integration follows an evolutionary approach rather than building a massive plugin upfront.
@@ -23,9 +29,27 @@ Giant AI's Neovim integration follows an evolutionary approach rather than build
 - **Fallback handling** - Graceful degradation when things fail
 - **Simple implementation** - Bash pipes instead of complex async code
 
-**Installation:**
+**Recommended Installation (Plugin):**
 ```lua
--- Add to your Neovim config
+-- Using lazy.nvim
+{
+  "bearded-giant/giant-ai.nvim",
+  config = function()
+    require('giant-ai').setup({
+      provider = "claude",  -- or your AI CLI tool
+      limit = 5,
+      keymaps = {
+        search_raw = "<leader>rs",
+        search_analyze = "<leader>ra",
+      },
+    })
+  end,
+}
+```
+
+**Legacy Installation (Direct Lua):**
+```lua
+-- Add to your Neovim config (deprecated - use plugin above)
 local giant_ai_path = "/path/to/giant-ai"
 package.path = package.path .. ";" .. giant_ai_path .. "/nvim/?.lua"
 
@@ -134,7 +158,7 @@ giant-ai.nvim/
 
 ## Current Recommendation
 
-**For users**: Start with the enhanced Lua script (`giant-ai-simple.lua`). It provides:
+**For users**: Use the dedicated [giant-ai.nvim](https://github.com/bearded-giant/giant-ai.nvim) plugin. It provides:
 - All core functionality
 - Clean, discoverable commands  
 - Smart Avante integration
@@ -148,16 +172,17 @@ giant-ai.nvim/
 
 ## Implementation Examples
 
-### **Current Approach Usage:**
+### **Current Plugin Usage:**
 ```lua
 -- Simple setup
-require('giant-ai-simple').setup()
+require('giant-ai').setup()
 
 -- Custom configuration  
-require('giant-ai-simple').setup({
+require('giant-ai').setup({
   provider = "claude",
   limit = 10,
   keymaps = {
+    search_raw = "<leader>fs",
     search_analyze = "<leader>fa",  -- Custom keymap
   }
 })
