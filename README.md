@@ -595,6 +595,25 @@ jobs:
 - Implement caching for expensive operations
 - Monitor server resource usage
 
+## Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
+- Setting up the development environment
+- Submitting pull requests
+- Contributor License Agreement (CLA)
+- Community guidelines
+
+Areas where we especially welcome contributions:
+- **RAG improvements** - Better semantic search and code understanding
+- **MCP tools** - New analysis and context extraction capabilities
+- **Agent mode enhancements** - Additional prompt templates and safety features
+- **Development tools** - Implementation of planned utilities (ai-pattern-refactor, ai-test-generate, etc.)
+- **Documentation** - Tutorials, examples, and architecture explanations
+
+## License
+
+Giant AI Dev is licensed under the [Apache License 2.0](LICENSE).
+
 ---
 
 *A next-generation development toolkit that understands your code, respects your privacy, and amplifies your productivity.*
