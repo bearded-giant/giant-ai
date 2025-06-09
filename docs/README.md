@@ -7,8 +7,9 @@ Welcome to the Giant AI documentation! This directory contains comprehensive gui
 **New to Giant AI?** Start here:
 
 1. **[LLM Connectivity Guide](llm-connectivity-guide.md)** - Essential reading: How Giant AI connects to your AI provider (Claude, OpenAI, etc.)
-2. **[RAG vs Grep Usage Guide](rag-search-usage-guide.md)** - Learn when semantic search provides value over traditional text search
-3. **[Quick Start Guide](../README.md#quick-start-tldr)** - Get up and running in 5 minutes
+2. **[RAG vs Grep Usage Guide](rag-search-usage-guide.md)** - Learn when semantic search provides value over traditional text search  
+3. **[RAG + AI Analysis Workflow](rag-ai-analysis-workflow.md)** - NEW: Making RAG search results actionable with AI analysis
+4. **[Quick Start Guide](../README.md#quick-start-tldr)** - Get up and running in 5 minutes
 
 ## 📋 Documentation Index
 
@@ -21,6 +22,7 @@ Welcome to the Giant AI documentation! This directory contains comprehensive gui
 ### Feature Guides
 - **[Agent Mode vs Manual Coding](agent-mode-vs-manual-coding.md)** - When to use autonomous vs interactive AI
 - **[RAG vs Grep Usage Guide](rag-search-usage-guide.md)** - Semantic search vs traditional text search comparison
+- **[RAG + AI Analysis Workflow](rag-ai-analysis-workflow.md)** - Making RAG search results actionable with AI analysis
 - **[Prompt Templates Unveiled](prompt-templates-unveiled.md)** - Optimizing AI interactions with context-aware prompts
 
 ### Provider & Model Selection

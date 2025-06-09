@@ -624,6 +624,7 @@ jobs:
 ### Getting Started
 - **[LLM Connectivity Guide](docs/llm-connectivity-guide.md)** - How Giant AI connects to different AI providers (Claude, OpenAI, etc.)
 - **[RAG vs Grep Usage Guide](docs/rag-search-usage-guide.md)** - When to use semantic search vs traditional text search
+- **[RAG + AI Analysis Workflow](docs/rag-ai-analysis-workflow.md)** - NEW: Making RAG search results actionable with AI analysis
 
 ### Core Concepts
 - **[MCP Demystified](docs/mcp-demystified.md)** - Understanding Model Context Protocol and enhanced AI interactions

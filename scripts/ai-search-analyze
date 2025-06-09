@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+"""Enhanced AI search that can pipe to AI for analysis"""
+
+import sys
+import json
+import subprocess
+import click
+from pathlib import Path
+
+# Import the search functionality
+sys.path.append(str(Path(__file__).parent.parent / "rag"))
+from search import search_project
+
+@click.command()
+@click.argument('query')
+@click.argument('project_path', type=click.Path(exists=True), default='.')
+@click.option('--limit', '-n', default=5, help='Number of search results')
+@click.option('--analyze', '-a', is_flag=True, help='Analyze results with AI')
+@click.option('--provider', '-p', default='claude', help='AI provider for analysis')
+@click.option('--format', '-f', type=click.Choice(['json', 'text']), default='text', help='Output format')
+def main(query, project_path, limit, analyze, provider, format):
+    """Search codebase semantically and optionally analyze with AI"""
+    
+    # Get RAG search results
+    try:
+        search_results = search_project(project_path, query, limit, 'json')
+        results_data = json.loads(search_results)
+    except Exception as e:
+        click.echo(f"Error searching: {e}", err=True)
+        sys.exit(1)
+    
+    if not analyze:
+        # Just return raw results (current behavior)
+        if format == 'json':
+            click.echo(search_results)
+        else:
+            formatted = search_project(project_path, query, limit, 'text')
+            click.echo(formatted)
+        return
+    
+    # Analyze with AI
+    try:
+        analysis = analyze_with_ai(results_data, query, provider)
+        click.echo(analysis)
+    except Exception as e:
+        click.echo(f"Error during AI analysis: {e}", err=True)
+        # Fall back to raw results
+        click.echo("\nFalling back to raw results:")
+        formatted = search_project(project_path, query, limit, 'text')
+        click.echo(formatted)
+
+def analyze_with_ai(results_data, query, provider):
+    """Send search results to AI for analysis"""
+    
+    # Build context from search results
+    context_parts = [
+        f"# Semantic Search Analysis",
+        f"**Query**: {query}",
+        f"**Project**: {results_data['project']}",
+        f"**Found {len(results_data['results'])} relevant code sections:**\n"
+    ]
+    
+    for i, result in enumerate(results_data['results'], 1):
+        metadata = result['metadata']
+        content = result['content']
+        distance = result['distance']
+        
+        context_parts.extend([
+            f"## Result {i}: {metadata['file_path']}",
+            f"**Location**: Lines {metadata.get('line_start', 'N/A')}-{metadata.get('line_end', 'N/A')}",
+            f"**Type**: {metadata.get('chunk_type', 'N/A')}",
+            f"**Relevance**: {(1-distance)*100:.1f}%",
+            f"```{metadata.get('file_type', '').replace('.', '')}",
+            content.strip(),
+            "```\n"
+        ])
+    
+    full_context = '\n'.join(context_parts)
+    
+    # Create AI prompt
+    prompt = f"""Please analyze these semantic search results and provide insights:
+
+{full_context}
+
+**Analysis Request:**
+Based on the search query "{query}" and the code sections found, please:
+
+1. **Summarize** what patterns/approaches were found
+2. **Analyze** the consistency and quality of implementations  
+3. **Identify** any gaps, inconsistencies, or improvement opportunities
+4. **Recommend** best practices based on what you see
+5. **Highlight** the most relevant/useful code sections for this query
+
+Focus on practical insights that would help a developer understand and work with this codebase."""
+
+    # Call AI provider
+    if provider == 'claude':
+        result = subprocess.run(
+            ['claude', '--print', prompt],
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+    else:
+        # Add other providers as needed
+        result = subprocess.run(
+            [provider, prompt],  # Assuming generic CLI interface
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+    
+    if result.returncode != 0:
+        raise Exception(f"AI provider failed: {result.stderr}")
+    
+    return result.stdout.strip()
+
+if __name__ == "__main__":
+    main()

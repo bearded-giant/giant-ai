@@ -94,6 +94,15 @@ exec python3 "$AI_DEV_DIR/rag/search.py" "\$@"
 EOF
 chmod +x ~/.local/bin/ai-search
 
+# Create ai-search-analyze wrapper with virtual environment (enhanced search with AI analysis)
+cat > ~/.local/bin/ai-search-analyze << EOF
+#!/bin/bash
+# Wrapper script for ai-search-analyze that uses isolated Python environment
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/scripts/ai-search-analyze" "\$@"
+EOF
+chmod +x ~/.local/bin/ai-search-analyze
+
 # Create ai-agent wrapper with virtual environment
 cat > ~/.local/bin/ai-agent << EOF
 #!/bin/bash
