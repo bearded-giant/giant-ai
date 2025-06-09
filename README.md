@@ -211,8 +211,17 @@ claude --context "reviewing pull request"
 
 ```
 giant-ai/                    # Standalone AI development toolkit
-├── docs/
-│   └── rag-search-usage-guide.md # RAG vs grep usage guide
+├── docs/                          # Comprehensive documentation
+│   ├── llm-connectivity-guide.md  # How AI providers connect to Giant AI
+│   ├── rag-search-usage-guide.md  # RAG vs grep usage guide
+│   ├── mcp-demystified.md         # Model Context Protocol explained
+│   ├── rag-overview-explained.md  # Semantic search system overview
+│   ├── context-management-explained.md # Project-aware AI context
+│   ├── agent-mode-vs-manual-coding.md # Autonomous vs interactive AI
+│   ├── llm-provider-practical-guide.md # Claude vs OpenAI comparison
+│   ├── prompt-templates-unveiled.md # Optimizing AI interactions
+│   └── tools/
+│       └── ai-pattern-refactor.md # Semantic refactoring documentation
 ├── rag/
 │   ├── db/                    # ChromaDB storage for all projects
 │   │   ├── project_abc123/    # Hashed project path
@@ -609,6 +618,32 @@ jobs:
 - Keep global servers lightweight
 - Implement caching for expensive operations
 - Monitor server resource usage
+
+## 📚 Documentation
+
+### Getting Started
+- **[LLM Connectivity Guide](docs/llm-connectivity-guide.md)** - How Giant AI connects to different AI providers (Claude, OpenAI, etc.)
+- **[RAG vs Grep Usage Guide](docs/rag-search-usage-guide.md)** - When to use semantic search vs traditional text search
+
+### Core Concepts
+- **[MCP Demystified](docs/mcp-demystified.md)** - Understanding Model Context Protocol and enhanced AI interactions
+- **[RAG Overview Explained](docs/rag-overview-explained.md)** - How semantic search enhances your development workflow
+- **[Context Management Explained](docs/context-management-explained.md)** - Project-aware AI with intelligent context loading
+
+### Advanced Features
+- **[Agent Mode vs Manual Coding](docs/agent-mode-vs-manual-coding.md)** - When to use autonomous coding vs interactive AI assistance
+- **[LLM Provider Practical Guide](docs/llm-provider-practical-guide.md)** - Comparing Claude vs OpenAI vs local models for different tasks
+- **[Prompt Templates Unveiled](docs/prompt-templates-unveiled.md)** - Optimizing AI interactions with context-aware prompts
+
+### Tools & Workflows
+- **[AI Pattern Refactor](docs/tools/ai-pattern-refactor.md)** - Semantic code refactoring across multiple files
+- **[Migration Guide](~/Desktop/giant-ai-migration-guide.md)** - Upgrading from `.ai-setup` to `.giant-ai` (temporary location)
+
+### Architecture & Integration
+- **[Complete Setup Guide](complete_ai_setup.md)** - Comprehensive installation and configuration (technical details)
+- **[Giant Agent Documentation](giant-agent.md)** - Autonomous coding mode with checkpoints and safety controls
+
+**💡 Pro Tip**: Start with the [LLM Connectivity Guide](docs/llm-connectivity-guide.md) to understand how Giant AI works with your preferred AI provider, then explore the RAG and MCP guides to unlock advanced features.
 
 ## Contributing
 
