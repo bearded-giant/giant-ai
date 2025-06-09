@@ -196,6 +196,8 @@ claude --context "reviewing pull request"
 
 ```
 giant-ai-dev/                    # Standalone AI development toolkit
+├── docs/
+│   └── rag-search-usage-guide.md # RAG vs grep usage guide
 ├── rag/
 │   ├── db/                    # ChromaDB storage for all projects
 │   │   ├── project_abc123/    # Hashed project path
@@ -225,6 +227,8 @@ giant-ai-dev/                    # Standalone AI development toolkit
 ```
 
 ## RAG System - Semantic Code Search
+
+> **💡 When to Use RAG vs Grep?** See [docs/rag-search-usage-guide.md](docs/rag-search-usage-guide.md) for a detailed comparison and practical examples of when RAG search provides value over traditional text search.
 
 ### Intelligent Chunking
 The RAG system uses intelligent chunking and stores indexes per-project:
