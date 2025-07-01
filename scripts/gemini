@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""
+Gemini CLI wrapper for Giant AI integration
+"""
+
+import sys
+import os
+import json
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from agent.providers.base import GeminiProvider
+
+def main():
+    # Read from stdin
+    prompt = sys.stdin.read()
+    
+    # Create provider with config from environment
+    config = {
+        'gemini_api_key': os.environ.get('GEMINI_API_KEY'),
+        'gemini_model': os.environ.get('GEMINI_MODEL', 'gemini-pro'),
+        'gemini_temperature': float(os.environ.get('GEMINI_TEMPERATURE', '0.7')),
+        'gemini_max_tokens': int(os.environ.get('GEMINI_MAX_TOKENS', '4000'))
+    }
+    
+    try:
+        provider = GeminiProvider(config)
+        result = provider.execute_agent_task(prompt, {'project_context': ''})
+        
+        if result['success']:
+            print(result['output'])
+        else:
+            print(f"Error: {result['error']}", file=sys.stderr)
+            sys.exit(1)
+            
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

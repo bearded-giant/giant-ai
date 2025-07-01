@@ -43,7 +43,16 @@ case "$PROVIDER" in
         echo "$PROMPT" | claude
         ;;
     "openai")
-        echo "$PROMPT" | openai-cli  # When available
+        echo "$PROMPT" | "$(dirname "$0")/openai"
+        ;;
+    "anthropic")
+        echo "$PROMPT" | "$(dirname "$0")/anthropic"
+        ;;
+    "gemini")
+        echo "$PROMPT" | "$(dirname "$0")/gemini"
+        ;;
+    "ollama")
+        echo "$PROMPT" | "$(dirname "$0")/ollama"
         ;;
     *)
         echo "$PROMPT" | "$PROVIDER"
