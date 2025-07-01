@@ -1,0 +1,52 @@
+# Giant AI Agent Configuration Template
+# Copy this to your project's .giant-ai/agent.yml and customize
+
+# Provider selection - choose one: claude-code, openai, anthropic, gemini
+provider: claude-code
+
+# Claude Code configuration (default, uses Claude Desktop)
+# No additional configuration needed for claude-code
+
+# OpenAI configuration (requires API key)
+openai_api_key: ${OPENAI_API_KEY}  # Can use environment variable
+openai_model: gpt-4-turbo-preview  # Options: gpt-4-turbo-preview, gpt-4, gpt-3.5-turbo
+openai_temperature: 0.7
+openai_max_tokens: 4000
+
+# Anthropic API configuration (requires API key)
+anthropic_api_key: ${ANTHROPIC_API_KEY}  # Can use environment variable
+anthropic_model: claude-3-opus-20240229  # Options: claude-3-opus-20240229, claude-3-sonnet-20240229
+anthropic_temperature: 0.7
+anthropic_max_tokens: 4000
+
+# Google Gemini configuration (requires API key)
+gemini_api_key: ${GEMINI_API_KEY}  # Can use environment variable
+gemini_model: gemini-pro  # Options: gemini-pro, gemini-pro-vision
+gemini_temperature: 0.7
+gemini_max_tokens: 4000
+
+# Ollama configuration (local models - no API key needed!)
+ollama_base_url: http://localhost:11434  # Default Ollama URL
+ollama_model: llama2  # Options: llama2, codellama, mistral, mixtral, deepseek-coder
+ollama_temperature: 0.7
+ollama_context_length: 4096  # Adjust based on your model and GPU memory
+
+# Agent behavior settings
+auto_accept: false  # Auto-accept changes without prompting
+checkpoint_before: true  # Create checkpoint before tasks
+checkpoint_after: false  # Create checkpoint after successful tasks
+auto_restore_on_failure: false  # Auto-restore on task failure
+
+# Session settings
+continue_session: false  # Continue from previous session
+log_sessions: true  # Log all agent sessions
+
+# Safety settings
+max_file_size: 1048576  # Max file size to edit (1MB)
+excluded_paths:  # Paths to never modify
+  - .git
+  - node_modules
+  - .env
+  - .env.local
+  - secrets.yml
+  - credentials.json

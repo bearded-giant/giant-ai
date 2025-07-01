@@ -417,6 +417,31 @@ else
     echo "✓ conventions.yml already exists"
 fi
 
+# Create agent.yml if it doesn't exist
+if [ ! -f "$AI_CONFIG_DIR/agent.yml" ] || [ "$CLEAN_INSTALL" = true ]; then
+    echo "Creating agent configuration file..."
+    # Find the templates directory
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    TEMPLATES_DIR="$(dirname "$SCRIPT_DIR")/templates"
+    
+    if [ -f "$TEMPLATES_DIR/agent.yml" ]; then
+        cp "$TEMPLATES_DIR/agent.yml" "$AI_CONFIG_DIR/agent.yml"
+        echo "✅ Created agent.yml from template"
+    else
+        # Create minimal agent.yml if template not found
+        cat > "$AI_CONFIG_DIR/agent.yml" << EOF
+# Giant AI Agent Configuration
+provider: claude-code
+
+# Add provider-specific configuration as needed
+# See documentation for available providers and options
+EOF
+        echo "✅ Created minimal agent.yml"
+    fi
+else
+    echo "✓ agent.yml already exists"
+fi
+
 # Add .giant-ai directory to gitignore (prefer global, fallback to local)
 GLOBAL_GITIGNORE=$(git config --global core.excludesfile 2>/dev/null || echo "")
 GITIGNORE_UPDATED=""

@@ -1,6 +1,15 @@
-# Giant AI - Intelligent Development Toolkit
+# Giant AI - Open Source Alternative to Cursor IDE
 
-A standalone AI-powered development toolkit that provides semantic code search, enhanced AI context, and project-aware assistance. Works with multiple LLM providers (Claude, OpenAI, etc.) through Model Context Protocol (MCP) and CLI tools.
+**Mission: Provide a terminal-first, Neovim-integrated alternative to Cursor IDE for developers who prefer CLI workflows.**
+
+Giant AI brings Cursor-like AI capabilities to your terminal and Neovim - semantic code search, multi-file editing, autonomous coding agents, and intelligent context management - all without leaving your preferred development environment.
+
+Unlike Cursor's closed ecosystem, Giant AI is:
+- **Terminal-first**: No GUI required, works over SSH
+- **Neovim-native**: Deep integration with your editor
+- **Provider-agnostic**: Use Claude, OpenAI, Gemini, or self-hosted models
+- **Privacy-focused**: Run entirely offline with Ollama (coming soon)
+- **Open source**: Extend and customize as needed
 
 Created and maintained by **Bearded Giant, LLC**.
 
@@ -539,9 +548,24 @@ Giant AI Dev includes a powerful agent mode that rivals Cursor IDE's capabilitie
 ### Features
 - **Autonomous task execution** - Give high-level instructions, agent handles implementation
 - **Checkpoint system** - Automatic snapshots before changes, easy rollback
-- **Multi-provider support** - Works with Claude Code, OpenAI (coming), and custom CLIs
+- **Multi-provider support** - Works with Claude Code, OpenAI, Anthropic, and Gemini
 - **Batch operations** - Execute multiple tasks in sequence
 - **Safety boundaries** - No git commits/pushes, respects project boundaries
+
+### Supported Providers
+- **Claude Code** (Default) - Uses Claude Desktop for native file operations
+- **OpenAI** - GPT-4 and GPT-3.5 via API
+- **Anthropic** - Claude 3 Opus/Sonnet via API  
+- **Google Gemini** - Gemini Pro with free tier
+
+Configure in `.giant-ai/agent.yml`:
+```yaml
+provider: openai  # or claude-code, anthropic, gemini
+openai_api_key: ${OPENAI_API_KEY}
+openai_model: gpt-4-turbo-preview
+```
+
+See [Provider Guide](docs/providers-guide.md) for detailed configuration.
 
 ### Quick Examples
 ```bash

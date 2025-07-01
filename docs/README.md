@@ -29,6 +29,7 @@ Welcome to the Giant AI documentation! This directory contains comprehensive gui
 
 ### Provider & Model Selection
 - **[LLM Provider Practical Guide](llm-provider-practical-guide.md)** - Claude vs OpenAI vs local models for different tasks
+- **[Providers Guide](providers-guide.md)** - Complete guide to all supported providers (Claude Desktop, OpenAI, Anthropic, Gemini)
 
 ### Tools & Utilities
 - **[Neovim Plugin](https://github.com/bearded-giant/giant-ai.nvim)** - Official Neovim integration (external repository)
