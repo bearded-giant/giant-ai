@@ -19,32 +19,29 @@ async def fetch_user_data(user_id: int) -> Dict[str, Any]:
         user_task = fetch_user(user_id)
         preferences_task = fetch_user_preferences(user_id)
         permissions_task = fetch_user_permissions(user_id)
-        
+
         # Wait for all tasks concurrently
         user, preferences, permissions = await asyncio.gather(
             user_task,
-            preferences_task, 
+            preferences_task,
             permissions_task,
-            return_exceptions=True  # Don't fail all if one fails
+            return_exceptions=True,  # Don't fail all if one fails
         )
-        
+
         # Handle individual failures
         if isinstance(user, Exception):
             logger.error(f"Failed to fetch user: {user}")
             raise ValueError(f"User {user_id} not found")
-            
+
         # Process results that succeeded
         profile = await build_user_profile(
             user=user if not isinstance(user, Exception) else None,
             preferences=preferences if not isinstance(preferences, Exception) else {},
-            permissions=permissions if not isinstance(permissions, Exception) else []
+            permissions=permissions if not isinstance(permissions, Exception) else [],
         )
-        
-        return {
-            **profile,
-            "last_updated": datetime.utcnow().isoformat()
-        }
-        
+
+        return {**profile, "last_updated": datetime.utcnow().isoformat()}
+
     except Exception as e:
         logger.exception(f"Failed to fetch user data for {user_id}")
         raise
@@ -54,11 +51,11 @@ async def retry_async_operation(
     operation,
     max_retries: int = 3,
     backoff_factor: float = 2.0,
-    initial_delay: float = 1.0
+    initial_delay: float = 1.0,
 ) -> Any:
     """Retry pattern for async operations with exponential backoff"""
     last_exception = None
-    
+
     for attempt in range(max_retries):
         try:
             return await operation()
@@ -68,7 +65,7 @@ async def retry_async_operation(
         except Exception as e:
             last_exception = e
             if attempt < max_retries - 1:
-                delay = initial_delay * (backoff_factor ** attempt)
+                delay = initial_delay * (backoff_factor**attempt)
                 logger.warning(
                     f"Operation failed (attempt {attempt + 1}/{max_retries}), "
                     f"retrying in {delay}s: {e}"
@@ -76,28 +73,23 @@ async def retry_async_operation(
                 await asyncio.sleep(delay)
             else:
                 logger.error(f"Operation failed after {max_retries} attempts")
-    
+
     raise last_exception
 
 
 async def process_batch_async(
-    items: List[Any],
-    processor_func,
-    max_concurrent: int = 10
+    items: List[Any], processor_func, max_concurrent: int = 10
 ) -> List[Any]:
     """Process items in batches with controlled concurrency"""
     semaphore = asyncio.Semaphore(max_concurrent)
-    
+
     async def process_with_semaphore(item):
         async with semaphore:
             return await processor_func(item)
-    
+
     # Create tasks for all items
-    tasks = [
-        asyncio.create_task(process_with_semaphore(item))
-        for item in items
-    ]
-    
+    tasks = [asyncio.create_task(process_with_semaphore(item)) for item in items]
+
     # Wait for all tasks with progress tracking
     results = []
     for i, task in enumerate(asyncio.as_completed(tasks)):
@@ -109,7 +101,7 @@ async def process_batch_async(
         except Exception as e:
             logger.error(f"Failed to process item: {e}")
             results.append(None)
-    
+
     return results
 
 
@@ -118,7 +110,7 @@ async def async_timed_operation(operation_name: str):
     """Context manager for timing async operations"""
     start_time = asyncio.get_event_loop().time()
     logger.info(f"Starting {operation_name}")
-    
+
     try:
         yield
     finally:
@@ -131,9 +123,7 @@ async def fetch_all_users(user_ids: List[int]) -> List[Dict[str, Any]]:
     """Fetch multiple users efficiently with async"""
     async with async_timed_operation("fetch_all_users"):
         return await process_batch_async(
-            items=user_ids,
-            processor_func=fetch_user_data,
-            max_concurrent=20
+            items=user_ids, processor_func=fetch_user_data, max_concurrent=20
         )
 
 

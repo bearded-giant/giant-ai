@@ -84,13 +84,13 @@ class CodebaseRAG:
 
         # Use a more controlled progress display
         progress_bar = click.progressbar(
-            length=len(files_to_index), 
-            label='Indexing files', 
+            length=len(files_to_index),
+            label="Indexing files",
             show_pos=True,
             show_percent=True,
-            show_eta=True
+            show_eta=True,
         )
-        
+
         with progress_bar:
             for i, file_path in enumerate(files_to_index):
                 if use_chunking:
@@ -115,18 +115,19 @@ class CodebaseRAG:
                         try:
                             import os
                             import sys
+
                             # Temporarily redirect stdout to suppress ChromaDB output
                             old_stdout = sys.stdout
-                            sys.stdout = open(os.devnull, 'w')
-                            
+                            sys.stdout = open(os.devnull, "w")
+
                             self.collection.upsert(
                                 documents=all_docs, metadatas=all_metas, ids=all_ids
                             )
-                            
+
                             # Restore stdout
                             sys.stdout.close()
                             sys.stdout = old_stdout
-                            
+
                             all_docs = []
                             all_metas = []
                             all_ids = []
@@ -139,7 +140,7 @@ class CodebaseRAG:
                             all_docs = []
                             all_metas = []
                             all_ids = []
-                
+
                 # Update progress
                 progress_bar.update(1)
 
@@ -148,20 +149,21 @@ class CodebaseRAG:
             try:
                 import os
                 import sys
+
                 # Temporarily redirect stdout to suppress ChromaDB output
                 old_stdout = sys.stdout
-                sys.stdout = open(os.devnull, 'w')
-                
+                sys.stdout = open(os.devnull, "w")
+
                 self.collection.upsert(
                     documents=all_docs, metadatas=all_metas, ids=all_ids
                 )
-                
+
                 # Restore stdout
                 sys.stdout.close()
                 sys.stdout = old_stdout
             except Exception as e:
                 # Restore stdout if there was an error
-                if 'old_stdout' in locals() and sys.stdout != old_stdout:
+                if "old_stdout" in locals() and sys.stdout != old_stdout:
                     sys.stdout.close()
                     sys.stdout = old_stdout
                 click.echo(f"\nError during final batch insert: {e}", err=True)
@@ -455,4 +457,3 @@ def list_projects():
 
 if __name__ == "__main__":
     cli()
-

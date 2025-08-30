@@ -10,27 +10,27 @@ PROJECT_DIR="$(pwd)"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --clean|-c)
-            CLEAN_INSTALL=true
-            shift
-            ;;
-        --help|-h)
-            echo "Usage: ai-init-project [OPTIONS] [PROJECT_DIR]"
-            echo ""
-            echo "Options:"
-            echo "  --clean, -c    Clean install - overwrite existing configuration files"
-            echo "  --help, -h     Show this help message"
-            echo ""
-            echo "Examples:"
-            echo "  ai-init-project                    # Initialize current directory"
-            echo "  ai-init-project /path/to/project   # Initialize specific directory"
-            echo "  ai-init-project --clean            # Clean reinstall current directory"
-            exit 0
-            ;;
-        *)
-            PROJECT_DIR="$1"
-            shift
-            ;;
+    --clean | -c)
+        CLEAN_INSTALL=true
+        shift
+        ;;
+    --help | -h)
+        echo "Usage: ai-init-project [OPTIONS] [PROJECT_DIR]"
+        echo ""
+        echo "Options:"
+        echo "  --clean, -c    Clean install - overwrite existing configuration files"
+        echo "  --help, -h     Show this help message"
+        echo ""
+        echo "Examples:"
+        echo "  ai-init-project                    # Initialize current directory"
+        echo "  ai-init-project /path/to/project   # Initialize specific directory"
+        echo "  ai-init-project --clean            # Clean reinstall current directory"
+        exit 0
+        ;;
+    *)
+        PROJECT_DIR="$1"
+        shift
+        ;;
     esac
 done
 
@@ -56,7 +56,7 @@ if [ "$CLEAN_INSTALL" = false ] && ([ -f "$AI_CONFIG_DIR/context.md" ] || [ -f "
     echo ""
     read -p "Choose option (1/2, default: 1): " -n 1 -r
     echo ""
-    
+
     if [[ $REPLY =~ ^[2]$ ]]; then
         CLEAN_INSTALL=true
         echo "Will perform clean install..."
@@ -92,7 +92,7 @@ mkdir -p "$AI_CONFIG_DIR"
 # Create project-specific context file if it doesn't exist
 if [ ! -f "$AI_CONFIG_DIR/context.md" ]; then
     echo "Creating project context file..."
-    cat > "$AI_CONFIG_DIR/context.md" << 'EOF'
+    cat >"$AI_CONFIG_DIR/context.md" <<'EOF'
 # Project Context
 
 ## Overview
@@ -148,7 +148,7 @@ fi
 # Create conventions file if it doesn't exist
 if [ ! -f "$AI_CONFIG_DIR/conventions.yml" ]; then
     echo "Creating conventions file..."
-    cat > "$AI_CONFIG_DIR/conventions.yml" << 'EOF'
+    cat >"$AI_CONFIG_DIR/conventions.yml" <<'EOF'
 # Project Conventions
 naming:
   files: kebab-case  # or camelCase, PascalCase, snake_case
@@ -187,24 +187,24 @@ GITIGNORE_UPDATED=""
 if [ -n "$GLOBAL_GITIGNORE" ] && [ -f "$GLOBAL_GITIGNORE" ]; then
     # Use global gitignore
     if ! grep -q ".giant-ai/" "$GLOBAL_GITIGNORE" 2>/dev/null; then
-        echo "" >> "$GLOBAL_GITIGNORE"
-        echo "# Giant AI local files" >> "$GLOBAL_GITIGNORE"
-        echo ".giant-ai/" >> "$GLOBAL_GITIGNORE"
+        echo "" >>"$GLOBAL_GITIGNORE"
+        echo "# Giant AI local files" >>"$GLOBAL_GITIGNORE"
+        echo ".giant-ai/" >>"$GLOBAL_GITIGNORE"
         GITIGNORE_UPDATED="global ($GLOBAL_GITIGNORE)"
     fi
 else
     # Fall back to local gitignore
     if [ -f "$PROJECT_DIR/.gitignore" ]; then
         if ! grep -q ".giant-ai/" "$PROJECT_DIR/.gitignore"; then
-            echo "" >> "$PROJECT_DIR/.gitignore"
-            echo "# Giant AI local files" >> "$PROJECT_DIR/.gitignore"
-            echo ".giant-ai/" >> "$PROJECT_DIR/.gitignore"
+            echo "" >>"$PROJECT_DIR/.gitignore"
+            echo "# Giant AI local files" >>"$PROJECT_DIR/.gitignore"
+            echo ".giant-ai/" >>"$PROJECT_DIR/.gitignore"
             GITIGNORE_UPDATED="local (.gitignore)"
         fi
     else
         # Create local .gitignore if it doesn't exist
-        echo "# Giant AI local files" > "$PROJECT_DIR/.gitignore"
-        echo ".giant-ai/" >> "$PROJECT_DIR/.gitignore"
+        echo "# Giant AI local files" >"$PROJECT_DIR/.gitignore"
+        echo ".giant-ai/" >>"$PROJECT_DIR/.gitignore"
         GITIGNORE_UPDATED="local (.gitignore - created)"
     fi
 fi
@@ -232,7 +232,8 @@ echo "1. Edit $AI_CONFIG_DIR/context.md to describe your project"
 echo "2. Edit $AI_CONFIG_DIR/conventions.yml to match your project's conventions"
 echo "3. Run 'ai-rag index $PROJECT_DIR' to index/reindex the codebase"
 echo ""
-echo "The AI assistant will now have access to:"
+echo "Giant AI assistant will now have access to:"
 echo "- Project-specific context and guidelines"
 echo "- Semantic search across your codebase"
 echo "- Your coding conventions and patterns"
+

@@ -13,12 +13,13 @@ logger = logging.getLogger(__name__)
 
 class AppError(Exception):
     """Base application error with consistent structure"""
+
     def __init__(
-        self, 
-        message: str, 
+        self,
+        message: str,
         code: str = "APP_ERROR",
         status_code: int = 500,
-        details: Optional[Dict[str, Any]] = None
+        details: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message)
         self.code = code
@@ -29,8 +30,8 @@ class AppError(Exception):
 
 def example_operation(data: Dict[str, Any]) -> Dict[str, Any]:
     """Example of consistent error handling pattern"""
-    operation_id = data.get('id', 'unknown')
-    
+    operation_id = data.get("id", "unknown")
+
     try:
         # Input validation
         if not data:
@@ -38,51 +39,48 @@ def example_operation(data: Dict[str, Any]) -> Dict[str, Any]:
                 "Invalid input data",
                 code="VALIDATION_ERROR",
                 status_code=400,
-                details={"received": data}
+                details={"received": data},
             )
-        
+
         # Main operation logic
         result = perform_operation(data)
-        
+
         # Success logging with context
         logger.info(
             "Operation completed successfully",
             extra={
                 "operation_id": operation_id,
-                "result_id": result.get('id'),
-                "duration_ms": result.get('duration_ms')
-            }
+                "result_id": result.get("id"),
+                "duration_ms": result.get("duration_ms"),
+            },
         )
-        
+
         return {
             "success": True,
             "data": result,
             "metadata": {
                 "operation_id": operation_id,
-                "timestamp": datetime.utcnow().isoformat()
-            }
+                "timestamp": datetime.utcnow().isoformat(),
+            },
         }
-        
+
     except AppError:
         # Re-raise application errors (they're already properly formatted)
         raise
-        
+
     except ValidationError as e:
         # Convert known exceptions to AppError
         logger.warning(
             "Validation failed",
-            extra={
-                "operation_id": operation_id,
-                "validation_errors": e.errors
-            }
+            extra={"operation_id": operation_id, "validation_errors": e.errors},
         )
         raise AppError(
             f"Validation failed: {str(e)}",
             code="VALIDATION_ERROR",
             status_code=400,
-            details={"errors": e.errors}
+            details={"errors": e.errors},
         )
-        
+
     except Exception as e:
         # Log unexpected errors with full context
         logger.exception(
@@ -90,24 +88,22 @@ def example_operation(data: Dict[str, Any]) -> Dict[str, Any]:
             extra={
                 "operation_id": operation_id,
                 "error_type": type(e).__name__,
-                "error_message": str(e)
-            }
+                "error_message": str(e),
+            },
         )
-        
+
         # Convert to AppError for consistent API responses
         raise AppError(
             "An unexpected error occurred",
             code="INTERNAL_ERROR",
             status_code=500,
-            details={
-                "operation_id": operation_id,
-                "error_type": type(e).__name__
-            }
+            details={"operation_id": operation_id, "error_type": type(e).__name__},
         ) from e
 
 
 # Context manager for error handling
 from contextlib import contextmanager
+
 
 @contextmanager
 def error_handler(operation_name: str, **context):
@@ -119,11 +115,7 @@ def error_handler(operation_name: str, **context):
     except Exception as e:
         logger.exception(
             f"Error in {operation_name}",
-            extra={
-                **context,
-                "error_type": type(e).__name__,
-                "error_message": str(e)
-            }
+            extra={**context, "error_type": type(e).__name__, "error_message": str(e)},
         )
         raise
 
