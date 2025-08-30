@@ -20,7 +20,6 @@ class CodebaseRAG:
     def __init__(self, project_path, persist_directory=None):
         self.project_path = Path(project_path).resolve()
 
-        # Use global RAG db location with project-specific collection
         if persist_directory is None:
             self.persist_dir = Path.home() / ".giant-ai" / "rag" / "db"
         else:
@@ -28,10 +27,8 @@ class CodebaseRAG:
 
         self.persist_dir.mkdir(parents=True, exist_ok=True)
 
-        # Project identifier for collection name
         self.project_id = self.project_path.name.replace(" ", "_").replace("/", "_")
 
-        # Lazy initialization - only load expensive resources when needed
         self.model = None
         self.ef = None
         self.client = None
@@ -57,17 +54,15 @@ class CodebaseRAG:
             if not self.persist_dir.exists():
                 return False
 
-            # Quick check without loading sentence transformers
             client = chromadb.PersistentClient(path=str(self.persist_dir))
             collections = client.list_collections()
             collection_name = f"codebase_{self.project_id}"
 
             for collection_info in collections:
                 if collection_info.name == collection_name:
-                    # Get the actual collection and check document count
                     collection = client.get_collection(
                         name=collection_name,
-                        embedding_function=None,  # Don't need embedding function just to count
+                        embedding_function=None
                     )
                     count = collection.count()
                     return count > 0
@@ -108,7 +103,6 @@ class CodebaseRAG:
             f"Chunking mode: {'enabled' if use_chunking else 'disabled (fast mode)'}"
         )
 
-        # Collect all files to index first
         files_to_index = []
         for pattern in file_patterns:
             for file_path in self.project_path.rglob(pattern):
@@ -117,12 +111,10 @@ class CodebaseRAG:
 
         click.echo(f"Found {len(files_to_index)} files to index")
 
-        # Process files in batches
         all_docs = []
         all_metas = []
         all_ids = []
 
-        # Use a more controlled progress display
         progress_bar = click.progressbar(
             length=len(files_to_index),
             label="Indexing files",
@@ -134,10 +126,8 @@ class CodebaseRAG:
         with progress_bar:
             for i, file_path in enumerate(files_to_index):
                 if use_chunking:
-                    # Original chunking behavior (slower)
                     docs, metas, ids = self.prepare_file_chunks(file_path)
                 else:
-                    # Fast mode - one document per file
                     doc, meta, doc_id = self.prepare_file_fast(file_path)
                     if doc:
                         docs, metas, ids = [doc], [meta], [doc_id]

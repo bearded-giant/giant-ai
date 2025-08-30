@@ -42,7 +42,6 @@ class ClaudeCodeProvider(BaseLLMProvider):
 
     def execute_agent_task(self, task: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute task using Claude Code CLI"""
-        # Build command with auto-accept if supported
         cmd = ["claude"]
 
         if context.get("auto_accept") and self.supports_auto_accept():
@@ -51,10 +50,8 @@ class ClaudeCodeProvider(BaseLLMProvider):
         if context.get("continue_session"):
             cmd.extend(["--continue"])
 
-        # Add the task as a prompt
         cmd.extend(["--print", task])
 
-        # Execute and capture output
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         return {
@@ -88,7 +85,6 @@ class OpenAIProvider(BaseLLMProvider):
 
     def execute_agent_task(self, task: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute task using OpenAI API"""
-        # Build system prompt with context
         system_prompt = self._build_system_prompt(context)
 
         headers = {
@@ -115,9 +111,7 @@ class OpenAIProvider(BaseLLMProvider):
             result = response.json()
             output = result["choices"][0]["message"]["content"]
 
-            # Parse structured output if present
             if "```json" in output:
-                # Extract JSON blocks for file operations
                 json_blocks = self._extract_json_blocks(output)
                 if json_blocks:
                     self._execute_file_operations(json_blocks)
@@ -222,7 +216,6 @@ class AnthropicProvider(BaseLLMProvider):
 
     def execute_agent_task(self, task: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute task using Anthropic API"""
-        # Build system prompt with context
         system_prompt = self._build_system_prompt(context)
 
         headers = {
@@ -249,7 +242,6 @@ class AnthropicProvider(BaseLLMProvider):
             result = response.json()
             output = result["content"][0]["text"]
 
-            # Parse structured output if present
             if "```json" in output:
                 json_blocks = self._extract_json_blocks(output)
                 if json_blocks:
@@ -353,7 +345,6 @@ class GeminiProvider(BaseLLMProvider):
 
     def execute_agent_task(self, task: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute task using Gemini API"""
-        # Build system prompt with context
         system_prompt = self._build_system_prompt(context)
 
         headers = {"Content-Type": "application/json"}
@@ -377,7 +368,6 @@ class GeminiProvider(BaseLLMProvider):
             result = response.json()
             output = result["candidates"][0]["content"]["parts"][0]["text"]
 
-            # Parse structured output if present
             if "```json" in output:
                 json_blocks = self._extract_json_blocks(output)
                 if json_blocks:
@@ -477,7 +467,6 @@ class OllamaProvider(BaseLLMProvider):
 
     def execute_agent_task(self, task: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute task using Ollama API"""
-        # Build system prompt with context
         system_prompt = self._build_system_prompt(context)
 
         # Combine system prompt and task
@@ -502,7 +491,6 @@ class OllamaProvider(BaseLLMProvider):
             result = response.json()
             output = result.get("response", "")
 
-            # Parse structured output if present
             if "```json" in output:
                 json_blocks = self._extract_json_blocks(output)
                 if json_blocks:

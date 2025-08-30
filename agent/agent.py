@@ -26,13 +26,8 @@ class AgentMode:
         self.checkpoint_manager = CheckpointManager(project_dir)
         self.session_log = []
 
-        # Load project context
         self.context = self._load_project_context()
-
-        # Load agent configuration
         self.agent_config = self._load_agent_config()
-
-        # Initialize provider
         provider_name = self.agent_config.get("provider", "claude-code")
         self.provider = LLMProviderFactory.create(provider_name, self.agent_config)
 
@@ -40,7 +35,6 @@ class AgentMode:
         """Execute an agent task with safety controls"""
         options = options or {}
 
-        # Create checkpoint before task execution
         if options.get("checkpoint", True):
             checkpoint_id = self.checkpoint_manager.create_checkpoint(
                 f"Before: {task[:50]}"
@@ -48,7 +42,6 @@ class AgentMode:
         else:
             checkpoint_id = None
 
-        # Prepare task context
         task_context = {
             "project_context": self.context,
             "task": task,
@@ -58,32 +51,26 @@ class AgentMode:
             "continue_session": options.get("continue_session", False),
         }
 
-        # Select and apply agent prompt template
         prompt = self._build_agent_prompt(
             task, options.get("prompt_template", "default")
         )
 
-        # Execute task with provider
         print(f"🤖 Executing agent task: {task}")
         print(f"   Provider: {self.provider.name}")
         print(f"   Auto-accept: {task_context['auto_accept']}")
 
         result = self.provider.execute_agent_task(prompt, task_context)
 
-        # Log the session
         self._log_session(task, result, checkpoint_id)
 
-        # Handle result
         if result["success"]:
             print("✅ Task completed successfully")
 
-            # Optionally create post-task checkpoint
             if options.get("checkpoint_after", False):
                 self.checkpoint_manager.create_checkpoint(f"After: {task[:50]}")
         else:
             print("❌ Task failed")
 
-            # Offer to restore checkpoint
             if checkpoint_id and options.get("auto_restore_on_failure", False):
                 print("🔄 Auto-restoring checkpoint due to failure...")
                 self.checkpoint_manager.restore_checkpoint(checkpoint_id)
@@ -97,7 +84,6 @@ class AgentMode:
         options = options or {}
         results = []
 
-        # Create initial checkpoint
         if options.get("checkpoint", True):
             initial_checkpoint = self.checkpoint_manager.create_checkpoint(
                 "Batch start"

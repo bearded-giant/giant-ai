@@ -28,7 +28,6 @@ class CheckpointManager:
         checkpoint_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         checkpoint_path = self.checkpoint_dir / checkpoint_id
 
-        # Create checkpoint metadata
         metadata = {
             "id": checkpoint_id,
             "timestamp": datetime.now().isoformat(),
@@ -37,9 +36,7 @@ class CheckpointManager:
             "modified_files": [],
         }
 
-        # If git repo, use git stash for checkpoint
         if self._is_git_repo():
-            # Get list of modified files
             result = subprocess.run(
                 ["git", "diff", "--name-only"],
                 cwd=self.project_dir,
@@ -49,7 +46,6 @@ class CheckpointManager:
             if result.returncode == 0:
                 metadata["modified_files"] = result.stdout.strip().split("\n")
 
-            # Create a git stash as checkpoint
             stash_msg = f"AI Agent Checkpoint: {checkpoint_id}"
             subprocess.run(
                 ["git", "stash", "push", "-m", stash_msg, "--include-untracked"],
@@ -57,12 +53,10 @@ class CheckpointManager:
             )
             metadata["git_stash"] = stash_msg
         else:
-            # For non-git projects, create file backups
             checkpoint_path.mkdir(parents=True, exist_ok=True)
             self._backup_project_files(checkpoint_path)
             metadata["backup_path"] = str(checkpoint_path)
 
-        # Save metadata
         metadata_path = self.checkpoint_dir / f"{checkpoint_id}.json"
         with open(metadata_path, "w") as f:
             json.dump(metadata, f, indent=2)
