@@ -13,7 +13,13 @@ from indexer import CodebaseRAG
 
 
 def search_project(project_path, query, limit=10, format="json"):
-    """Search a project's indexed codebase"""
+    """Search a project's indexed codebase
+    
+    Formats:
+    - json: JSON output for programmatic use
+    - text: Human-readable text output
+    - quickfix: Vim quickfix format for Neovim integration
+    """
     project_path = Path(project_path)
 
     # Check if project is initialized (has .giant-ai directory)
@@ -54,6 +60,28 @@ def search_project(project_path, query, limit=10, format="json"):
     if format == "json":
         output = {"query": query, "project": str(project_path), "results": results}
         return json.dumps(output, indent=2)
+    elif format == "quickfix":
+        # Vim quickfix format: filename:line:col:type:message
+        lines = []
+        for result in results:
+            file_path = result['metadata']['file_path']
+            line_start = result['metadata'].get('line_start', 1)
+            line_end = result['metadata'].get('line_end', line_start)
+            chunk_type = result['metadata'].get('chunk_type', 'match')
+            
+            # Get absolute path for the file
+            abs_path = Path(project_path) / file_path
+            
+            # Create a preview message with distance score
+            distance = result['distance']
+            preview = result['content'][:100].replace('\n', ' ').strip()
+            message = f"[{distance:.3f}] {chunk_type}: {preview}"
+            
+            # Quickfix format: filename:line:col:message
+            # Use line_start for the jump position
+            lines.append(f"{abs_path}:{line_start}:1:{message}")
+            
+        return "\n".join(lines)
     else:
         # Human readable format
         lines = [f"Search results for '{query}' in {project_path}:"]
@@ -78,7 +106,8 @@ def main():
         print("  query: Search query string")
         print("  project_path: Path to project (default: current directory)")
         print("  limit: Number of results (default: 10)")
-        print("  format: Output format - 'json' or 'text' (default: json)")
+        print("  format: Output format - 'json', 'text', or 'quickfix' (default: json)")
+        print("         quickfix: Vim quickfix format for Neovim integration")
         sys.exit(1)
 
     query = sys.argv[1]

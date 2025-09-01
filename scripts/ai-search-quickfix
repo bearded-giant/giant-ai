@@ -1,0 +1,35 @@
+#!/bin/bash
+# Giant AI Search - Quickfix Format
+# Semantic search that outputs in Vim quickfix format
+
+set -e
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Ensure we have a query
+if [ $# -lt 1 ]; then
+    echo "Usage: ai-search-quickfix <query> [project_path] [limit]"
+    echo "  query: Search query string"
+    echo "  project_path: Path to project (default: current directory)"
+    echo "  limit: Number of results (default: 10)"
+    echo ""
+    echo "Output is in Vim quickfix format for direct Neovim integration"
+    exit 1
+fi
+
+QUERY="$1"
+PROJECT_PATH="${2:-.}"
+LIMIT="${3:-10}"
+
+# Check if we have the virtual environment
+if [ ! -d "$PARENT_DIR/.venv" ]; then
+    echo "Error: Virtual environment not found. Run 'ai-setup' first."
+    exit 1
+fi
+
+# Activate virtual environment and run search with quickfix format
+source "$PARENT_DIR/.venv/bin/activate"
+cd "$PARENT_DIR/rag"
+python search.py "$QUERY" "$PROJECT_PATH" "$LIMIT" "quickfix"
