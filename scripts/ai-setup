@@ -97,27 +97,51 @@ mkdir -p ~/.local/bin
 # Create ai-rag wrapper with virtual environment
 cat > ~/.local/bin/ai-rag << EOF
 #!/bin/bash
+<<<<<<< Updated upstream
 # Wrapper script for ai-rag that uses isolated Python environment
 source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
 exec python3 "$AI_DEV_DIR/rag/indexer.py" "\$@"
+||||||| Stash base
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/rag/indexer.py" "\$@"
+=======
+# Direct venv path to avoid asdf/pyenv shim interference
+exec "$AI_DEV_DIR/.venv/bin/python3" "$AI_DEV_DIR/rag/indexer.py" "\$@"
+>>>>>>> Stashed changes
 EOF
 chmod +x ~/.local/bin/ai-rag
 
 # Create ai-search wrapper with virtual environment
 cat > ~/.local/bin/ai-search << EOF
 #!/bin/bash
+<<<<<<< Updated upstream
 # Wrapper script for ai-search that uses isolated Python environment
 source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
 exec python3 "$AI_DEV_DIR/rag/search.py" "\$@"
+||||||| Stash base
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/rag/search.py" "\$@"
+=======
+# Direct venv path to avoid asdf/pyenv shim interference
+exec "$AI_DEV_DIR/.venv/bin/python3" "$AI_DEV_DIR/rag/search.py" "\$@"
+>>>>>>> Stashed changes
 EOF
 chmod +x ~/.local/bin/ai-search
 
 # Create ai-search-analyze wrapper with virtual environment (enhanced search with AI analysis)
 cat > ~/.local/bin/ai-search-analyze << EOF
 #!/bin/bash
+<<<<<<< Updated upstream
 # Wrapper script for ai-search-analyze that uses isolated Python environment
 source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
 exec python3 "$AI_DEV_DIR/scripts/ai-search-analyze" "\$@"
+||||||| Stash base
+source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
+exec python3 "$AI_DEV_DIR/scripts/ai-search-analyze" "\$@"
+=======
+# Direct venv path to avoid asdf/pyenv shim interference
+exec "$AI_DEV_DIR/.venv/bin/python3" "$AI_DEV_DIR/scripts/ai-search-analyze" "\$@"
+>>>>>>> Stashed changes
 EOF
 chmod +x ~/.local/bin/ai-search-analyze
 
@@ -132,18 +156,16 @@ chmod +x ~/.local/bin/ai-search-pipe
 # Create ai-agent wrapper with virtual environment
 cat > ~/.local/bin/ai-agent << EOF
 #!/bin/bash
-# Wrapper script for ai-agent that uses isolated Python environment
-source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
-exec python3 "$AI_DEV_DIR/scripts/ai-agent" "\$@"
+# Direct venv path to avoid asdf/pyenv shim interference
+exec "$AI_DEV_DIR/.venv/bin/python3" "$AI_DEV_DIR/scripts/ai-agent" "\$@"
 EOF
 chmod +x ~/.local/bin/ai-agent
 
 # Create ai-pattern-refactor wrapper with virtual environment
 cat > ~/.local/bin/ai-pattern-refactor << EOF
 #!/bin/bash
-# Wrapper script for ai-pattern-refactor that uses isolated Python environment
-source "$AI_DEV_DIR/.venv/bin/activate" 2>/dev/null
-exec python3 "$AI_DEV_DIR/tools/ai-pattern-refactor" "\$@"
+# Direct venv path to avoid asdf/pyenv shim interference
+exec "$AI_DEV_DIR/.venv/bin/python3" "$AI_DEV_DIR/tools/ai-pattern-refactor" "\$@"
 EOF
 chmod +x ~/.local/bin/ai-pattern-refactor
 
